@@ -1,0 +1,43 @@
+---
+layout: default
+---
+
+<script>var scriptSource = "sketches/smiles_01.js"</script>
+
+
+
+<div class="row">
+  <div class="col-md-8"><br><br>
+    <h3>Number One: The Face</h3>
+    <p>Here's well define some variables to replace our explicit numbers</p>
+  </div>
+</div>
+
+
+
+<div class="row">
+  <div class="col-md-12" style="text-align:center">
+    <script id="processor" type="text/processing" data-processing-target="processing-canvas"></script>
+    <!--<canvas data-processing-sources="/sketches/smiles_01.js"></canvas>-->
+    <canvas id="processing-canvas"> </canvas>
+
+  </div>
+
+  {% include center.html %}
+       
+        <pre>  
+        <code  id="coder"> <div id="editor" style="width:960px"></div>
+        </code>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+    
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+</script>

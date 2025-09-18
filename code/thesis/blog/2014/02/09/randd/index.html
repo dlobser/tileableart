@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+        <link href='http://fonts.googleapis.com/css?family=Codystar:300' rel='stylesheet' type='text/css'>
+
+    <style>
+      #mainBoxFull img { display: block; }
+      #mainBoxFull{ font-size:0; }
+      img{
+        padding:0;
+      }
+      #title{
+        /*font-family: 'Roboto', sans-serif;*/
+        font-family: 'Codystar', cursive;
+        font-size:4em;
+      }
+      #black{
+        background-color:black;
+      }
+      .col-centered{
+          float: none;
+          margin: 0 auto;
+      }
+      .center-block {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      a:link {color:#999999;}      /* unvisited link */
+      a:visited {color:#999999;}  /* visited link */
+      a:hover {color:#FFFFFF !important; text-decoration:none !important;}  /* mouse over link */
+      a:active {color:#0000FF;}  /* selected link */
+    </style>
+    <title>Moths</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="../../../../dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head> <script type="text/javascript">
+    $(document).bind(
+      'touchmove',
+      function(e) {
+        e.preventDefault();
+      }
+    );
+    </script>
+
+  <body style="background-color:black;color:#bbbbbb">
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="background-color:black">
+      <div class="container">
+        <div class="navbar-header" style="text-align:center">
+
+          <a class="navbar-brand" href="/" style="font-family:Codystar">Home</a>
+          <a class="navbar-brand" href="/blog" style="font-family:Codystar;font-size:1em">Blog</a>
+          <a class="navbar-brand" href="/about" style="font-family:Codystar">About</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="container">
+        <br><br>
+        <div class="row">
+  
+    <p><div style="background-color:black">
+
+<div style="text-align:center">
+<img src="../../../../images/mothwip/burst_01.jpg"
+width=900px>
+</div>
+<img src="../../../../images/mothwip/wing_01.png"
+width=300px>
+<div style="float:right;padding-right:150px">
+<br><br><br><br><br><br><br><br><br>
+<img src="../../../../images/mothwip/body_01.png"
+width=600px>
+</div>
+<br>
+</div>
+
+
+<p><br></p>
+
+<p>The Moth must exist in different forms for different purposes.<br>
+Here I am attempting to create a stylized, if relatively realistic version<br>
+primarily for 3D printing.  As part of the process I'm continuing work<br>
+on TREEjs, an update to <a href="http://idlehands.tv">Turbine</a> which will be more flexible.<br><br></p>
+
+<p>This code creates the two wings and the body of the moth that you see here.<br></p>
+
+<p><code></p>
+
+<pre><code>  tree = new TREE();
+
+   //upper wing
+  tree.generate({
+        joints: [4,30],
+        divs:   [0,1],
+        start:  [0,0],
+        angles: [0,Math.PI/2],
+        length: [2,5],
+        rads:   [1,1],
+  });
+
+
+  xform(makeInfo([
+        //rotate root
+        [0,0,"all"], {rz:-.12,sc:1},
+        [0,0,0], {ry:.2,rz:.3,sc:1},
+        //bottom joint
+        [0,0,0,0,0], {rz:2,sc:1},
+        [0,0,0,0,[1,15]], {rz:-.05,sc:1},
+        //second from bottom
+        [0,0,1,0,0], {rz:1.8,sc:1},
+        [0,0,1,0,[1,20]], {rz:-.02,sc:1},
+        //top
+        [0,0,3,0,0], {rz:1.5,sc:1},
+        [0,0,3,0,[1,30]], {rz:.01,sc:1},
+        [0,0,3,0,[25,28]], {rz:.45,sc:1.1},
+        [0,0,2,0,[24,29]], {rz:.42,sc:1},
+        [0,0,0,0,[25,30]], {rz:-.25,sc:1},
+        [0,0,1,0,[26,30]], {rz:-.5,sc:1},
+
+  ]),
+  tree,
+  go);
+
+
+  var wngs = (tree.worldPositionsArray(tree.report()));
+
+  var newTube = [];
+
+  for(var i = 1 ; i &lt; 4 ; i++){
+
+        var b = Math.floor(Math.random()*5);
+        var c = i+1;//Math.floor(1+Math.random()*4);
+
+        var d = c-1;
+        if(d&lt;1)d=1;
+
+        while(b&lt;20){
+
+              var tube = [];
+              newTube.push(tube);
+
+
+              if(Math.random()&gt;.5){
+                    tube.push(wngs[c][b]);
+                    tube.push(wngs[c][b+1]);
+
+                    tube.push(wngs[d][b+8]);
+                    tube.push(wngs[d][b+10]);
+              }
+              else{
+                    tube.push(wngs[d][b]);
+                    tube.push(wngs[d][b+1]);
+
+                    tube.push(wngs[c][b+8]);
+                    tube.push(wngs[c][b+10]);
+              }
+
+              var f = Math.floor(1+Math.random()*5);
+              b+=f;
+        }
+
+  }
+
+  tree.tubes(newTube,2);
+
+  //make the body
+
+  tree.generate({
+        joints: [40,10],
+        divs:   [0,1],
+        start:  [0,0],
+        angles: [0,Math.PI/2],
+        length: [3.5,5],
+        rads:   [1,2],
+  });
+
+  xform(makeInfo([
+        //rotate root
+        [0,1,0], {ry:Math.PI,rx:Math.PI-.2,scx:.7},
+        [0,1,[1,40]], {rx:-.02},
+        [0,1,[0,40],0,[1,10]], {rz:.1,rx:-.35,sc:1},
+        [0,1,[0,40],1,[1,10]], {rz:.1,rx:.35,sc:1},
+
+  ]),
+  tree,
+  go);
+
+  xform(makeInfo([
+        [0,1,"all"], {sc:1},
+        [0,1,0], {sc:.8},
+  ]),
+  tree,
+  scaleUpDown);
+
+  function scaleUpDown(obj,args){
+        var s = args.sc || 1;
+        var off = obj.joint/50;
+        var sc = ((1+Math.sin(1.8+off*Math.PI*1.2)*.1)-.05)+Math.sin(obj.joint*2)*.05;
+        obj.rotator.scale=new THREE.Vector3(sc*s,sc*s,sc*s);
+  }
+
+
+  //lower wing
+  tree.generate({
+        joints: [8,25],
+        divs:   [0,1],
+        start:  [0,0],
+        angles: [0,Math.PI/2],
+        length: [1,5],
+        rads:   [1,1],
+  });
+
+
+  xform(makeInfo([
+        // rotate root
+        [0,2,"all"], {rz:-.17,sc:1},
+        [0,2,0], {rx:-.15,rz:1.4,sc:.9},
+        //bottom joint
+        [0,2,[0,8],0,[15,25]], {rz:.02,sc:1,offMult:.03,offMult2:.0001,off:-.2},
+        [0,2,[0,8],0,[5,14]], {rz:.01,sc:1,offMult:.01,offMult2:.0001,off:-.03},
+
+  ]),
+  tree,
+  go2);
+
+  var wngs = (tree.worldPositionsArray(tree.report()));
+  console.log(wngs);
+
+  var newTube = [];
+
+  for(var i = 87 ; i &lt; 94 ; i++){
+
+        var b = Math.floor(Math.random()*5);
+        var c = i+1;//Math.floor(1+Math.random()*4);
+
+        var d = c-1;
+        if(d&lt;1)d=1;
+
+        while(b&lt;15){
+
+              var tube = [];
+              newTube.push(tube);
+
+
+              if(Math.random()&gt;.5){
+                    tube.push(wngs[c][b]);
+                    tube.push(wngs[c][b+1]);
+
+                    tube.push(wngs[d][b+8]);
+                    tube.push(wngs[d][b+10]);
+              }
+              else{
+                    tube.push(wngs[d][b]);
+                    tube.push(wngs[d][b+1]);
+
+                    tube.push(wngs[c][b+8]);
+                    tube.push(wngs[c][b+10]);
+              }
+
+              var f = Math.floor(1+Math.random()*5);
+              b+=f;
+        }
+
+  }
+
+  tree.tubes(newTube,2);
+  tree.makeTubes(3);
+
+  xform(makeInfo([
+        [0,2,[0,8],0,[15,24]], {rz:.3,sc:3},
+  ]),
+  tree,
+  append);
+
+  xform(makeInfo([
+
+        [0,2,[0,8],0,[0,10],[0,3],"all"], {rz:.1,sc:.9},
+
+  ]),
+  tree,
+  go);
+</code></pre>
+
+<p></code></p>
+</p>
+</div>
+
+
+     
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+  </body>
+</html>

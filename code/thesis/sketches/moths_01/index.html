@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Miller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style>
+    #container{
+
+		
+	}
+    </style>
+	<body style="background-color:black" id="nocursor">
+    <!-- <link href="../assets/css/bootstrap-responsive.css" rel="stylesheet"> -->
+
+		<div id="container"></div>
+		<div id="info">
+			
+		</div>
+
+		<script src="three.js"></script>
+		
+		<script src="orbit.js"></script>
+		
+		<script src="js/OBJLoader.js"></script>
+		<script src="TREE.js"></script>
+
+		<script type="text/javascript">
+		    document.getElementById('nocursor').style.cursor = 'none';
+		</script>
+	
+
+		<script>
+		
+	
+			var camera, controls, scene, renderer;
+
+			var tree,lgtGrp;
+
+			var clock = new THREE.Clock();
+			clock.start();
+			var time = 0;//clock.getElapsedTime();
+
+			var thing = [];
+			var timer = 1;
+
+			var avg = new Average(10);
+
+			init();
+			
+			window.addEventListener('load', function() { animate();}, false)
+
+			function init() {
+
+				time=0;
+
+				camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.z = 400;
+
+
+				controls = new THREE.OrbitControls( camera );
+				// controls.addEventListener( 'change', render );
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0x000000, 0.0004 );
+
+				tree = new TREE();
+
+				tree.params.jointGeo = new THREE.CylinderGeometry(.1,.1,1,6,1);
+				tree.params.ballGeo = new THREE.Geometry();
+
+				tree.generate({
+					joints: [3,10],
+					divs:   [0,3],
+					start:  [0,2],
+					angles: [Math.PI/2,Math.PI/2],
+					length: [20,6],
+					rads:   [100,1],
+				});
+
+				// tree.params.jointGeo = new THREE.SphereGeometry(120,10,20);
+
+				xform(makeInfo([
+					[0,[0,99],0,0,9], {rx:Math.PI/3,sc:3,amount:5},
+					[0,[0,99],0,0,9], {rx:-Math.PI/3,sc:3,amount:5},
+				]),
+				tree,
+				append);
+
+				// var off = 0 ; 
+
+				// function changeOffset(obj,args){
+				// 	// obj.offset = off;
+				// 	// off++;
+
+				// }
+
+				// xform(makeInfo([
+				// 	//rotate root
+					
+				// 	[0,[0,49],0,0,0,[0,1],0], {rx:rot,offMult:1},
+					
+				// ]),
+				// tree,
+				// changeOffset);
+
+				
+
+
+				
+				// tree.updateMatrixWorld();
+
+				
+				var ball = (new THREE.Mesh(new THREE.SphereGeometry(25,6,6),new THREE.MeshLambertMaterial({color:0xffffff})))
+				scene.add(ball);
+				lgtGrp = new THREE.Object3D();
+								scene.add(lgtGrp);
+
+				scene.add(tree);
+					
+				var light = new THREE.PointLight( 0xff6600, 1, 190 ); light.position.set( 0,0,150 ); scene.add( light );
+				// light = new THREE.DirectionalLight( 0xFFFFFF );
+				// light.position.set( 1, 1, .5 );
+				scene.add( light );
+
+				var light = new THREE.PointLight( 0xffaa66, 2, 70 ); light.position.set( 0,0,100 ); scene.add( light );
+				scene.add( light );
+					var light = new THREE.PointLight( 0xff9933, .5, 30 ); light.position.set( 0,0,25 ); scene.add( light );
+				// scene.add( light );
+				var light = new THREE.PointLight( 0x5588ff, 5, 20 ); light.position.set( 0,0,0 ); scene.add( light );
+								lgtGrp.add(light);
+
+				var light = new THREE.PointLight( 0x5588ff, 5, 20 ); light.position.set( 0,0,0 ); scene.add( light );
+				lgtGrp.add(light);
+				lgtGrp.children[0].position.y=10;
+				lgtGrp.children[1].position.y=-10;
+				lgtGrp.position.z=40;
+				// scene.add( light );
+				var light = new THREE.PointLight( 0x5588ff, 5, 20 ); light.position.set( 0,0,60 ); scene.add( light );
+				// scene.add( light );
+				
+				console.log(lgtGrp);
+			
+				// light = new THREE.DirectionalLight( 0x555555 );
+				// light.position.set( -1, 1, .5 );
+				// scene.add( light );
+				
+				// light = new THREE.DirectionalLight( 0x555555 );
+				// light.position.set( 0, 1, 1 );
+				// scene.add( light );
+				
+				// light = new THREE.DirectionalLight( 0x666666 );
+				// light.position.set( 0, 1, -1 );
+				// scene.add( light );
+
+				// light = new THREE.DirectionalLight( 0x334477,1,0 );
+				// light.position.set( -1, -1, -1 );
+				// scene.add( light );
+				
+				// light = new THREE.DirectionalLight( 0x556699,1,0 );
+				// light.position.set( 1, -1, 1 );
+				// scene.add( light );
+
+				// light = new THREE.AmbientLight( 0x222222 );
+				// scene.add( light );
+
+				renderer = new THREE.WebGLRenderer( { clearColor: 0xff0000, antialias: true } );
+				renderer.setClearColor( scene.fog.color, 1 );
+				renderer.setSize( window.innerWidth, window.innerHeight);
+				
+				container = document.getElementById( 'container' );
+				container.appendChild( renderer.domElement );
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+			
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function animate() {
+				
+				render();
+				
+				requestAnimationFrame( animate );
+				controls.update();
+				
+			}
+
+		
+			
+			function render() {
+
+				timer = window.mouseX/5000;
+				var avgTimer = avg.avg(timer);
+				// console.log(avgTimer);
+				// var time = clock.getElapsedTime()*avgTimer;
+				if(avgTimer>0)
+					time+=1*avgTimer;
+				else
+					time+=1;
+
+				lgtGrp.rotation.z = time*4;
+				// console.log(avgTimer);
+
+				var rot = 1.5+Math.sin(time*8);
+
+				function roti(obj,args){
+					obj.rotator.rotation.x = args.amt*(args.off+Math.sin((obj.id)+((args.off2+time)*16)));
+				}
+
+				tree.rotation.x = Math.PI/2;
+				tree.rotation.y = time;
+				xform(makeInfo([
+					//rotate root
+					// [0,[0,49],0], {ry:time,idMult:1},
+					[0,[0,99],0,0,0], {rz:-time,idMult:(1+(time*-.0001))},
+					// [0,[0,49],0,0,0,0,0], {rx:rot,offMult:1},
+					// [0,[0,49],0,0,0,1,0], {rx:-rot},
+					[0,[0,99],0,0,0,[0,1],"all"], {rz:.1,scz:.5,scy:.8,scx:1.2},
+					[0,[0,99],0,0,9], {ry:0},
+					
+				]),
+				tree,
+				go2);
+				xform(makeInfo([
+					
+					[0,[0,99],0,0,0,0,[1,5]], {off:0,off2:0,amt:.5},
+					[0,[0,99],0,0,0,1,[1,5]], {off:0,off2:Math.PI/6,amt:.5},
+					[0,[0,99],0,0,0,0,0], {off2:0,off:2*Math.PI+1.5,amt:1},
+					[0,[0,99],0,0,0,1,0], {off2:Math.PI/6,off:Math.PI+1.5,amt:1},
+					
+					
+				]),
+				tree,
+				roti);
+
+				
+				
+				renderer.render( scene, camera );
+
+			}
+				
+			window.onkeyup = onKeyUp;
+			
+			function onKeyUp(evt) {
+
+				console.log(evt.keyCode);
+
+				if(evt.keyCode == 65){
+					timer -= .1;
+				}
+					if(evt.keyCode == 81){
+					timer += .1;
+				}
+			}
+
+			  // function initEventHandlers(window)
+			  //  {
+			      window.onmousedown = function(event) { // Mouse pressed
+			         this.handle.mousePressed = true;
+			   			moveMouse(this.handle, event);
+			      }
+			      window.onmouseup = function(event) {   // Mouse released
+			         this.handle.mousePressed = false;
+			      }
+			      window.onmousemove = function(event) { // Mouse moved
+			        moveMouse(this.handle, event);
+			      }
+
+			      function moveMouse(handle, event) {
+			         var x = event.clientX;
+			         var y = event.clientY;
+
+			         var rect = event.target.getBoundingClientRect();
+			         if ( rect.left <= x && x <= rect.right &&
+			              rect.top  <= y && y <= rect.bottom ) {
+			            window.mouseX = x - rect.left;
+			            window.mouseY = y - rect.top;
+			         }
+			      };
+			   // }
+
+		
+		</script>
+
+		
+	</body>
+</html>

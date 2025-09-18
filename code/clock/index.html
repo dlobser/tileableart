@@ -1,0 +1,40 @@
+
+<html>
+  <head>
+
+  	
+  	<h1 style="postiion:absolute;text-align:center;margin-top:100px"> DLKP reunion in <span id="timer"></span> seconds </h1>
+  	<div style="text-align:center">
+		<img src = "http://31.media.tumblr.com/tumblr_ll5ymvkkWU1qje4xjo1_500.gif" width="300px">
+		<img src = "http://31.media.tumblr.com/tumblr_ll5ymvkkWU1qje4xjo1_500.gif" width="300px">
+	</div>
+  </head>
+  <body>
+  	<script>
+
+  	var time = 1420519507444+691200000;
+
+  	countDown();
+
+  	function countDown(){
+
+  		setTimeout(function(){
+  			var xo = "";
+  			for(var i = 0 ; i < (1+Math.sin(Date.now()*.1))*10 ; i++){
+  				xo+="XO";
+  			}
+			console.log(Date.now()-time);
+			console.log(xo);
+			requestAnimationFrame(countDown);
+			var r = (Date.now()-time)/1000;
+			var t = Math.abs(Math.floor(r));
+			document.getElementById("timer").innerHTML = t;
+
+  		},1000)
+
+  		
+  		
+  	}
+  	</script>
+  </body>
+  </html>

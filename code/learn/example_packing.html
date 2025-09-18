@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  
+	<head>
+  
+
+    <LINK href="css/codeMirror.css" rel="stylesheet" type="text/css">
+    <script src="lib/processing.js"></script>
+    <script src="lib/jquery.js"></script>
+    <script src="lib/dist/js/bootstrap.min.js"></script>
+    <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+    <title>Creative Code for Parametric Design</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="lib/dist/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="grid.css" rel="stylesheet">
+    <style type="text/css" media="screen">
+    #editor { 
+          position: absolute;
+          top: 70px;
+          right: 0;
+          bottom: 0px;
+          left: 40px;
+      }
+  </style>
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+   
+  </head>
+
+  <body>
+
+
+  <link href="css/ace.css" rel="stylesheet">
+
+     <header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="index.html" class="navbar-brand">Home</a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">
+      
+         <li>
+          <a href="about.html">About</a>
+        </li>
+      </ul>
+       
+    
+    </nav>
+  </div>
+</header>
+
+    <div class="container">
+      <div class="row"><br>
+         
+  <div class="col-md-1"></div>
+
+  <div class="col-md-12">
+    <br>
+    <h3>Circle Packing</h3>
+<p>Here's we're using some tricks to cram loads of non intersecting circles together.<br>
+There are lots of ways to pack circles and learning to do this yourself is an excellent<br>
+introduction to the use of arrays. </p>
+
+<script> 
+	scriptSource = "sketches/example_packing.js";
+</script>
+
+
+  <div style="position:relative" class="display">
+    <canvas id="sketch" class="canvas1"></canvas>    
+  </div>
+  
+  <div class="controls">
+    <button onclick="startSketch();">Update Code</button>
+  </div>
+
+  <pre id="the-editor" class="editor">
+    // Processing JS:
+    // http://processingjs.org/
+  </pre>
+    
+  <script type="application/javascript" src="lib/aceSetup.js"></script>
+
+
+
+  </div>
+</div>
+
+    </div> <!-- /container -->
+
+    <script>
+
+    function setSpan(id, str) {
+      document.getElementById(id).firstChild.nodeValue = str;
+    }
+
+    text = "";
+    texter = "";
+    console.log(scriptSource);
+
+    window.onload = function(){
+        var iframe = document.createElement('iframe');
+        iframe.id = 'iframe';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        iframe.src = scriptSource;
+
+        setTimeout(function(){
+            
+            text += document.getElementById('iframe').contentDocument.body.firstChild.innerHTML;
+            texter = text.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&");
+            editor.setValue(texter);
+            startSketch();
+            
+        }, 1000);
+
+    }
+
+    function update(){
+            editor.setValue(texter);
+
+    }
+
+    
+
+
+    </script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </body>
+</html>

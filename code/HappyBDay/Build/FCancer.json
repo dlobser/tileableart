@@ -1,0 +1,11 @@
+{
+"TOTAL_MEMORY": 268435456,
+"dataUrl": "FCancer.data.unityweb",
+"asmCodeUrl": "FCancer.asm.code.unityweb",
+"asmMemoryUrl": "FCancer.asm.memory.unityweb",
+"asmFrameworkUrl": "FCancer.asm.framework.unityweb",
+"graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20"
+}

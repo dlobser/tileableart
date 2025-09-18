@@ -1,0 +1,736 @@
+
+<!! ASSIGNMENT DUE WEDNESDAY SEPTEMBER 18, 2013 FOR KEN PERLIN'S GRAPHICS CLASS>
+
+<script src="script.js"></script>
+
+<!! REPLACE THE TEXT BELOW WITH A TITLE FOR YOUR SHADER>
+
+<script id="title" type="text/plain">
+Chinese Medicine Balls
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH A BRIEF DESCRIPTION OF YOUR SHADER>
+
+<script id="description" type="text/plain">
+
+Because one ball is never enough.
+
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH YOUR SHADER CODE>
+
+<script id="shader" type="x-shader/x-fragment">
+const int ARRSIZE = 6;
+float ceps = 1e-5; //a custom version of eps (assuming one is actually defined)
+const mat4 id = mat4(1., 0., 0., 0.,
+		     0., 1., 0., 0.,
+		     0., 0., 1., 0.,
+		     0., 0., 0., 1.);
+
+//Translate/scale tranformation matrix
+mat4 tsMatrix(vec3 t, vec3 s) {
+        return mat4(s.x,  0.,  0., 0., 
+		     0., s.y,  0., 0.,
+		     0.,  0., s.z, 0.,
+		    t.x, t.y, t.z, 1.);
+}
+
+//Rotation matrix, second arguments is an integer which determines rotation axis
+//such that 1 = x, 2 = y, 3 = z 
+mat4 rotmat(float theta, int axis){
+	float c = cos(theta);
+	float s = sin(theta);
+	if (axis == 3) //apparently switch statements aren't supported in webgl?
+		return mat4( c,  s, 0., 0.,
+		     	    -s,  c, 0., 0.,
+			    0., 0., 1., 0.,
+			    0., 0., 0., 1.);
+	else if (axis == 2)
+		return mat4( c, 0.,  s, 0.,
+		     	    0., 1., 0., 0.,
+			    -s, 0.,  c, 0.,
+			    0., 0., 0., 1.);
+	else if (axis == 1)
+		return mat4(1., 0., 0., 0.,
+		     	    0.,  c,  s, 0.,
+			    0., -s,  c, 0.,
+			    0., 0., 0., 1.);
+	else 
+		//error: axis must be 1, 2 or 3!
+		//I don't know how to actually return an error, and they seem
+		//to provide more trouble than use... just return an identity matrix
+		return mat4(1., 0., 0., 0.,
+		     	    0., 1., 0., 0.,
+			    0., 0., 1., 0.,
+			    0., 0., 0., 1.);
+}
+
+mat4 rotmatYaxis(float theta){
+ return mat4(cos(theta), 0.0, sin(theta), 0.0, 0.0, 1.0, 0.0, 0.0, -sin(theta), 0.0, cos(theta), 0.0, 0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 rotmatXaxis(float theta){
+ return mat4(   1.0, 0.0,           0.0,        0.0, 
+                0.0, cos(theta),    sin(theta), 0.0, 
+                0.0, -sin(theta),   cos(theta), 0.0, 
+                0.0, 0.0,           0.0,        1.0);
+}
+
+mat4 rotmatZaxis(float theta){
+ return mat4(cos(theta), sin(theta), 0.0, 0.0, -sin(theta), cos(theta), 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 sMatrix(vec3 s) {
+        return mat4(s.x,    0., 0., 0., 
+                    0.,     s.y,0., 0., 
+                    0.,     0., s.z,0., 
+                    0., 0. ,0.,1.);
+}
+
+mat4 tMatrix(vec3 t){
+        return mat4(1., 0., 0., 0.,
+                    0., 1., 0., 0., 
+                    0., 0., 1., 0., 
+                    t.x,t.y,t.z,1.);
+
+}
+mat4 TRSmat(float x, float y, float z, vec3 T, vec3 S){
+    //mat4 mat =  rotmatXaxis(x) * rotmatYaxis(y) * rotmatZaxis(z) * tsMatrix(-T/S, 1.0/S);
+    mat4 mat =   tMatrix(T) *rotmatXaxis(x) * rotmatYaxis(y) * rotmatZaxis(z) * sMatrix(S) ;
+    return mat;
+}
+
+//Is there no built in transpose?
+mat4 transpose(mat4 inmat){
+     mat4 outmat;
+     for(int i = 0; i < 4; i++)
+        for(int j = 0; j < 4; j++)
+	   outmat[i][j] = inmat[j][i];
+     return outmat;
+}
+
+mat4 uppershift(mat4 inmat){
+     mat4 omat = mat4(0.);
+     mat4 dmat = inmat+transpose(inmat);
+     for(int i = 0; i < 4; i++)
+         for(int j = 0; j < 4; j++)
+	     omat[i][j] = (i <= j) ?
+		         ((i == j) ? dmat[i][j]/2. 
+		                   : dmat[i][j])
+			           : 0.;
+     return omat; 
+}
+
+float sum(mat4 inmat){
+    float tot = 0.;
+    for(int i = 0; i < 4; i++)
+         for(int j = 0; j < 4; j++)
+	      tot += inmat[i][j];
+    return tot;
+}
+
+mat4 transformUTM(mat4 inmat, mat4 transmat){
+    return uppershift(transpose(transmat)*inmat*transmat);
+} 
+vec4 transformUTM(vec4 inmat, mat4 transmat){
+    return transpose(transmat)*inmat*transmat;
+} 
+//Ray is just for conveniently passing a few arguments at a time
+//when calculating the solution of a quadratic surface, here we have 
+//both solutions to the quadratic formula (tEnter/tExit) as well as the
+//derivative (technically a gradient) for the normal surface.
+struct Ray {
+	float tEnter;
+    float tExit;
+	vec3 surfNorm;
+	mat4 transform;
+    vec3 color;
+    bool hit;
+    vec3 n;
+    float t;
+};
+
+struct varray4 {
+	vec4 array[ARRSIZE];
+        int length;
+};	
+
+struct Cam{
+    vec4 V;
+    vec4 W;
+};
+
+
+struct Transform{
+    float x;
+    float y;
+    float z;
+    vec3 T;
+    vec3 S;
+    mat4 M;
+};
+
+struct Lights{
+    vec4 directional[10];
+    vec3 ambient;
+    int numDir;
+};
+
+struct sCube{
+    vec4 cube[6];
+    vec4 rotCube[6];
+    vec3 color;
+};
+
+Transform makeXform(float x, float y, float z, vec3 T, vec3 S){
+    Transform Xform;
+    Xform.x = x;
+    Xform.y = y;
+    Xform.z = z;
+    Xform.T = T;
+    Xform.S = S;
+    Xform.M = TRSmat(x, y, z, T, S);
+    return Xform;
+}
+
+Lights makeLights(in vec3 amb, in vec4 dir[10], in int num){
+    
+    Lights lights;  
+    //lights.ambient = vec3(0.0);
+    lights.numDir = num;
+
+    for (int i = 0 ; i < 10 ; i++){
+    
+        if(i<=num){
+            lights.directional[i] = dir[i];
+        }
+        else{
+            lights.directional[i] = vec4(0.0);
+        }
+    }
+
+    lights.ambient = amb;
+    return lights;
+
+}
+
+
+Cam makeCam(float focal_length, float zPos){
+    Cam cam;
+    vec2 uv = 1.0*( gl_FragCoord.xy / uViewportSize.xy );   
+    //float focal_length = 5.0;
+    cam.V = vec4( 0.0, 0.0, zPos, 1.0); //ray origin
+    cam.W = normalize( vec4( -0.5 + uv.x,0.5 - uv.y, -focal_length, 0.0) );
+    return cam;
+
+}
+
+sCube makeCube(vec3 color, Transform xform){
+
+    sCube cube;
+    
+    mat4 inverseMatrix = TRSmat(xform.x,xform.y,xform.z,xform.T,xform.S);
+    
+    cube.cube[0] = vec4(-1.0,0.0,0.0,-1.0) * inverseMatrix;
+    cube.cube[1] = vec4(1.0,0.0,0.0,-1.0) * inverseMatrix;
+    cube.cube[2] = vec4(0.0,-1.0,0.0,-1.0) * inverseMatrix;
+    cube.cube[3] = vec4(0.0,1.0,0.0,-1.0) * inverseMatrix;
+    cube.cube[4] = vec4(0.0,0.0,-1.0,-1.0) * inverseMatrix;
+    cube.cube[5] = vec4(0.0,0.0,1.0,-1.0) * inverseMatrix;
+    
+    cube.color = color;
+    
+    return cube;
+}
+
+//Forms an upper triangular matrix based on quadratic equation coefficients
+//note: ideally an array would be passed but was having some issues below...
+mat4 qsurf(float q1, float q2, float q3,
+	   float q4, float q5, float q6,
+	   float q7, float q8, float q9, float q10){
+	return mat4(q1, q6, q5, q7,
+	            0., q2, q4, q8,
+		    0., 0., q3, q9,
+		    0., 0., 0., q10);
+}
+
+
+struct Surface{
+    mat4 coeff;
+    vec3 color;
+};
+
+
+Surface makeSurface(vec3 color, int type){
+
+    Surface surface;
+
+    if (type==1){
+        surface.coeff = qsurf(1., 1., 1., 0., 0., 0., 0., 0., 0., -1.);
+    }
+    else if (type==2){
+        surface.coeff = qsurf(1., 0., 1., 0., 0., 0., 0., 0., 0., -1.);
+    }
+    else if (type==3){
+        surface.coeff = qsurf(1.,-1., 1., 0., 0., 0., 0., 0., 0.,  0.);
+    }
+    else{
+        surface.coeff = qsurf(1., 1., 1., 0., 0., 0., 0., 0., 0., -1.);
+    }
+
+    surface.color = color;
+
+    return surface;
+
+}
+
+//Define surface types based on coefficients in quadratic equation
+//...was having trouble defining an array using c formalism, i.e.
+//float myarray[3] = {1.0, 2.0, 3.0}; which is why i decided to
+//pass multiple arguments to qsurf. this should be fixed.
+mat4 qsphere = qsurf(1., 1., 1., 0., 0., 0., 0., 0., 0., -1.);
+mat4 qcyl    = qsurf(1., 0., 1., 0., 0., 0., 0., 0., 0., -1.);
+mat4 qcone   = qsurf(1.,-1., 1., 0., 0., 0., 0., 0., 0.,  0.);
+
+//uSurf (unbounded surface) solves the quadratic equation for an input surface type such as
+//that returned from qsurf. Both plus/minus solutions are passed as tEnter
+//and tExit in a Ray structure. The normalized normal vector field is
+//also passed in the same structure under surfNorm.
+Ray uSurf(mat4 insurf, vec4 V, vec4 W){
+	Ray outsurf;
+	float as = insurf[0][0]; float bs = insurf[1][1];
+	float cs = insurf[2][2]; float ds = insurf[1][2];
+	float es = insurf[0][2]; float fs = insurf[0][1];
+	float gs = insurf[0][3]; float hs = insurf[1][3];
+	float is = insurf[2][3]; float js = insurf[3][3];
+
+	//recast everything into a quadratic form
+	float A = as*W.x*W.x + bs*W.y*W.y + cs*W.z*W.z +
+	    	  ds*W.y*W.z + es*W.z*W.x + fs*W.x*W.y;
+	float B = 2.0*(as*V.x*W.x + bs*V.y*W.y + cs*V.z*W.z) +
+	    	  ds*(V.y*W.z + V.z*W.y) +
+	    	  es*(V.z*W.x + V.x*W.z) +
+	     	  fs*(V.x*W.y + V.y*W.x) +
+	    	  gs*W.x + hs*W.y + is*W.z;
+	float C = as*V.x*V.x + bs*V.y*V.y + cs*V.z*V.z +
+	    	  ds*V.y*V.z + es*V.z*V.x + fs*V.x*V.y +
+	    	  gs*V.x + hs*V.y + is*V.z + js;
+
+    	float h = B*B - 4.0*A*C;
+
+    	if (h < 0.0){ // imaginary solution
+		outsurf.tEnter = 0.0;
+	   	outsurf.tExit  = 0.0;
+   	   	outsurf.surfNorm = vec3(0., 0., 0.); 
+		outsurf.transform = mat4(1.,-1./.2,0.,0.,
+			        0.,1.,0.,0.,
+				0.,0.,1.,0.,
+				0.,0.,0.,1);
+    	} else {      // real solution 
+	    	float t = (-B - sqrt(h)) / 2.0 / A;
+    	    	outsurf.tEnter = t;			   //- solution
+            	outsurf.tExit  = (-B + sqrt(h)) / 2.0 / A; //+ solution
+    	    	float xx = V.x + t*W.x;                
+    	    	float yy = V.y + t*W.y;
+    	    	float zz = V.z + t*W.z;
+    	    	outsurf.surfNorm = 		//derivative of the quadratic
+		    normalize(vec3(2.0*as*xx + es*zz + fs*yy + gs,
+			    	   2.0*bs*yy + ds*zz + fs*xx + hs,
+				   2.0*cs*zz + ds*yy + es*xx + is));
+		outsurf.transform = mat4(1.,0.,0.,0.,
+				         0.,1.,0.,0.,
+				         0.,0.,1.,0.,
+				         0.,0.,0.,1);
+    	}
+    	return outsurf;
+}
+
+//bSurf (bounded surface) works essentially like uSurf setup like iCube except for an 
+//arbitrary surface bounded by two planes lb, and ub (lower and upper bound respectively).
+Ray bSurf(mat4 insurf, in Cam cam, in vec4 lb, in vec4 ub){
+    Ray inobj = uSurf(insurf,cam.V,cam.W);
+    Ray surfout;
+	
+    surfout.tExit    = 0.0;
+    surfout.tEnter   = 0.0;
+    surfout.surfNorm = vec3(0.);
+
+    float tEnter[3];
+    float tExit[3];
+    vec4 bounds[3]; //this is admittedly lazy but I wanted to take advantage
+     		    //of all the work already put into iCube
+    tEnter[0] = inobj.tEnter;
+    tExit[0]  = inobj.tExit;
+
+    bounds[1] = lb;
+    bounds[2] = ub;
+
+
+    vec4 V = cam.V;
+    vec4 W = cam.W;
+
+
+    for(int i=1; i<3; i++){
+        tEnter[i] = tExit[i] = 0.0;
+        float LW = (dot(bounds[i], W));
+        float LV = (dot(bounds[i], V));
+
+       // if(abs(LW) < ceps && LV < -ceps) continue;       //ray inside half space
+        if(abs(LW) < ceps && LV > 0.0)   return surfout; //ray outside half space
+        if(LW < -ceps) tEnter[i] = -LV/LW;  //ray enter half space
+        if(LW > ceps)  tExit[i]  = -LV/LW;  //ray exit half space
+    }
+
+    float maxEnter = -1e20;
+    float minExit  =  1e20;
+    int   maxIndex = -1;
+    int   minIndex = -1;
+    float t;
+
+    for (int i = 0 ; i < 3 ; i++){
+       if(tEnter[i] > maxEnter && tEnter[i] != 0.0){
+            maxEnter = tEnter[i]; // entering rays
+            maxIndex = i;
+        }
+        if(tExit[i] < minExit && tExit[i] != 0.0){
+            minExit = tExit[i];   // exiting rays
+            minIndex = i;
+        }
+    }
+
+    if( maxEnter < minExit && inobj.tEnter != 0.0){
+	surfout.tEnter   = maxEnter;
+	surfout.tExit    = minExit;
+        surfout.surfNorm = (minIndex == 0) ? inobj.surfNorm : ub.xyz;
+    }
+ 
+    return surfout;
+}
+/*
+Ray bSurf3(in Cam cam, in vec4 lb, in vec4 ub){
+    Ray inobj = uSurf(insurf,cam.V,cam.W);
+    Ray surfout;
+    
+    surfout.tExit    = 0.0;
+    surfout.tEnter   = 0.0;
+    surfout.surfNorm = vec3(0.);
+
+    float tEnter[3];
+    float tExit[3];
+    vec4 bounds[3]; //this is admittedly lazy but I wanted to take advantage
+                //of all the work already put into iCube
+    tEnter[0] = inobj.tEnter;
+    tExit[0]  = inobj.tExit;
+
+    bounds[1] = lb;
+    bounds[2] = ub;
+
+
+    vec4 V = cam.V;
+    vec4 W = cam.W;
+
+
+    for(int i=1; i<3; i++){
+        tEnter[i] = tExit[i] = 0.0;
+        float LW = (dot(bounds[i], W));
+        float LV = (dot(bounds[i], V));
+
+       // if(abs(LW) < ceps && LV < -ceps) continue;       //ray inside half space
+        if(abs(LW) < ceps && LV > 0.0)   return surfout; //ray outside half space
+        if(LW < -ceps) tEnter[i] = -LV/LW;  //ray enter half space
+        if(LW > ceps)  tExit[i]  = -LV/LW;  //ray exit half space
+    }
+
+    float maxEnter = -1e20;
+    float minExit  =  1e20;
+    int   maxIndex = -1;
+    int   minIndex = -1;
+    float t;
+
+    for (int i = 0 ; i < 3 ; i++){
+       if(tEnter[i] > maxEnter && tEnter[i] != 0.0){
+            maxEnter = tEnter[i]; // entering rays
+            maxIndex = i;
+        }
+        if(tExit[i] < minExit && tExit[i] != 0.0){
+            minExit = tExit[i];   // exiting rays
+            minIndex = i;
+        }
+    }
+
+    if( maxEnter < minExit && inobj.tEnter != 0.0){
+    surfout.tEnter   = maxEnter;
+    surfout.tExit    = minExit;
+        surfout.surfNorm = (minIndex == 0) ? inobj.surfNorm : ub.xyz;
+    }
+ 
+    return surfout;
+}
+*/
+//bSurf (bounded surface) works essentially like uSurf setup like iCube except for an 
+//arbitrary surface bounded by two planes lb, and ub (lower and upper bound respectively).
+Ray bSurf2(mat4 insurf, in Cam cam, in varray4 bnds){
+    
+    Ray surfout;
+    surfout.tExit    = 0.0;
+    surfout.tEnter   = 0.0;
+    surfout.surfNorm = vec3(0.);
+    vec4 maxSurf;
+
+    vec4 V = cam.V;
+    vec4 W = cam.W;
+
+    Ray inobj = (sum(insurf) == 0.) ? surfout : uSurf(insurf,V,W);
+
+    int numbounds = bnds.length+1;
+    float tEnter[ARRSIZE];
+    float tExit[ARRSIZE];
+    vec4 bounds[ARRSIZE];
+
+    tEnter[0] = inobj.tEnter;
+    tExit[0]  = inobj.tExit;
+
+    for(int i = 1; i < ARRSIZE; i++) 
+	if (i < numbounds)
+	    bounds[i] = bnds.array[i-1];
+        else
+            break;
+
+    for(int i=1; i<ARRSIZE; i++){
+	if (i < numbounds){
+            tEnter[i] = tExit[i] = 0.0;
+            float LW = (dot(bounds[i], W));
+            float LV = (dot(bounds[i], V));
+
+            if(abs(LW) < ceps && LV < -ceps) continue;       //ray inside half space
+            if(abs(LW) < ceps && LV > 0.0)   return surfout; //ray outside half space
+            if(LW < -ceps) tEnter[i] = -LV/LW;  //ray enter half space
+            if(LW >  ceps) tExit[i]  = -LV/LW;  //ray exit half space
+	} else 
+	    break;
+    }
+
+    float maxEnter = -1e20;
+    float minExit  =  1e20;
+    int   maxIndex = -1;
+    int   minIndex = -1;
+    float t;
+
+    for (int i = 0 ; i < ARRSIZE; i++){
+ 	if (i < numbounds){
+            if(tEnter[i] > maxEnter && tEnter[i] != 0.0){
+                 maxEnter = tEnter[i]; // entering rays
+                 maxIndex = i;
+		 maxSurf  = bnds.array[i];
+             }
+             if(tExit[i] < minExit && tExit[i] != 0.0){
+                 minExit = tExit[i];   // exiting rays
+                 minIndex = i;
+             }
+	} else 
+	     break;
+    }
+
+    if( maxEnter < minExit && inobj.tEnter != 0.0){
+        surfout.tEnter   = maxEnter;
+        surfout.tExit    = minExit;
+        surfout.surfNorm = (minIndex != 0) ?  maxSurf.xyz : inobj.surfNorm;//ub.xyz;
+    }
+    
+    return surfout;
+}
+
+Ray pCube(in Cam cam, in sCube cube, in Lights lights){
+
+    float LV;
+    float LW;
+
+    float maxEnter;
+    float minExit;
+
+    int maxIndex;
+    int minIndex;
+
+    Ray ray;
+    
+    ray.tEnter = 0.0;
+    ray.tExit = 0.0;
+    ray.n = cube.cube[0].xyz;
+    ray.t = 0.4;
+    ray.hit = false;
+    ray.color = lights.ambient;
+    //ray.testFloat = 1.0;
+    //ray.testVec3 = cube.cube[0].xyz;
+
+    float tEnter[6];
+    float tExit[6];
+    
+    float eps = 0.000001;
+    bool miss = false;
+
+    for(int i = 0 ; i < 6 ; i ++){
+
+        tEnter[i] = 0.0;
+        tExit[i] = 0.0;
+
+        LW = ( dot( cube.cube[i], cam.W ));
+        LV = ( dot( cube.cube[i], cam.V ));
+
+        //degenerate cases
+        
+        //The entire ray lies inside the half space - ignore this L
+        //this doesn't seem to do anything
+      //  if( abs(LW) < eps && LV < -eps ){
+            //ray.hit = false;
+        //  break;
+      //  }
+        
+        //The entire ray lies outside the half space - missed
+        if( abs(LW) < eps && LV > 0.0 ){
+            miss = true;
+            //continue;
+        }
+
+        // enter the half space
+        if ( LW < -eps ){
+            tEnter[i] = -LV/LW;
+        }
+
+        // exit the half space
+        if (LW > eps){
+            tExit[i] = -LV/LW;
+        }
+
+    }
+
+    maxEnter = -1e20;
+    minExit = 1e20;
+    ray.t = 1e6;
+
+    maxIndex = 0;
+    minIndex = 0;
+
+    for (int i = 0 ; i < 6 ; i++){
+
+        // entering rays
+       if(tEnter[i] > maxEnter && tEnter[i] != 0.0){
+            maxEnter = tEnter[i];
+            maxIndex = i;
+            ray.n = normalize(cube.cube[i].xyz);
+        }
+
+        //exiting rays
+        if(tExit[i] < minExit && tExit[i] != 0.0){
+
+            minExit = tExit[i];
+            minIndex = i;
+
+        }
+    }
+    
+    if( miss == false && maxEnter < minExit ){
+        ray.t = maxEnter;
+        
+        float col = 0.5;
+        
+        for(int i = 0 ; i < 10 ; i++){
+            if(i<=lights.numDir){
+                float tempCol=dot(normalize(ray.n),normalize(lights.directional[i].xyz))*lights.directional[i].w;
+                if(tempCol>0.0){
+                    col+=tempCol;
+                }
+            }   
+            else{
+                col+=0.0;
+            }
+        }
+        ray.color = (cube.color*col)+lights.ambient;
+        ray.hit = true;
+    }
+    else{
+        ray.hit = false;
+    }
+
+    return ray;
+}
+
+float remap (in float low1, in float high1, 
+	     in float low2, in float high2, in float value){
+     return low2 + (value - low1) * (high2 - low2) / (high1 - low1) ;
+}
+
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+
+void main( void ){ //I still don't understand why void is called in the argument of main
+	           //I thought this was something you might do in a C header file when 
+		   //declaring a function with no argument, but never when it was actually
+		   //called. Perhaps I'm mistaken..
+
+//#############################################//
+//######## Initialize Scene Parameters ########//
+//#############################################//
+    vec3 light = normalize(vec3(1.4,2.6,1.4));    // light position
+    vec2 uv = 1.0*( gl_FragCoord.xy / uViewportSize.xy );
+
+    Cam cam;
+
+    vec4 dirLights[10];
+    dirLights[0] = vec4(sin(uTime),-1,-0.4,1.0);
+    dirLights[1] = vec4(0,1,0.0,0.2);
+    
+    Lights lighting;
+    lighting.ambient = vec3(0.1,0.2,0.1);
+    lighting = makeLights(vec3(0.051,0.06,0.07),dirLights,1);
+
+    float focal_length = 5.0;
+    vec4 V = vec4( 0.0, 0.0, 60.0, 1.0); //ray origin
+    vec4 W = normalize( vec4( -0.5 + uv.x,0.5 - uv.y, -focal_length, 0.0) );
+
+    cam.V = V;
+    cam.W = W;
+
+    Transform cubeXform = makeXform(uTime,uTime,uTime,
+    vec3(0.0, 0.0, sin(uTime)),
+    vec3(1.0, 1.0, 1.0));
+    
+    sCube cuber = makeCube(vec3(1.0*sin(4.0*uTime)+0.5,0.7,0.2),cubeXform);
+        
+    Ray cube;
+    cube = pCube(cam,cuber,lighting);
+
+
+    mat4 obj1 = qsphere;
+    mat4 obj2 = qcyl;
+
+    vec4 lb = vec4(0., -1., 0., -1.);
+    vec4 ub = vec4(0., 1., 0., -1.);
+
+    mat4 ts  = tsMatrix(vec3(0.,0.,-00.0),vec3(1.,1.,1.));
+    mat4 ts2 =rotmat(uTime*1.3,1)*tsMatrix(vec3(5.0*sin(uTime),5.*sin(1.34*uTime),0.*sin(.8*uTime)+45.0),vec3(1.,1.,1.));
+  
+    Ray sph1 = uSurf(transformUTM(obj1,ts),V,W);
+	//Ray cube = iCube(cam,cubeXform,lighting);
+	
+    Ray sph2 = bSurf(transformUTM(obj2,ts2),cam,lb*ts2,ub*ts2);
+	
+    Ray sph3 = bSurf(transformUTM(obj2,ts2),cam,lb*ts2,ub*ts2);
+    vec3 sph1col = sph1.surfNorm;
+    vec3 col1 = vec3(1.,1.,1.)*pow(dot(sph1col,-W.xyz),4.);
+    vec3 col2 = sph2.surfNorm;
+   vec3 col3 = sph3.surfNorm;
+    float keepim = (sph1.tEnter > 0.) ? 1. : 0.;
+    float keepsph1 = (sph3.tEnter > sph1.tEnter) ? 0. : 1.;
+    gl_FragColor = vec4(col2*keepim*keepsph1+sph1col*keepsph1+1.*col3,1.);
+    //gl_FragColor = vec4(vec3(0.1),1.0);
+    if(cube.hit){
+	   gl_FragColor = vec4(cube.color,1.);
+    }
+} 
+
+</script>
+
+<script>start()</script>

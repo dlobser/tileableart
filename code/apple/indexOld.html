@@ -1,0 +1,255 @@
+
+	<!-- for Google -->
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+
+<meta name="author" content="" />
+<meta name="copyright" content="" />
+<meta name="application-name" content="" />
+
+<!-- for Facebook -->          
+<meta property="og:title" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:image" content="" />
+<meta property="og:url" content="" />
+<meta property="og:description" content="" />
+
+<!-- for Twitter -->          
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="" />
+<meta name="twitter:description" content="" />
+<meta name="twitter:image" content="" />
+<html>
+  <head>
+  
+    <title>Heart!</title>
+ 	<link href="lib/jqueryui/jquery-ui.css" rel="stylesheet">
+ 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+	<style>
+    <style>
+    #container{
+		width:500px
+	}
+	body{
+		background-color:white;
+		margin:0;
+		padding:0;
+		text-decoration:none;
+		/*cursor: none !important; */
+	}
+	 body {
+        overflow: hidden;
+	   font-family:  sans-serif; sans-serif; 
+	   font-weight: 300;
+	
+    }
+    a:link {color:#999999;text-decoration:none;}      /* unvisited link */
+	a:visited {color:#999999;text-decoration:none;}  /* visited link */
+	a:hover {color:#333333;text-decoration:none;}  /* mouse over link */
+	a:active {color:#999999;text-decoration:none;}  /* selected link */
+   
+	.buttonb {
+		-moz-box-shadow:inset 0px 6px 3px 0px #ffffff;
+		-webkit-box-shadow:inset 0px 6px 3px 0px #ffffff;
+		box-shadow:inset 0px 14px 13px 0px #ffffff;
+		background-color:#f9f9f9;
+		border:1px solid #dcdcdc;
+		display:inline-block;
+		color:#666666;
+		font-family:Arial;
+		font-size:10px;
+		font-weight:bold;
+		font-style:normal;
+		height:18px;
+		line-height:5px;
+		width:59px;
+		text-decoration:none;
+		text-align:center;
+		text-shadow:-3px -1px 7px #ffffff;
+	}.buttonb:hover {
+		background-color:#e9e9e9;
+	}.buttonb:active {
+		position:relative;
+		top:1px;
+	}
+	}.buttonb:visited {
+		text-decoration:none !important;
+		border:none;
+	}
+	}.buttonb:focus {
+		text-decoration:none !important;
+		border:none;
+		outline:none;
+	}
+	*:focus {
+	    outline: none;
+	}
+    
+    #editor { 
+        margin: 0;
+        margin-right:50%;
+        margin-bottom:100px;
+        position: absolute;
+        z-index:1;
+        background-color:transparent;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+    #margin{
+    	margin-left:-15px;
+    }
+    </style>
+
+	</head>
+<body>
+<div id="accordion" style="width:200px;position:absolute;z-index:20">
+  <h3 ><i class="fa fa-heart"></i> Fruitify!</h3>
+  <div id="margin" >
+  Fruitify your beautiful life. <br><br>Adjust the curves that make the fruit, and also adjust the rotation of the inner and outer shells as well as the color!  <br><br> Then you can 3D print it!
+  </div>
+  <h3 style="font-size:.7em"><i class="fa fa-certificate"></i> Shape</h3>
+  <div  id="margin" style="background:transparent">
+    <div style="margin-left:-5px;position:relative;width:150px;background:#aaddff;text-align:center">outer shape<canvas id="myCanvas" width="150" height="150" style="border:2px;border-color:black;padding:0px;border-radius:0px"></canvas></div><br>
+
+		<div style="margin-left:-5px;position:relative;width:150px;background:#aaddff;text-align:center">inner shape<canvas id="myCanvas2" width="150" height="150" style="padding:0px;border-radius:0px"></canvas></div><br>
+
+		<div id="sliders" style="position:relative;width:150px;margin-left:-5px;margin-top:10px"></div>
+		<br>
+  </div>
+
+
+  <h3 style="font-size:.7em"><i class="fa fa-eyedropper fa-lg"></i> Color</h3>
+  <div  id="margin" style="background:transparent">
+  	<div style="text-align:center;margin-left:-5px;position:relative;width:150px;background:#99ccff">color<canvas id="myCanvas3" width="150" height="150" style="padding:0px;border-radius:0px"></canvas>detail</div>
+
+		<div style="margin-left:-5px;margin-top:0px"></div>
+		<div id="slider"  style="position:relative;width:150px;margin-left:-5px;margin-top:5px"></div><br>
+
+  </div>
+ <h3 style="font-size:.7em">  	<i class="fa fa-camera-retro fa-lg"></i> Export</h3>
+  <div  id="margin">
+    		<div id="tabs-5"><input style="font-size:.7em;width:150px" type="button" id="buttonid" value="export .obj" onclick="saver()"class="buttonb"></div>
+
+  </div>
+
+
+  <h3 style="font-size:.7em"><i class="fa fa-facebook"></i> Share</h3>
+  <div id="margin">
+    	<span class='st_sharethis_large' displayText='ShareThis'></span>
+		<span class='st_facebook_large' displayText='Facebook'></span>
+		<span class='st_twitter_large' displayText='Tweet'></span>
+		<span class='st_linkedin_large' displayText='LinkedIn'></span>
+		<span class='st_pinterest_large' displayText='Pinterest'></span>
+		<span class='st_email_large' displayText='Email'></span>
+  </div>
+
+</div>
+ 
+
+
+
+	<div style="position:absolute;width:100%;margin-top:-150px;">
+		<p style="text-align:center;font-size:10em;color:#eeeeee">Fruitify!</p>
+	</div>
+
+	<div id="container" style="position:absolute;background:radial-gradient(#ffffff,#ccddff,#5599ff)"></div>
+
+
+
+<!-- 
+<div id="tabs" style="width:180px;font-size:.8em;background:radial-gradient(#ffffff,#ccddff)">
+	<ul>
+			<div style="padding-top:5px;padding-bottom:5px;text-align:center"><span style="text-align:center;margin:10px">Fruitify!</span></div>
+
+		<li style="font-size:.8em"><a href="#tabs-1">About</a></li>
+		<li style="font-size:.8em"><a href="#tabs-2">Shape</a></li>
+		<li style="font-size:.8em"><a href="#tabs-3">Colors</a></li>
+		<li style="font-size:.8em"><a href="#tabs-4">Preset</a></li>
+		<li style="font-size:.8em"><a href="#tabs-5">Export</a></li>
+		<li style="font-size:.8em"><a href="#tabs-6">Share</a></li>
+
+	</ul>
+	<div id="tabs-2">
+		<div style="margin-left:-5px;position:relative;width:150px;background:#99ccff;text-align:center">outer shape<canvas id="myCanvas" width="150" height="150" style="border:2px;border-color:black;padding:0px;border-radius:0px"></canvas></div>
+
+		<div style="margin-left:-5px;position:relative;width:150px;background:#99ccff;text-align:center">inner shape<canvas id="myCanvas2" width="150" height="150" style="padding:0px;border-radius:0px"></canvas></div>
+
+		<div id="sliders" style="position:relative;width:150px;margin-left:-5px;margin-top:10px"></div>
+
+
+	</div>
+	<div id="tabs-3">
+
+		<div style="margin-left:-5px;position:relative;width:150px;background:#99ccff">color<canvas id="myCanvas3" width="150" height="150" style="padding:0px;border-radius:0px"></canvas>detail</div>
+
+		<div style="margin-left:-5px;margin-top:0px"></div>
+		<div id="slider"  style="position:relative;width:150px;margin-left:-5px;margin-top:5px"></div><br>
+	</div>
+	<div id="tabs-5"><input type="button" id="buttonid" value="saveObj" style="width:150px"onclick="saver()"class="buttonb">
+	</div>
+	<div id="tabs-1">Fruitify is for your beautiful life. <br><br>Adjust the curves that make the fruit, and also adjust the rotation of the inner and outer shells as well as the color!  <br><br> Then you can 3D print it!
+	</div>
+	<div id="tabs-4">banana, mango, mudfruit, uglyfruit, durian fruit
+	</div>
+	<div id="tabs-6">
+		<span class='st_sharethis_large' displayText='ShareThis'></span>
+		<span class='st_facebook_large' displayText='Facebook'></span>
+		<span class='st_twitter_large' displayText='Tweet'></span>
+		<span class='st_linkedin_large' displayText='LinkedIn'></span>
+		<span class='st_pinterest_large' displayText='Pinterest'></span>
+		<span class='st_email_large' displayText='Email'></span>
+	</div>
+</div>
+ -->
+
+	
+
+
+<!-- <link href='http://fonts.googleapis.com/css?family=Roboto:400,100' rel='stylesheet' type='text/css'> -->
+
+			
+			<!-- 
+			<div style="position:absolute;z-index:5;padding-left:10px;padding-top:10px">
+				
+				
+				
+			<input type="button" id="buttonid" value="applyPreset" style="width:70px"onclick="applyPreset()"class="buttonb">
+
+
+				<div style="font-family:sans-serif;font-size:.8em">
+				<br>
+			</div>
+			</div>
+			 -->
+
+
+		<script src="lib/jqueryui/external/jquery/jquery.js"></script>
+
+		<script src="lib/jqueryui/jquery-ui.min.js"></script>
+		<script src="lib/three.js"></script>
+		<script src="lib/library.js"></script>
+		<script src="lib/blob.js"></script>
+
+		<script src="lib/TREE.js"></script>
+
+		<script src="lib/appleTemplate.js"></script>
+
+		<script src="sketches/appleUI2.js"></script>
+		<script src="sketches/apple.js"></script>
+
+
+		<script>
+
+		
+
+		</script>
+<script type="text/javascript">var switchTo5x=true;</script>
+<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">stLight.options({publisher: "a610c381-0a02-4883-8d96-cfc4ce601185", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+
+	</body>
+</html>
+
+

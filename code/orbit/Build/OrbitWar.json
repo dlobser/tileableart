@@ -1,0 +1,11 @@
+{
+"TOTAL_MEMORY": 268435456,
+"dataUrl": "OrbitWar.data.unityweb",
+"asmCodeUrl": "OrbitWar.asm.code.unityweb",
+"asmMemoryUrl": "OrbitWar.asm.memory.unityweb",
+"asmFrameworkUrl": "OrbitWar.asm.framework.unityweb",
+"graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20"
+}

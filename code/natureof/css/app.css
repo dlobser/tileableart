@@ -1,0 +1,31 @@
+body{
+	background-color: black;
+	color:#333;
+	overflow: hidden;
+	font-family: sans-serif;
+}
+
+h1 {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+font-size: large;
+border-size: thin;
+border-style: dotted
+border-color: red;
+width: 400px;
+}
+
+Read more: How to Style a Heading with CSS | eHow.com http://www.ehow.com/how_2076121_style-heading-css.html#ixzz2K8We4Cyy
+
+#content { 
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	padding: 25px 25px 30px 25px;
+}
+#container{
+	background-color:black;
+}
+
+
+
+

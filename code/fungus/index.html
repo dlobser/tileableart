@@ -1,0 +1,193 @@
+<div style="padding-left:10%;font-family:sans-serif">
+<h2>Tunniel Holzfigure</h2>
+Botanist/Mycelium Simulator<br>
+<br>
+
+<div style="padding-right:30%">
+
+
+<h2>Hyphae in Art</h2>
+The use of generative hyphae like structures leads to imagery which tends to be tangled and wispy while also being highly structured.  As an effect or generative illustration technique it is well suited to particular situations, in a similar way that <a href="https://www.google.com/search?q=delaunay+art&safe=off&espv=210&es_sm=91&source=lnms&tbm=isch&sa=X&ei=aEEOU43QDe2D0QG2i4DgBw&ved=0CAkQ_AUoAQ&biw=1178&bih=678#q=delaunay+triangulation+art&safe=off&tbm=isch">Delauney triangulation</a> is.  The process by which I've been learning how to program has involved matching art projects to computer science concepts.  In this case the computer science project is the graph data structure and mycelium are a perfect, natural representation of that abstract structure.<br><br>
+<img src="http://www.creativeapplications.net/wp-content/uploads/2010/03/Mycelium00.png" width="500px">
+<img src="http://farm4.static.flickr.com/3137/5704290009_9fd5455ccd.jpg" width="500px">
+<img src="funballs.png" width="500px">
+<img src="http://api.ning.com/files/g17LZTw29M6TxIGzhYqN4yDujjo8Hu*4JCDEVFnbjWUwaLgi6DXR9R6rTf1EnWRPoq0XMcXUgfDmrXz4iGRX54WWSEihsSpR/Mycelium32.jpg" width="500px">
+<img src="http://farm5.staticflickr.com/4145/4967445227_682d59b159_z.jpg" width="500px">
+<h2>Mycelial Growth</h2>
+
+
+During my search for methods by which artists and scientists simulate mycelial growth I discovered Tunniel's work.  He is an Austrian botanist and I found that his simulations exhibited more realistic behavior than any others.  N-e-r-v-o-u-s system for instance uses a simulation of growing hyphae in their work but I believe it lacks the complexity of Tunniel's simulation.  <br><br>
+
+
+<iframe width="854" height="510" src="http://www.youtube.com/embed/8Gn5b_8X9og" frameborder="0" allowfullscreen></iframe>
+<br><br>
+
+The following is based on an interview with him.  I am very interested in the growth and resulting structure of mycelial networks as they follow rules of graph theory so closely and reflect structures which appear in many forms on different scales.  I began by asking Tunniel about how mycelium grow in the real world.
+<br><br>
+<iframe width="854" height="510" src="http://www.youtube.com/embed/0fWdpvFSm7E?feature=player_detailpage" frameborder="0" allowfullscreen></iframe
+<br><br><br>
+A spore lands on a substrate that it likes.  Water is the main requirement for growth.  Germination is initiated.  The hyphae begin by growing isotropically (in all directions), they then resolve to growing in one direction.  This direction is usually in orientation with the root of the spore.  As it grows it digests the surrounding substrate and if there is enough food the hyphae will branch.  Most mycelium branch subapically - which is to say, behind the leading edge.  However, in some cases hyphae will branch at the apex, in this case the rate of growth slows as the split happens.  This happens if growth is perturbed in some way.
+<br><br>
+<iframe width="854" height="510" src="http://www.youtube.com/embed/J-aAUEXGMgE" frameborder="0" allowfullscreen></iframe>
+<br><br>
+The first hyphae are called foraging hyphae and they will not branch with each other, rather they grow isotropically seeking out new sources of food.  After a period of time secondary or vegetative hyphae begin to emerge.  These branches grow more slowly and more erratically in between the original branches.  These secondary hyphae have some awareness of the location of other searching branches and they will orient toward each other and always merge at the tips, hyphae never penetrate the sides of other branches.  "This novel mode of cell-cell-communication was coined <a href="http://chemwiki.ucdavis.edu/Biological_Chemistry/Catalysts/Enzymatic_Kinetics/Ping-pong_mechanisms">"ping-pong mechanism"</a>.  As I understand it, In Tunniel's simulation he used the amount of digestive juice (blue) as a regulator to determine when vegetative hyphae would sprout.
+<br><br>
+<iframe width="854" height="510" src="http://www.youtube.com/embed/noPjeygJEZo" frameborder="0" allowfullscreen></iframe>
+This animation represents an analysis of <a href="http://en.wikipedia.org/wiki/Betweenness_centrality">betweenness centrality,</a> a measure of a node's centrality in a network.  This concept becomes important when discussing "scale free" networks (below).<br><br>
+
+<img src="f_21.jpg">
+<br>
+As you can see from this drawing, the initial spore grows in one direction but quickly proceeds to expand outward in every direction.  The caption on the drawing refers to the mycelium as being in the <a href="http://www.biology-online.org/dictionary/Diploid">"diploid"</a> phase.  This refers to the fact that mycelium share cell nuclei between 'siblings' rather than mix chromosomes the way animals do.  <a href="http://www.mushroomthejournal.com/greatlakesdata/Terms/mycel137.html">"The only time that fungal nuclei ever actually merge with their cell-mate is just before meiosis and spore production"</a>.  Tunniel was not concerned with this aspect of fungal life for his simulation.
+<br><br>
+<iframe width="854" height="510" src="http://www.youtube.com/embed/wxAMQYj--jU" frameborder="0" allowfullscreen></iframe><br><br>
+<br><br>
+Tunniel's simulation uses a combination of raster (a matrix of pixels) and vector graphics.  He has two data structures, one contains nodes, the other contains lines.  As mycellium are very similar to a graph in computer science it is only natural to use the rules of graph theory in the simulation.  The nodes and edges contain information about how much food is available - how much "blue" is around (digestive juice and autoregulator) and the connections to immediate neighbors amongst other things.  The branches themselves orient themselves in the direction of the most food and a 'reaction diffusion' model can be used to describe the interaction between the red substrate, green food, and blue digestive enyzmes / autoregulative substances (in the simulation, these are identical).
+<br><br>
+
+<div style="font-family:serif">
+<a href="http://en.wikipedia.org/wiki/Reaction%E2%80%93diffusion_system">Reaction-diffusion systems</a> are mathematical models which explain how the concentration of one or more substances distributed in space changes under the influence of two processes: local chemical reactions in which the substances are transformed into each other, and diffusion which causes the substances to spread out over a surface in space. --Wikipedia<br><br></div>
+<iframe width="854" height="510" src="http://www.youtube.com/embed/OrstYgsEOvQ" frameborder="0" allowfullscreen></iframe><br><br>
+This simulation was not created by Tunniel and uses a completely different technique.  Rather than mixing in vectors this simulation is based entirely on cellular automata and uses the <a href="https://code.google.com/p/reaction-diffusion/">Ready</a> package.  I'm including it here to further illustrate that complex structures can arise from simple rules.<br><br>
+<iframe width="854" height="510" src="http://www.youtube.com/embed/bucBGVfSGp8" frameborder="0" allowfullscreen></iframe>
+<br><br>
+Video Feedback<br>
+<iframe width="854" height="510" src="http://www.youtube.com/embed/mKK-q3yjph4" frameborder="0" allowfullscreen></iframe>
+<br><br>
+
+During our conversation a few points stood out to me.<br>
+
+<ul>
+<li>Growing mycelium pull water and nutrients through the network.</li>
+<li>Mushrooms appear more frequently in the fall because plants are no longer using their resources.</li>
+<li>Mushrooms don't 'grow' but are pumped full of water.</li>
+<li>Plants that receive fertilizer don't need mycorrhizae.</li>
+<li>In adverse conditions hyphae will form sclerotia.</li>
+<li>The hyphae will empty out, leaving empty shells behind, these can be filled up later.</li>
+</ul>
+<br><br>
+And in particular, regarding my initial attraction to this topic he brought up the idea that mycelium is a <a href="http://en.wikipedia.org/wiki/Scale-free_network">scale free network</a> that follows a <a href="http://en.wikipedia.org/wiki/Power_law">power law</a>.
+ <br><br>
+
+<div style="font-family:serif">
+"Scale-free networks occur in many areas of science and engineering, including the topology of web pages (where the nodes are individual web pages and the links are hyper-links), the collaborative network of Hollywood actors (where the nodes actors and the links are co-stars in the same movie), the power grid of the western United States (where the nodes are generators, transformers, and substations and the links are power transmission lines), and the peer-reviewed scientific literature (where the nodes are publications and the links are citations).
+<br><br>
+
+ It has been suggested that the scale-free organizational structure of natural complex systems is responsible for a number of common emergent properties that are shared by different complex systems
+<br><br>
+
+ Scale-free networks tend to promote high speed transfer of information or energy. Their hubs have a combination of high global connectivity with highly developed local clustering. Consequently, there is a rapid synchronization of distant nodes."
+<br><br>
+</div>
+
+This idea is explored in more detail in this book:<a href="http://www.patternsinnature.org/Book/ScalefreeNetworks.html">Patterns in Nature</a>
+
+<br><br>
+Notes from the interview
+</div><br><br>
+
+
+<div style="font-size:.001em;padding-right:50%">
+
+
+spores require water and nutrients - but mostly water<br>
+if the water is there germination is initiated<br>
+grows isotropically (all directions are the same)<br>
+then it grows in one direction<br>
+if there's enough food it will branch<br>
+branch - subopically? behind the apex - subapical<br>
+	behind growing<br>
+other grow opically<br>
+	the tip splits<br>
+	these go a little slower<br>
+	this happens if growth is perturbed<br>
+about one centimeter behind<br>
+	new hyphae - grow thinner and more eratically<br>
+	if one tip grows close<br>
+	it instigates the growth of a fusion capable tip<br>
+	fuse tip to tip<br>
+	oscillating concetrations of proteins - <br>
+		tips produce different kinds of proteins<br>
+		ping pong mechanism<br>
+autoregulator/vegetative chemicals are unknown<br>
+	15 micrometers<br>
+emitting substances to digest the substrate<br>
+	in the code the substance is the same<br>
+foraging or primary hyphae<br>
+	secondary vegetative hyphae/fusion capable hyphae<br>
+	they split apically<br>
+neurospora crassa<br>
+	most used to model mycelium because it's big and grows fast<br>
+Basidiomycetes form rhizomorphs<br>
+geneticically dissimilar mycellium can grow together<br>
+	some rare cases of interspecies fusions<br>
+a lot of symbiosis of fungi in the woods<br>
+mycorrhizal symbiosis<br>
+	fertilizer kills it because then the plants don't need it<br>
+	you get mushrooms in the fall because they have a sugar surplus<br>
+		the plants don't need them anymore<br>
+<br>
+mushrooms are grown from cells in the soil<br>
+<br>
+simulation<br>
+
+spore is placed anywhere on a 2d image<br>
+	spore emits blue<br>
+	diffusable food state<br>
+	if it has twice as much food - it will start to grow<br>
+	first mobilize substrate - takes up food<br>
+		blue is substance given off by floor - also autoregulator<br>
+		red channel is substrate<br>
+		green channel is absorable food<br>
+	if it senses another spore nearby it will fuse<br>
+		if blue is similar in every direction it will grow primary hyphae<br>
+	growth costs food<br>
+		branching costs food<br>
+		upkeep food<br>
+		costs energy to emit blue<br>
+	if blue substance is too high it means it's old and it won't branch anymore<br>
+		blue is a kind of clock<br>
+		it's built up slowly<br>
+	more fusions with poor nutrients<br>
+		fusions give it resilience<br>
+			if parts are removed there's more redundancy<br>
+		different transport patterns in different species<br>
+		the act of growing pulls water along<br>
+	many species can recycle hyphae<br>
+	sclerotia - hybernation<br>
+<br>
+	all nodes are a single array<br>
+		each node has info about connections<br>
+		blue<br>
+		etc<br>
+	nodes store which edges it's connected to<br>
+		just one point<br>
+	edges store which nodes<br>
+		edges are structures (like an object without methods)<br>
+		series of points<br>
+		usually one unit length apart (unless they're fusing)<br>
+	internal food is mapped onto hyphae<br>
+	branching is based strictly on the amount of blue<br>
+		and they need enough food<br>
+		fluctuations between blue <br>
+			fake ping pong<br>
+			green sucking away blue<br>
+			when they turn green they look for more blue<br>
+	betweenness centrality<br>
+		calculate all the shortest paths between all the nodes<br>
+		the e<br>
+	boost graph library<br>
+<br>
+	ryan alexander<br>
+<br>
+	making optimal transport networks<br>
+		fungal networks are resilient<br>
+		take out one edge, the whole thing still works<br>
+		non hierarchical<br>
+			change every tree into a binary tree?<br>
+<br>
+	each node in a network can have maximally 3 connections<br>
+		in mycelium<br>
+	in other networks - nodes can have many connections<br>
+		hubs<br>
+<br>
+	

@@ -1,0 +1,92 @@
+
+<!! ASSIGNMENT DUE WEDNESDAY SEPTEMBER 18, 2013 FOR KEN PERLIN'S GRAPHICS CLASS>
+
+<script src="script.js"></script>
+
+<!! REPLACE THE TEXT BELOW WITH A TITLE FOR YOUR SHADER>
+
+<script id="title" type="text/plain">
+Chinese Medicine Balls
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH A BRIEF DESCRIPTION OF YOUR SHADER>
+
+<script id="description" type="text/plain">
+
+Because one ball is never enough.
+
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH YOUR SHADER CODE>
+
+<script id="shader" type="x-shader/x-fragment">
+
+//define sphere positions and scale
+vec4 sph1 = vec4(sin(uTime), cos(uTime)*0.5, sin(uTime)*-2., abs(sin(uTime*5.5)+5.0)*0.15);
+vec4 sph2 = vec4(sin(uTime+3.14), cos(uTime+3.14), 0.0, abs(sin(uTime*5.0)+5.0)*0.15); 
+
+float iSphere( in vec3 V, in vec3 W, in vec4 sph )
+{
+    //quadratic equation
+    vec3  A = V - sph.xyz; // ray origin minus sphere position - gives a vector
+    float b = 2.0 * dot( A, W );
+    float c = dot(A,A) - sph.w;
+    float h = b*b - 4.0 *c;
+    
+    //set t to negative one to test 
+    if (h < 0.0) { return -1.0; }
+	
+    float t = (-b - sqrt(h)) / 2.0;
+    return t;
+}
+
+float remap (in float low1, in float high1, in float low2, in float high2, in float value){
+     return low2 + (value - low1) * (high2 - low2) / (high1 - low1)	;
+}
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+void main( void )
+{
+     vec3 light = normalize( vec3(0.4,2.6,1.4) );    // light position
+     vec2 uv = ( gl_FragCoord.xy / uViewportSize.xy );  
+
+     vec3 V = vec3( 0.0, 0.0, 4.0 ); //ray origin
+     vec3 W = normalize( vec3( -0.5 + uv.x * (uViewportSize.x/uViewportSize.y),-0.5 + uv.y , -1.0 ) ); //ray direction
+
+     float t = iSphere( V, W, sph1 );
+     float q = iSphere( V, W, sph2 );
+	
+     vec3 col = vec3(0.0);
+	 vec3 col2 = vec3(0.0);
+
+     if ( t > 0.0 ) // sphere
+     {                                    
+         vec3 pos = V + t * W;
+         vec3 nor = ( pos - sph1.xyz );
+         float dif = clamp( dot( nor, light ), 0.0, 1.0); 
+	     //float ao = remap(0.0,1.0,0.0,-0.1,t); //attempting to incorporate depth by remapping the t value but no luck  
+         col = vec3( rand(vec2(nor.x,nor.y)), 0.8, 0.6) * dif + vec3(0.1, 0.2, 0.4) ;
+     }
+	
+     if ( q > 0.0 ) // sphere
+     {                                    
+         vec3 pos = V + q * W;
+         vec3 nor = ( pos - sph2.xyz );
+         float dif = clamp( dot( nor, light ), 0.0, 2.0); 
+         col2 = vec3( 0.0, 0.8, 0.9) * dif + vec3(0.1, 0.2, 0.4) ;
+     }
+	 
+	 if (t>0.0 && q>0.0)
+	 {
+		//just playing around with what happens when balls intersect
+		col = vec3(rand(vec2(uv)))*vec3(0.5,0,0.4);
+	 }
+         
+     gl_FragColor = vec4( col+col2, 1.0 ); 
+}
+</script>
+
+<script>start()</script>

@@ -1,0 +1,38 @@
+
+
+learning to code design - with processing and threejs
+learn to draw with code
+
+Intro:
+	This talk is for computer artists that want to learn how to program but like me, were to daunted by the prospect to really get going, or perhaps, like me, took a few furtive steps with mel scripts or a little Python but want something more.  HTML5 authoring tools will certainly catch up to where Flash was many years ago, but for the time being html5 requires some knowledge of programming, and fortunately the basics aren't that difficult.  My approach was to
+
+When I was in art school one of our first exercises was to draw elipses, over and over - and that become a practice for me, ellipses and circles all over the place.  I approached array manipulation in the same way, and the thing that I was most interested in manipulating with arrays was the line.  I fell into pursuing this line of work in no small part because of Yayoi Kusama's show and a trip to Dia Beacon.  Their work possessed a simple, meditative quality and I realized that a lot of their would could be re-created in code and if their work could be re-created in code then it could be mutated in such a way as to develop entirely new art styles.  This isn't just interesting as an exercise but is of course put into practice all the time in CG.  Think paint fx or massive or particles or modifyable rigs - we work with these tools all the time, but in my experience most cg artists, even ones that do code, only learn enough to accomplish the task of the day and don't push farther into fundamentals.  So what I'd like to present is a topic that I fear may be boring to people who know nothing about coding and to people who know everything about coding but I'm hoping to strike that delicate middle ground - and this shit is going to be hard - good - hard is good.
+
+Rules based art has been around for some time - let's track the work of mondrian
+
+I believe that code should be in the hands of artists.  I believe strongly that code can be a powerful expressive medium and the wall that have kept creative people away from it are becoming thinner.  I really think that with more artists actually getting under the hood, and down the to the level of the algorithm a new set of styles can emerge that can actually uplift the general aesthetic quality of America.  It's become fashionable since the eighties to poopoo taste, and to say that taste is subjective and therefore without standards and I'm guessing that most of us in here would squarely disagree with that sentiment.  As artists and designers and technicians that work closely in an aesthetically driven field, style is our breathe and our air.  You look around NY and see rows of gorgeous nineteenth century buildings and even the ugly ones that don't quite measure up are ok.  The brownstone was the cheap building of it's day - the brownstone covering them the vinyl siding.  But even these cheap buildings had something in a common, a standard.  The difference, post war - was that ideologies were smashed and an entire world needed to be rebuilt from scratch, quickly and on the cheap.  Modernism intervened and the laborious processes of earlier architecture went out the window.  The promise of parametric design and digital fabrication techniques is that we can bring back decor - people like decor - people like things that look nice - but these days, it needs to be cheap.  Now - with coding tools in the right hands, I believe that we can actually help usher in an era where beautiful public spaces and beautiful design generally is more easily accessible - standards will rise - you lift the bottom and you increase the number of people that can appreciate blah 
+
+Another great reason to learn parametric design is because it's a little like the difference between catching a fish and learning to fish.  There's also a quality to the process that's very much like creating life.  Very many algorithms mimic the processes of life and using them to create design is a bit like playing god, or some kind of crazy wizard.
+
+Part 1: Mondrian
+
+Mondrian's work beautifully traces an experimental approach to rules.  At first his images are recognizable, but treated with an affect that looks almost like a photoshop filter.  Over the years he begins to break the image plane and eventually finds his way to complete abstraction.  It is not a hard thing to look at his paintings and reverse engineer some rules that could create some 
+	
+You can look at his later work in terms of its lines or its masses.  You could take a box at first and set a random scale - based on that you'd use rules for the other boxes.
+
+The twentieth century was full of artists that bound themselves with rules - here is some further reading:
+
+http://www.brooklynrail.org/2005/04/art/logical-conclusions-40-years-of-rule-bas
+http://philipgalanter.com/downloads/vague_terrain_2006.pdf
+http://www.massmoca.org/lewitt/
+
+Part 2: 
+
+
+SOFTlab, Nervous System, Francis Bitonti, Leander Herzog, Daniel Widrig, Shajay Booshan, Benjamin Maus (and more.) Downloadable from Scribd.
+
+http://madmuseum.org/exhibition/out-hand
+
+http://roberthodgin.com/
+
+Tools: processing, cinder, open frameworks, threejs, Unity

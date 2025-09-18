@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link rel="stylesheet" href="css/app.css" />
+		<title>three.js webgl - orbit controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+		<div id="container"></div>
+		<div id="info">
+			<a href="http://threejs.org" target="_blank">three.js</a> - orbit controls example
+		</div>
+
+		<script src="js/three/build/three.min.js"></script>
+
+		<script src="js/three/js/controls/OrbitControls.js"></script>
+		
+		<script src="js/libs/ImprovedNoise.js"></script>
+
+		<script src="js/three/js/Detector.js"></script>
+		<script src="js/three/js/libs/stats.min.js"></script>
+		
+		<script src="js/three/js/loaders/OBJLoader.js"></script>
+		
+		<script type="text/javascript" src="http://dat-gui.googlecode.com/git/build/dat.gui.min.js"></script>
+
+		<script>
+		
+			//dat.gui adds controls----------------------------
+		/*
+			var ctrl;
+
+			window.onload = function() {
+				ctrl = new world();
+				var gui = new dat.GUI();
+				// gui.add(text, 'message');
+				gui.add(ctrl, 'speed', -1, 1);
+				gui.add(ctrl, 'size', .1, 5);
+			};
+
+			var world = function()
+			{
+				this.speed = 0.1;
+				this.size = 1;
+			};
+			*/
+		
+			
+			//dat.gui adds controls----------------------------
+			
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var container, stats;
+
+			var camera, controls, scene, renderer,camLook, camPos, dummy, picker, myNoise, shake, box,arm,sound1;
+
+			var cross;
+			
+			var things = [];
+			
+			var Sound = function ( sources, radius, volume ) {
+
+				var audio = document.createElement( 'audio' );
+
+				for ( var i = 0; i < sources.length; i ++ ) {
+
+					var source = document.createElement( 'source' );
+					source.src = sources[ i ];
+
+					audio.appendChild( source );
+
+				}
+
+				this.position = new THREE.Vector3();
+
+				this.play = function () {
+
+					audio.play();
+
+				}
+
+				this.update = function ( camera ) {
+
+					var distance = this.position.distanceTo( camera.position );
+
+					if ( distance <= radius ) {
+
+						audio.volume = volume * ( 1 - distance / radius );
+
+					} else {
+
+						audio.volume = 0;
+
+					}
+
+				}
+
+			}
+
+			init();
+			animate();
+
+			function init() {
+			
+			picker = Math.random();
+			
+				camPos = new THREE.Vector3 (466,109,711);
+
+				camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera.position = camPos;
+				camLook = new THREE.Vector3 (0,150,0);
+				
+				camera.lookAt( camLook );
+				
+				//controls = new THREE.OrbitControls( camera );
+				//controls.addEventListener( 'change', render );
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+				
+				dummy = new THREE.Object3D();
+				
+				console.log(camera.position);
+				console.log(camera.lookAt);
+				
+				box = new THREE.Object3D();
+				arm = new THREE.Object3D();
+				
+				sound1 = new Sound( [ 'sounds/recital.mp3', 'sounds/recital.mp3' ], 900, .3 );
+				sound1.position.copy( box.position );
+				sound1.play();
+				
+
+				// world
+				
+	
+				
+				var loader = new THREE.OBJLoader();
+				
+				loader.addEventListener( 'load', function ( event ) {
+
+					var object = event.content;
+					
+					object.position = new THREE.Vector3(  0,0,0  );
+		
+					object.scale.x = 100;
+					object.scale.y = 100;
+					object.scale.z = 100;
+					
+					box.add(object);
+					
+				});
+				loader.load( 'models/box_body_01.obj' );
+				
+					var loader = new THREE.OBJLoader();
+				
+				loader.addEventListener( 'load', function ( event ) {
+
+					var object = event.content;
+					
+					object.position = new THREE.Vector3(  0,0,0  );
+		
+					object.scale.x = 100;
+					object.scale.y = 100;
+					object.scale.z = 100;
+					
+					arm.add(object);
+					box.add(arm);
+					scene.add( box );
+				});
+				loader.load( 'models/box_arm_01.obj' );
+				
+				
+				
+				var texture2 = new THREE.Texture();
+
+				var loader2 = new THREE.ImageLoader();
+				loader2.addEventListener( 'load', function ( event ) {
+
+					texture2.image = event.content;
+					texture2.needsUpdate = true;
+
+				} );
+				loader2.load( 'textures/house.jpg' );
+
+				
+				var loader2 = new THREE.OBJLoader();
+				
+				loader2.addEventListener( 'load', function ( event ) {
+
+					var object = event.content;
+
+					object.traverse( function ( child ) {
+
+						if ( child instanceof THREE.Mesh ) {
+
+							child.material.map = texture2;
+
+						}
+
+					} );
+					
+					object.position = new THREE.Vector3(  0,0,0  );
+		
+					object.scale.x = 100;
+					object.scale.y = 100;
+					object.scale.z = 100;
+					
+					console.log("ok");
+					
+					dummy.add(object);
+					dummy.add(box);
+					scene.add( dummy );
+					
+					//heart.push(object);
+				});
+				loader2.load( 'models/house.obj' );
+					
+				var boxPos = new THREE.Vector3(36.4,62.1,20.0);
+				var boxSize = new THREE.Vector3(.05,.05,.05);
+				box.position = boxPos;
+				box.scale = boxSize;
+
+				// lights
+
+				light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 1, 1, 1 );
+				scene.add( light );
+
+				light = new THREE.DirectionalLight( 0x002288 );
+				light.position.set( -1, -1, -1 );
+				scene.add( light );
+
+				light = new THREE.AmbientLight( 0x222222 );
+				scene.add( light );
+
+
+				// renderer
+
+				renderer = new THREE.WebGLRenderer( { antialias: false } );
+				renderer.setClearColor( scene.fog.color, 1 );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				
+				//renderer = new THREE.WebGLRenderer();
+
+				container = document.getElementById( 'container' );
+				container.appendChild( renderer.domElement );
+				
+				//stats will display an fps counter in the upper left
+				/*
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				stats.domElement.style.zIndex = 100;
+				container.appendChild( stats.domElement );
+				*/
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			
+
+			}
+			
+			document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+
+			function onDocumentMouseDown( event ) {
+					camLook.add(new THREE.Vector3(1,1.1,1));
+					console.log("hi");
+					shake = 10;
+					picker = Math.random();
+				
+				}
+				
+			function camAnimate(){
+			
+			myNoise = new ImprovedNoise();
+			
+			var bigRot;
+				
+				if(picker <= .33){
+					camPos = new THREE.Vector3 (466,109,711);
+					camLook = new THREE.Vector3 (0,150,0);
+					bigRot = 0;
+				}
+				else if(picker <= .66 && picker >.33){
+					camPos = new THREE.Vector3 (139,141,222);
+					camLook = new THREE.Vector3 (0,25,0);
+					bigRot = 1;
+				}
+				else{
+					camPos = new THREE.Vector3 (87,94,74);
+					camLook = new THREE.Vector3 (10,55,0);
+					bigRot = 0;
+				}
+				
+				
+			
+				var timer = .0001 * Date.now();
+				
+				camera.position = camPos;
+				camera.lookAt( camLook );
+				dummy.rotation.y = ((Math.sin(timer*500)/100)*(shake/2)) + (bigRot*Math.sin(timer*2)/10);
+				dummy.position.y = myNoise.noise(timer*14,10*timer,14*timer)*shake;
+				
+				if(shake>0){
+				
+				shake-=.1;
+				
+				}
+				//console.log(shake);
+				
+				
+				
+			}
+			
+			function boxAnimate(){
+			
+				
+			
+			var timer = .001 * Date.now();
+				arm.rotation.z +=.1;
+				box.rotation.y +=.05;
+				box.position.z = (Math.sin(timer*5)*5)+12;
+				
+			
+			}
+				
+
+			function animate() {
+				boxAnimate();
+				render();
+				moveThings();
+				camAnimate();
+				//Mover();
+				requestAnimationFrame( animate );
+				//controls.update();
+				sound1.update( camera );
+				
+			}
+			
+			function moveThings(){
+				for ( var i = 0, il = things.length; i < il; i ++ ) {
+					var thing = things.shift();
+					thing.position.x += 3;							
+					things.push(thing);
+				}
+			}
+			
+			
+
+			function render() {
+			
+				
+				//moveThings();
+				renderer.render( scene, camera );
+				//stats.update();
+				
+
+			}
+			
+			function Mover(){
+				//set up
+				this.location = new THREE.Vector3(0,0,0);
+				this.velocity = new THREE.Vector3(0,0,0);
+				this.acceleration = new THREE.Vector3(0.01,0.01,0.01);
+				
+				
+				//console.log(this.velocity);
+				this.step = function(){
+					this.velocity.addSelf(this.acceleration);
+					this.location.addSelf(this.velocity);
+					this.mesh.position = this.location;
+					//this.mesh1.position = this.location;
+					checkBounds(this);
+					limit(this.velocity ,10);
+					this.acceleration = new THREE.Vector3((Math.random()-0.5)/100,(Math.random()-0.5)/100,(Math.random()-0.5)/100);
+			};
+		}
+
+
+
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,67 @@
+<html>
+<body>
+<canvas id="myCanvas" width="600" height="600"></canvas>
+
+
+<script>
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+var pi = 3.141592;
+
+var vectors = [];
+
+makeVectors();
+drawVectors();
+saveGCode(vectors);
+
+
+function makeVectors(){
+
+	for(var i = 0 ; i < 5000 ; i++){
+		var vec = {};
+		vec.x = Math.sin((i/100.0) * pi * 2);//*1+Math.sin((i/100)*pi*20)*.1;
+		vec.y = Math.cos((i/100.0) * pi * 2);//*1+Math.cos((i/100)*pi*20)*.1;
+		vec.z = .27+((i/100.0)*.27);
+		vectors.push(vec);
+	}
+}
+
+function drawVectors(){
+
+	ctx.moveTo(300+vectors[0].x*100,300+vectors[0].y*100);
+
+	for(var i = 0 ; i < vectors.length ; i++){
+		var vec = vectors[i];
+		ctx.lineTo(300+vec.x*100,(vec.z*-10)+300+vec.y*100);
+		ctx.stroke();	
+	}
+
+}
+
+
+function saveGCode(arr) {
+
+    var output = " <br>M73 P0 (enable build progress)<br>G21 (set units to mm)<br>G90 (set positioning to absolute)<br>G10 P1 X-16.5 Y0 Z0 (Designate T0 Offset)<br>G55 (Recall offset cooridinate system)<br>(**** begin homing ****)<br>G162 X Y F2500 (home XY axes maximum)<br>G161 Z F1100 (home Z axis minimum)<br>G92 Z-5 (set Z to -5)<br>G1 Z0.0 (move Z to ÔøΩ0?)<br>G161 Z F100 (home Z axis minimum)<br>M132 X Y Z A B (Recall stored home offsets for XYZAB axis)<br>(**** end homing ****)<br>G1 X112 Y-73 Z155 F3300.0 (move to waiting position)<br>G130 X0 Y0 A0 B0 (Lower stepper Vrefs while heating)<br>M6 T0 (wait for toolhead, and HBP to reach temperature)<br>M104 S230 T0 (set extruder temperature)<br>M6 T0 (wait for toolhead, and HBP to reach temperature)<br>G130 X127 Y127 A127 B127 (Set Stepper motor Vref to defaults)<br>M108 R3.0 T0<br>G0 X112 Y-73 (Position Nozzle)<br>G0 Z0.2 (Position Height)<br>M108 R4.0 (Set Extruder Speed)<br>M101 (Start Extruder)<br>G4 P1500 (Create Anchor)<br>";
+
+
+    for(var i = 0 ; i < arr.length ; i++){
+
+                
+            output+="G1 X" + arr[i].x*30;
+            output+=" Y"  +  arr[i].y*30;
+            output+=" Z"  +  arr[i].z;
+            output+=" F2000";
+            output+='<br>';
+        
+          
+    }
+
+  	document.write(output);
+}
+
+
+</script>
+<body>
+</html>

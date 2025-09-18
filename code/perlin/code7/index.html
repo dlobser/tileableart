@@ -1,0 +1,460 @@
+
+
+<head><script src=gl.js></script><script src=build.js></script></head>
+<!--<body style="background-image:url('http://www.freefever.com/stock/textures-wallpapers-black-floral-texture-pattern-designbackground-wallpaper.jpeg');background-color:gray" onload=glStart();>-->
+<body style="background-color:black" onload=glStart();>
+
+<center>
+  <!--
+<table width=90%><tr><td>
+<hr color=white size=20>
+
+<tr>
+<td>
+<center><canvas id=canvas1 data-render=gl width=400 height=400
+tabindex="1"></canvas></center>
+
+<td>&nbsp;</td>
+<td>
+<center><canvas id=canvas2 data-render=gl width=400 height=400
+tabindex="1"></canvas></center>
+</td>
+</tr>
+</table>
+</center>
+<hr>
+-->
+<div style="cursor:crosshair">
+<h2 style="font-family:sans-serif;color:white">Bottle Full of Bub</h2>
+<p style="font-family:sans-serif;color:white;font-size:1em">mouse controls motion - give it a moment to load<br>if it errors, reload</p>
+<canvas id=canvas1 data-render=gl width=1000 height=600
+tabindex="1"></canvas>
+</div>
+
+
+<script id=fs_phong type=x-shader/x-fragment>
+    uniform float p[10];
+    uniform vec3 lDir;
+    varying vec3 vNormal;
+    varying vec2 vUV;
+
+      vec4 mod289(vec4 x)
+  {
+    return x - floor(x * (1.0 / 289.0)) * 289.0;
+  }
+
+  vec4 permute(vec4 x)
+  {
+    return mod289(((x*34.0)+1.0)*x);
+  }
+
+  vec4 taylorInvSqrt(vec4 r)
+  {
+    return 1.79284291400159 - 0.85373472095314 * r;
+  }
+
+  vec2 fade(vec2 t) {
+    return t*t*t*(t*(t*6.0-15.0)+10.0);
+  }
+
+  // Classic Perlin noise // *cough
+  float cnoise(vec2 P)
+  {
+    vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
+    vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
+    Pi = mod289(Pi); // To avoid truncation effects in permutation
+    vec4 ix = Pi.xzxz;
+    vec4 iy = Pi.yyww;
+    vec4 fx = Pf.xzxz;
+    vec4 fy = Pf.yyww;
+
+    vec4 i = permute(permute(ix) + iy);
+
+    vec4 gx = fract(i * (1.0 / 41.0)) * 2.0 - 1.0 ;
+    vec4 gy = abs(gx) - 0.5 ;
+    vec4 tx = floor(gx + 0.5);
+    gx = gx - tx;
+
+    vec2 g00 = vec2(gx.x,gy.x);
+    vec2 g10 = vec2(gx.y,gy.y);
+    vec2 g01 = vec2(gx.z,gy.z);
+    vec2 g11 = vec2(gx.w,gy.w);
+
+    vec4 norm = taylorInvSqrt(vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11)));
+    g00 *= norm.x;  
+    g01 *= norm.y;  
+    g10 *= norm.z;  
+    g11 *= norm.w;  
+
+    float n00 = dot(g00, vec2(fx.x, fy.x));
+    float n10 = dot(g10, vec2(fx.y, fy.y));
+    float n01 = dot(g01, vec2(fx.z, fy.z));
+    float n11 = dot(g11, vec2(fx.w, fy.w));
+
+    vec2 fade_xy = fade(Pf.xy);
+    vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
+    float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
+    return 2.3 * n_xy;
+  }
+
+
+    void main(void) {
+
+       // NORMALIZE LENGTH OF THE INTERPOLATED NORMAL
+
+       vec2 noise = vec2(sin(vUV.x*sin(vUV.x*33.)*4.5),sin(vUV.y*sin(vUV.y*33.)*4.5));
+
+       vec3 normal = normalize(vNormal)*((cnoise(vUV*20.)*.1)+.9);
+
+       // COMPUTE DIFFUSE FACTOR
+
+       
+
+       float ldn = dot(lDir, normal);
+       float diffuse = (-normal.z+1.)+max(0., ldn);//*noise.y;
+
+       // COMPUTE SPECULAR FACTOR
+
+       vec3 refl = 2. * ldn * normal - lDir;
+       float specular = pow(max(0., refl.z)*((-normal.z+1.)*3.)*(max(0.,-cnoise(vUV*20.)+1.)*1.), p[9]);
+
+       // SUM PHONG REFLECTION COMPONENTS
+
+       vec3 c = vec3(p[0],p[1],p[2]) * (-vNormal.y + 1.) +
+                vec3(p[3],p[4],p[5]) * diffuse +
+                vec3(p[6],p[7],p[8]) * specular;
+
+       // APPLY GAMMA CORRECTION
+
+       gl_FragColor = vec4(pow(c.x,1.),pow(c.y,0.45),pow(c.z,0.45),1.);
+    }
+</script>
+
+<script id=fs_uv type=x-shader/x-fragment>
+    uniform vec3 rgb;
+    varying vec3 vNormal;
+    varying vec2 vUV;
+    void main(void) {
+       float c = 2.*max(0.,dot(vec3(.3,.3,.3),normalize(vNormal)));
+       float u = .5+.5*sin(30.*vUV.x);
+       float v = .5+.5*sin(40.*vUV.y);
+       gl_FragColor = vec4(c*rgb*vec3(u,v,1.), 1.);
+    }
+</script>
+
+
+<script id=fs_wood type=x-shader/x-fragment>
+  uniform sampler2D uSampler;
+  uniform sampler2D uSampler2;
+  uniform sampler2D uSampler3;
+  uniform sampler2D uSampler4;
+  uniform vec3 uLDir;
+  varying vec3 vNormal;
+  varying vec2 vUV;
+  uniform float p[10];
+
+  vec3 ungammaCorrect(vec3 c) { return vec3(pow(c.x,2.222),pow(c.y,2.222),pow(c.z,2.222)); }
+  vec3 gammaCorrect(vec3 c) { return vec3(pow(c.x,.45),pow(c.y,.45),pow(c.z,.45)); }
+  vec3 gamma(vec3 c, float p) { return vec3(pow(c.x,p),pow(c.y,p),pow(c.z,p)); }
+
+
+       vec4 mod289(vec4 x)
+  {
+    return x - floor(x * (1.0 / 289.0)) * 289.0;
+  }
+
+  vec4 permute(vec4 x)
+  {
+    return mod289(((x*34.0)+1.0)*x);
+  }
+
+  vec4 taylorInvSqrt(vec4 r)
+  {
+    return 1.79284291400159 - 0.85373472095314 * r;
+  }
+
+  vec2 fade(vec2 t) {
+    return t*t*t*(t*(t*6.0-15.0)+10.0);
+  }
+
+  // Classic Perlin noise //
+  float cnoise(vec2 P)
+  {
+    vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
+    vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
+    Pi = mod289(Pi); // To avoid truncation effects in permutation
+    vec4 ix = Pi.xzxz;
+    vec4 iy = Pi.yyww;
+    vec4 fx = Pf.xzxz;
+    vec4 fy = Pf.yyww;
+
+    vec4 i = permute(permute(ix) + iy);
+
+    vec4 gx = fract(i * (1.0 / 41.0)) * 2.0 - 1.0 ;
+    vec4 gy = abs(gx) - 0.5 ;
+    vec4 tx = floor(gx + 0.5);
+    gx = gx - tx;
+
+    vec2 g00 = vec2(gx.x,gy.x);
+    vec2 g10 = vec2(gx.y,gy.y);
+    vec2 g01 = vec2(gx.z,gy.z);
+    vec2 g11 = vec2(gx.w,gy.w);
+
+    vec4 norm = taylorInvSqrt(vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11)));
+    g00 *= norm.x;  
+    g01 *= norm.y;  
+    g10 *= norm.z;  
+    g11 *= norm.w;  
+
+    float n00 = dot(g00, vec2(fx.x, fy.x));
+    float n10 = dot(g10, vec2(fx.y, fy.y));
+    float n01 = dot(g01, vec2(fx.z, fy.z));
+    float n11 = dot(g11, vec2(fx.w, fy.w));
+
+    vec2 fade_xy = fade(Pf.xy);
+    vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
+    float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
+    return 2.3 * n_xy;
+  }
+
+   vec3 reflRay(vec3 dir, vec3 norm) {
+
+    vec3 ray;
+    ray = (2.0 * dot(dir , norm) * norm) + dir;
+    return ray;
+  }
+
+
+
+
+
+
+   void main(void) {
+
+    vec2 noise = vec2(sin(vUV.x*sin(vUV.x*33.)*4.5),sin(vUV.y*sin(vUV.y*33.)*4.5));
+
+    vec3 normal = normalize(vNormal-( (  vec3(cnoise(vUV*10.)*.1)*2.)  +  (vec3(cnoise(vUV*60.)*1.1)*.02)  ));
+
+    vec3 lNormal = reflRay(vec3(0,0,-1),((vec3(normal.x+1.5,normal.y+1.7,normal.z+1.9))/4.));
+    vec3 lUNormal = reflRay(vec3(0,0,-1),((vec3(vNormal.x+1.5,vNormal.y+1.7,vNormal.z+1.9))/4.));
+    vec3 nNormal = ((vec3(-vNormal.x+1.9,-vNormal.y+1.7,-vNormal.z+1.9))/4.);
+
+
+    vec3 refl = reflRay(vec3(0,0,1),normalize(normal));
+
+
+    float d = max(0., dot(uLDir, normalize(normal)));
+    vec3 rgb = vec3(d,d,d);
+
+    vec3 reflSharp = (texture2D(uSampler, (vec2(lNormal).xy)).xyz);
+    vec3 reflBlur = (texture2D(uSampler3, (vec2(lUNormal).xy)).xyz);
+    
+    vec3 circles = (texture2D(uSampler4, (vec2(vUV.x*8.,vUV.y*4.))).xyz);
+    vec3 circles2 =  gamma((vec3(circles)*p[6] * normal.z), (max(.0,(sin(p[6]))*0.8)+1.3 )) *2. *normal.y;
+
+
+    vec3 lambert = (texture2D(uSampler2, (vec2(nNormal).xy)).xyz);
+
+    float nM = ((normal.z-1.)*-2.);
+    
+    float nU = ((vNormal.z-1.)*-2.);
+
+    vec3 trgb = ((normal.z-1.)*-2.) * (texture2D(uSampler, (vec2(lNormal).xy+1.1)*-.45).xyz);// * ((normal.z+1.)*-1.);
+
+    vec3 lrgb = ((normal.z)) * (texture2D(uSampler2, (vec2(vNormal)+1.)*-.5).xyz);
+
+    //vec3 trgb = (texture2D(uSampler, (vec2(normal).xy+1.5)*-.25).xyz);
+    //rgb = rgb * trgb;
+    gl_FragColor = vec4((  (circles2 *max(0.,(p[7])))+
+    (reflSharp*ungammaCorrect(vec3(nM))*.5*max(0.,p[3]))  +
+    (ungammaCorrect(lambert*0.5)) * p[0]*2.*(abs(p[4]+.5))  + 
+    ((reflBlur * nU * abs(p[5])) )*circles.y), 
+    1.);
+    // gl_FragColor = vec4((lrgb/2. + trgb/2.), 1.);
+    //gl_FragColor = texture2D(uSampler, vUV);
+    //gl_FragColor = vec4((vNormal+1.)/2.,1.);
+     //gl_FragColor = vec4(reflBlur,1.);
+  }
+</script>
+
+<script>
+
+
+    canvas1.setup = function() {
+      
+     
+      this.tents = [];
+
+
+      this.addTent(70,'sphere');
+     // this.addTent(30,'sph2');
+
+      var empty = [];
+      this.addObject(empty,'fs_wood');
+
+      this.objects[this.objects.length-1].add(this.tents[0][0]);
+      this.root = this.objects[this.objects.length-1];
+
+      console.log(this.root);
+
+      //this.addTent(20,'sphere');
+      //this.addTent(20,'sphere');
+      //this.addTent(10,'sphere');
+
+      //this.tents[4][4].add(this.tents[0][0]);
+     // this.tents[4][4].add(this.tents[1][0]);
+     // this.tents[4][0].add(this.tents[2][0]);
+     // this.tents[4][0].add(this.tents[3][0]);
+
+
+    }
+
+    canvas1.addTent = function(num,typer){
+
+      var that = this;
+      var type = typer || 'cube';
+
+      var tent = [];
+     
+      for(var i = 0 ; i < num ; i++){
+       
+        if(type=='cube')
+        that.addObject(createCube(), 'fs_wood');
+        else if(type=='sph2')
+        this.addObject(createParametric(1/48,1/24,sph2), 'fs_wood');
+       else
+        this.addObject(createParametric(1/48,1/24,sph), 'fs_wood');
+
+        tent.push(that.objects[that.objects.length-1]);
+        
+        if(i>0){
+          tent[i-1].add(tent[i]);
+        }
+      }
+
+      that.tents.push(tent);
+      
+
+    }
+        
+    canvas1.update = function() {
+      
+
+        var params = [];
+        params.rz = this.mouseX*0.00041*time;
+        this.root.pMatrix = makeMatrix(params);
+    
+    
+        
+        
+        for(var i = 0 ; i < this.tents.length ; i++){
+          var color = 0;
+          for(var j = 0 ; j < this.tents[i].length ; j++){
+      
+      var params = [];
+      params.rx = 1.2435+time*(this.mouseX*0.001);
+      var rotator = makeMatrix(params);
+
+            var obj = this.tents[i][j];
+
+            var off = 0;
+            if(i>1)
+              off=.7;
+
+            var parms = [];
+
+            var m = ((this.mouseY*0.001)+1)||1;
+           
+            parms.y = .2;
+           
+
+            var n = this.mouseY*.01*noise(time+j/100,j+time/100+500,j+time/100+1000)*j/20;
+            
+            
+            if(i==0){
+              if(j==0){
+                parms.sx = parms.sy = parms.sz = .1;
+                parms.rz = 3;//+Math.sin(m*-(time*.99)+off*1)*-.5;
+              }
+              
+              else{
+                 parms.sx = parms.sy = parms.sz = 1.08;
+                parms.rz = .2+(Math.sin((m*-time+off+(j))*2)*.005*j)+.5;
+               
+              }
+              parms.z = this.mouseX*0.0001;
+              
+             
+            }
+            else
+              parms.rz = 0;//this.mouseX*0.0001;
+
+
+            var scaleMat = makeMatrix(parms);
+
+            obj.pMatrix = scaleMat;
+
+            obj.matrix = jMatMult(rotator,(recurse(obj,obj.pMatrix)));
+
+            color+=(1/this.tents[i].length);
+      
+      var cSin = Math.sin(color*this.mouseX*0.2)+0.5;
+      var fSin = Math.sin(color*this.mouseX*0.3);
+      var bSin = Math.sin(color*this.mouseY*0.2);
+      var dSin =  Math.sin(color*this.mouseY*this.mouseX*0.1);
+      var dSin =  Math.sin((time*(this.mouseY*0.0021)+j));//+(color*this.mouseY*this.mouseX*0.1));
+      
+            obj.setUniform('p', [color,0,0, cSin,bSin,dSin, fSin,dSin,.3,3]);
+      
+            if(i==4&&j==9) //make the head red
+            obj.setUniform('p', [.2,.02,0, 1,0,0, 1,.3,0,3]);
+
+            obj.setUniform('uLDir', [.57,.57,0.]);
+
+            obj.textures = [];
+
+            obj.textures[1] = "refl_superBlur_off.jpg";
+            obj.textures[0] = "refl_off.jpg";
+      obj.textures[2] = "refl_littleBlur_off.jpg";
+      obj.textures[3] = "circles.jpg";
+
+
+            
+          }
+        }
+
+        if (this.mousePressed)
+           console.log("canvas1 drag " + this.mouseX + " " + this.mouseY);
+    }
+
+
+    var sph = function(u,v) {
+       var theta = 2 * Math.PI * u,
+           phi = Math.PI * (v - .5),
+           cosT = Math.cos(theta) *.1, cosP = Math.cos(phi)*1 ,
+           sinT = Math.sin(theta) *.1, sinP = Math.sin(phi)*.1 ;
+       return [ cosT * cosP, sinT * cosP, sinP ];
+    }
+
+    var sph = function(u,v) {
+          var theta = 2 * Math.PI * u,
+           phi = Math.PI * (v - .5),
+           cosT = Math.cos(theta) *.1, 
+           cosP = Math.cos(phi)*1 ,
+           sinT = Math.sin(theta) *.1, 
+           sinP = Math.sin(phi)*.1 ;
+       return [ cosT * cosP, sinT * cosP, sinP ];
+    }
+
+     var sph2 = function(u,v) {
+       var theta = 2 * Math.PI * u,
+           phi = Math.PI * (v - .5),
+           cosT = Math.cos(theta) * .1 + ( Math.sin(theta*6.)*.01), cosP = Math.cos(phi)*1 ,
+           sinT = Math.sin(theta) *.1 + ( Math.cos(phi*6.)*.01), sinP = Math.sin(phi)*.1 ;
+       return [ cosT * cosP, sinT * cosP, sinP ];
+    }
+
+</script>
+</center>
+</body>
+

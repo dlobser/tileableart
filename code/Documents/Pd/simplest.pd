@@ -1,0 +1,9 @@
+#N canvas 68 239 450 300 12;
+#X obj 187 215 dac~;
+#X obj 181 176 multiosc;
+#X obj 192 106 hsl 128 15 50 1000 0 0 empty empty empty -2 -8 0 10
+-262144 -1 -1 3700 1;
+#X obj 199 142 + 50;
+#X connect 1 0 0 0;
+#X connect 2 0 3 0;
+#X connect 2 0 1 0;

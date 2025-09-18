@@ -1,0 +1,25 @@
+  .editor { 
+     
+      margin: 20px;
+      border: 2px solid #d0d0d0;      
+      width: 960px;
+      height: 1024px;
+    }
+    .display {
+      vertical-align:middle;
+      width:960px;
+      margin: 20px;
+    }
+    .controls {
+      margin: 20px;
+    }
+    .canvas1 {
+      border: 2px solid #d0d0d0;      
+      width: 960px;
+      height: 540px;
+    }
+    .canvas2 {
+      border: 2px solid #d0d0d0;      
+      width: 960px;
+      height: 200px;
+    }

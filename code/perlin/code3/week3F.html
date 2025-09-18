@@ -1,0 +1,256 @@
+
+<!! ASSIGNMENT DUE WEDNESDAY SEPTEMBER 18, 2013 FOR KEN PERLIN'S GRAPHICS CLASS>
+
+<script src="script.js"></script>
+
+<!! REPLACE THE TEXT BELOW WITH A TITLE FOR YOUR SHADER>
+
+<script id="title" type="text/plain">
+Chinese Medicine Balls
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH A BRIEF DESCRIPTION OF YOUR SHADER>
+
+<script id="description" type="text/plain">
+
+Because one ball is never enough.
+
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH YOUR SHADER CODE>
+
+<script id="shader" type="x-shader/x-fragment">
+
+//make a struct that stores info about the ray - this includes whether the hit happened, the t value, the color and normal
+
+//define sphere positions and scale
+vec4 sph1 = vec4(sin(uTime), cos(uTime)*0.5, sin(uTime)*-2.,
+abs(sin(uTime*5.5)+5.0)*0.15);
+vec4 sph2 = vec4(sin(uTime+3.14), cos(uTime+3.14), 0.0,
+abs(sin(uTime*5.0)+5.0)*0.15);
+
+vec4 cyl = vec4(0.0,0.0,0.0,1.0);  //if w is 1 it's a point
+
+vec4 cube[6];
+float tEnter[6];
+float tExit[6];
+
+mat4 tsMatrix(vec3 t, vec3 s) {
+        return mat4(s.x,0.,0.,0., 0.,s.y,0.,0., 0.,0.,s.z,0., t.x,t.y,t.z,1.);
+}
+mat4 rotmatYaxis(float theta){
+ return mat4(cos(theta), 0.0, sin(theta), 0.0, 0.0, 1.0, 0.0, 0.0, -sin(theta), 0.0, cos(theta), 0.0, 0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 rotmatXaxis(float theta){
+ return mat4(1.0, 0.0, 0.0, 0.0, 0.0, cos(theta), sin(theta), 0.0, 0.0, -sin(theta), cos(theta), 0.0, 0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 rotmatZaxis(float theta){
+ return mat4(cos(theta), sin(theta), 0.0, 0.0, -sin(theta), cos(theta), 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 matrix;
+mat4 inverseMatrix;
+
+// init transform and scale
+vec3 T;
+vec3 S;
+float LV;
+float LW;
+
+    float maxEnter;
+    float minExit;
+
+    int maxIndex;
+    int minIndex;
+    float t;
+	
+struct Ray{
+	float t;
+	vec3 n;
+	bool hit;
+	float testFloat;
+	vec3 testVec3;
+};
+
+
+Ray iCube( in vec4 V, in vec4 W){
+
+
+
+    T = vec3(1.0, -10.0, 10.0*sin(4.0*uTime)-10.0); // translate upward by one unit
+    S = vec3(1.0, 1.0, 1.0); // scale down by one half
+
+    matrix = tsMatrix(T, S);
+    inverseMatrix = tsMatrix(-T/S, 1.0/S);
+
+    //matrix = tsMatrix(vec3(0.0,0.0,0.0),1.0);
+    //inverseMatrix = tsMatrix(vec3(0.0,0.0,0.0),1.0);
+    inverseMatrix = rotmatXaxis(uTime) * rotmatYaxis(-uTime*0.9);
+
+    cube[0] = vec4(-1.0,0.0,0.0,-1.0) * inverseMatrix;
+    cube[1] = vec4(1.0,0.0,0.0,-1.0) * inverseMatrix;
+    cube[2] = vec4(0.0,-1.0,0.0,-1.0) * inverseMatrix;
+    cube[3] = vec4(0.0,1.0,0.0,-1.0) * inverseMatrix;
+    cube[4] = vec4(0.0,0.0,-1.0,-1.0) * inverseMatrix;
+    cube[5] = vec4(0.0,0.0,1.0,-1.0) * inverseMatrix;
+
+	Ray ray;
+	
+	ray.n = cube[0].xyz;
+	ray.t = 0.4;
+	ray.hit = false;
+	ray.testFloat = 1.0;
+	ray.testVec3 = cube[0].xyz;
+	
+	float eps = 0.000001;
+	bool miss = false;
+
+    for(int i = 0 ; i < 6 ; i ++){
+
+        tEnter[i] = 0.0;
+        tExit[i] = 0.0;
+
+        LW = ( dot( cube[i], W ));
+        LV = ( dot( cube[i], V ));
+
+        //degenerate cases
+		
+        //The entire ray lies inside the half space - ignore this L
+		if( abs(LW) < eps && LV < -eps ){
+			//ray.hit = false;
+			break;
+		}
+		
+		//The entire ray lies outside the half space - missed
+		if( abs(LW) < eps && LV > 0.0 ){
+			miss = true;
+//			continue;
+		}
+
+		// enter the half space
+		if ( LW < -eps ){
+			tEnter[i] = -LV/LW;
+		}
+
+		// exit the half space
+		if (LW > eps){
+			tExit[i] = -LV/LW;
+		}
+
+	}
+
+    //To find the intersection of the ray with the cube, we take the maximum tenter of the entering rays, and the minimum texit of the exiting rays, and see whether tenter < texit. If so, then the ray has entered the cube at tenter. If not, then the ray has missed the cube.
+
+    //hold the min and max values
+    maxEnter = -1e20;
+    minExit = 1e20;
+
+    maxIndex = 0;
+    minIndex = 0;
+ //   float t;
+
+
+    for (int i = 0 ; i < 6 ; i++){
+
+        // entering rays
+
+       if(tEnter[i] > maxEnter && tEnter[i] != 0.0){
+            maxEnter = tEnter[i];
+            maxIndex = i;
+			ray.n = normalize(cube[i].xyz);
+        }
+
+        //exiting rays
+        if(tExit[i] < minExit && tExit[i] != 0.0){
+
+            minExit = tExit[i];
+            minIndex = i;
+
+        }
+    }
+	
+	
+
+
+    if( miss == false && maxEnter < minExit ){
+		//return vec3(1.0,0.0,1.0); 
+		ray.t = maxEnter;
+		ray.hit = true;
+		/*
+		      //http://www.john-smith.me/hassles-with-array-access-in-webgl--and-a-couple-of-workarounds
+        for (int i=0; i<6; i++) {
+
+            if ( i == maxIndex ) {
+                
+               // float j;
+                
+                //j = tEnter[i];//
+              //  j = 1.0/(tEnter[i]+1.0)*50.;
+
+                //j = tEnter[i]*0.001; //very different results
+
+                return vec3(cube[i].x,j,cube[i].z);
+             //   break;
+            }
+         
+        }
+*/
+    }
+ //   else {
+  //      return vec3(1.0,1.0,0.0); 
+ //   }
+	return ray;
+}
+
+float iSphere( in vec3 V, in vec3 W, in vec4 sph )
+{
+    vec3  A = V - sph.xyz; // ray origin minus sphere position - gives a vector
+    float b = 2.0 * dot( A, W );
+    float c = dot(A,A) - sph.w;
+    float h = b*b - 4.0 *c;
+
+    //set t to negative one to test
+    if (h < 0.0) { return -1.0; }
+    float t = (-b - sqrt(h)) / 2.0;
+    return t;
+}
+
+
+float remap (in float low1, in float high1, in float low2, in float
+high2, in float value){
+     return low2 + (value - low1) * (high2 - low2) / (high1 - low1) ;
+}
+
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+
+void main( void ){
+
+    vec3 light = normalize( vec3(1.4,2.6,1.4) );    // light position
+    vec2 uv = 1.0*( gl_FragCoord.xy / uViewportSize.xy );
+
+    float focal_length = 5.0;
+    vec4 V = vec4( 0.0, 0.0, 60.0, 1.0); //ray origin
+    vec4 W = normalize( vec4( -0.5 + uv.x,0.5 - uv.y, -focal_length, 0.0) );
+	
+	Ray cube;
+    cube = iCube(V,W);
+    //float cyl = iCylinder(V,W,cyl);
+	
+	gl_FragColor = vec4( vec3(0.2,0.0,0.5), 1.0 );
+
+  //  vec3 col = vec3(0.0);
+   // vec3 col2 = vec3(0.0);
+	if(cube.hit == true){
+		gl_FragColor = vec4( cube.n, 1.0 );
+	}
+	
+}
+</script>
+
+<script>start()</script>

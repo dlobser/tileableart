@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  
+	<head>
+  
+
+    <LINK href="css/codeMirror.css" rel="stylesheet" type="text/css">
+    <script src="lib/processing.js"></script>
+    <script src="lib/jquery.js"></script>
+    <script src="lib/dist/js/bootstrap.min.js"></script>
+    <script src="ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+    <title>Creative Code for Parametric Design</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="lib/dist/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="grid.css" rel="stylesheet">
+    <style type="text/css" media="screen">
+    #editor { 
+          position: absolute;
+          top: 70px;
+          right: 0;
+          bottom: 0px;
+          left: 40px;
+      }
+  </style>
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+   
+  </head>
+
+  <body>
+
+
+  <link href="css/ace.css" rel="stylesheet">
+
+     <header class="navbar navbar-inverse navbar-fixed-top bs-docs-nav" role="banner">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="index.html" class="navbar-brand">Home</a>
+    </div>
+    <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <ul class="nav navbar-nav">
+      
+         <li>
+          <a href="about.html">About</a>
+        </li>
+      </ul>
+       
+    
+    </nav>
+  </div>
+</header>
+
+    <div class="container">
+      <div class="row"><br>
+         
+  <div class="col-md-1"></div>
+
+  <div class="col-md-12">
+    <br>
+    <style>
+
+a:link {
+COLOR: #000000;
+}
+a:visited {
+COLOR: #005588;
+background-color:white;
+}
+a:hover {
+COLOR: #000000;
+}
+a:active {
+COLOR: #FFaa00;
+}
+
+</style>
+<br>
+<canvas id="processing-canvas"> </canvas>
+<br><br>
+<script src="sketches/title.js" type="text/processing" data-processing-target="processing-canvas">
+
+
+</script>
+<script>var scriptSource = "sketches/smiles_01.js"</script>
+<div class="row">
+  <div class="col-md-12">
+
+
+    <div class="panel panel-default" style="margin-top:-20px">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+ReadMe!        </a>
+        </h4>
+      </div>
+    <div id="collapseOne" class="panel-collapse collapse out">
+      <div class="panel-body" style="padding-left:100px;background-color:#eeeeff">
+        Code is a powerful expressive medium and the walls that have kept creative people away from it are becoming thinner. <br> When artists learn to control the algorithm, a new set of styles will emerge, and from that, a new way of seeing.  <br>This site is the beginning of an attempt to lay out a series of skill building demos. <br> There are a lot of excellent tutorials out there but the idea here is to create a series of sandboxes with links to learn more.<br>
+        <a href="why.html"><h2 style="font-family:cursive">Why?</h2></a>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+ 
+  <div class="col-md-12" style="padding:0px">
+    <div class="col-md-5" style="background-color:#eeeeee">
+    <h3>Learning to Code</h3><br>
+    <a href="smiles_000.html">Intro to Lines and Shapes</a><br>
+    <a href="smiles_00.html">Lines/Shapes/Curves</a><br>
+    <a href="smiles_01.html">Make a face</a><br>
+    <a href="smiles_02.html">Varying Variables</a><br>
+    <a href="smiles_03.html">Interactive Motion</a><br>
+    <a href="smiles_04.html">Loopdy Loops</a><br>
+    <a href="smiles_04a.html">Spiral Loops</a><br>
+    <a href="smiles_05.html">FUNctions</a><br>
+    <a href="smiles_06.html">Arrays, like shoeboxes</a><br>
+    <a href="smiles_07.html">Recursion</a><br><br><br><br><br><br>
+
+
+  </div>
+   <div class="col-md-3" style="background-color:#cccccc">
+    <h3>Examples</h3><br>
+    <a href="example_bezier.html">Bezier Example</a><br>
+    <a href="example_curveVertex.html">Curve Vertex Example</a><br>
+    <a href="example_packing.html">Circle Packing</a><br>
+    <a href="example_packing_02.html">Recursive Circle Packing</a><br>
+    <a href="example_packing_03.html">Happy Packing</a><br>
+    <a href="example_mondrian.html">Mondrian</a><br>
+    <a href="example_poetryBalls.html">Poetry Balls</a><br>
+    <a href="example_sierpinski.html">Sierpinski</a><br>
+    <a href="example_patternMaker.html">Tiling</a><br><br><br><br><br><br>
+
+ <br><br>
+ </div>
+    <div class="col-md-4" style="background-color:#aaaaaa">
+<h3 style="padding-left:20px">Links</h3><br>
+   <div class="col-md-6" style="background-color:#cccccc">
+    <h4>Rule Based Art</h4><br>
+    <a href="MONDRIAN.html">Mondrian</a><br>
+    <a href="http://www.brooklynrail.org/2005/04/art/logical-conclusions-40-years-of-rule-bas">Rule Based Exhibit</a><br>
+    <a href="http://n-e-r-v-o-u-s.com/">n-e-r-v-o-u-s system</a><br>
+    <a href="http://www.swimbots.com/">Swimbots</a><br>
+    <a href="http://blog.signalnoise.com/wp-content/uploads/2009/10/i_hodgin1.jpg">Robert Hodgin</a><br>   
+    <a href="http://en.wikipedia.org/wiki/Ernst_Haeckel">Ernst Haeckl</a><br>
+    <a href="http://www.youtube.com/watch?v=Mxz86aUbfyE">Michael Snow</a><br>
+    <a href="http://shanehope.info/">Shane Hope</a><br>
+    <a href="http://en.wikipedia.org/wiki/Sol_LeWitt">Sol Lewitt</a><br>
+    <a href="http://www.yayoi-kusama.jp/e/information/index.html?utm_source=The+Zoe+Report&utm_campaign=15c1a25785-TZR_LV_Kusama_Round_Sunnies_Ad_Guide7_13_2012&utm_medium=email">Yayoi Kusama</a><br>
+    <a href="http://en.wikipedia.org/wiki/Le_Corbusier">Le Corbusier</a><br>
+    <a href="http://en.wikipedia.org/wiki/Bernd_and_Hilla_Becher">Bernd and Hilla Becher</a>
+    <br><br><br><br><br>
+ </div>
+  <div class="col-md-6" style="background-color:#999999">
+    <h4>Processing</h4><br>
+      <h5>-learn-<br></h5>
+      <a href="http://hello.processing.org/">Hello Processing! (intro)</a><br>
+      <a href="http://processingjs.org/articles/p5QuickStart.html">Set up Processing JS</a><br>
+      <a href="http://www.processing.org/reference/">Processing Quick Reference</a><br>
+      <h5>-design-<br></h5>
+      <a href="http://fyprocessing.tumblr.com/">FYProcessing</a><br>
+      <a href="http://balkanium.tumblr.com/archive">Balkanium</a><br>
+      <a href=" http://beesandbombs.tumblr.com/">Bees and Bombs</a><br>
+      <a href="http://hamoid.tumblr.com/">aBe</a>
+      <br><br><br>
+      
+  </div>
+   .<br><br><br><br>
+</div>
+</div>
+
+
+  </div>
+</div>
+
+    </div> <!-- /container -->
+
+    <script>
+
+    function setSpan(id, str) {
+      document.getElementById(id).firstChild.nodeValue = str;
+    }
+
+    text = "";
+    texter = "";
+    console.log(scriptSource);
+
+    window.onload = function(){
+        var iframe = document.createElement('iframe');
+        iframe.id = 'iframe';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        iframe.src = scriptSource;
+
+        setTimeout(function(){
+            
+            text += document.getElementById('iframe').contentDocument.body.firstChild.innerHTML;
+            texter = text.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&");
+            editor.setValue(texter);
+            startSketch();
+            
+        }, 1000);
+
+    }
+
+    function update(){
+            editor.setValue(texter);
+
+    }
+
+    
+
+
+    </script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </body>
+</html>

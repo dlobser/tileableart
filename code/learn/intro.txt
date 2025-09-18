@@ -1,0 +1,12 @@
+Code is a new medium of artistic expression.  With it we make films and games.  We start with simple points, then lines, then faces which link together to make complx three dimensional forms with behaviors.  Code is about relationships, complexity and dare I say, life itself.  Let's face it, most 'code art' isn't very good.  I believe this can be fixed by getting more artists thinking in code.
+
+I'd like to talk about Processing because it's the best way for artists to learn code.
+
+David Lobser has created animation for broadcast, film and interactive media as a production artist, director (for Psyop's Blacklist) and designer.  He is presently a student at NYU's Interactive Telecommunications Program where he's been exploring the expressive potential of interactive code for 3D printing and real time animation.
+
+Recent projects include:
+
+Turbine: A branching parametric modeling and animation tool.
+G-Code Painter: A unique way to use the makerbot.
+{Medusa, Medusa, ...}: A projection installation exploring code and life.
+Ball Drawer: A game like approach to 3D modeling.

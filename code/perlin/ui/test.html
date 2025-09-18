@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="us">
+<head>
+	<meta charset="utf-8">
+	<title>jQuery UI Example Page</title>
+	<link href="jquery-ui.css" rel="stylesheet">
+	<style>
+	body{
+		font: 50.5% "Trebuchet MS", sans-serif;
+		margin: 10px;
+	}
+	.demoHeaders {
+		margin-top: 0em;
+	}
+	.mine{
+		margin-bottom:1em;
+		padding-top:10em;
+		font-size:2em;
+		position:absolute;
+	}
+	#dialog-link {
+		padding: .4em 1em .4em 20px;
+		text-decoration: none;
+		position: relative;
+	}
+	#dialog-link span.ui-icon {
+		margin: 0 1px 0 0;
+		position: absolute;
+		left: .2em;
+		top: 50%;
+		margin-top: -8px;
+	}
+	#icons {
+		margin: 0;
+		padding: 0;
+	}
+	#icons li {
+		margin: 2px;
+		position: relative;
+		padding: 4px 0;
+		cursor: pointer;
+		float: left;
+		list-style: none;
+	}
+	#icons span.ui-icon {
+		float: left;
+		margin: 0 4px;
+	}
+	.fakewindowcontain .ui-widget-overlay {
+		position: absolute;
+	}
+	select {
+		width: 200px;
+	}
+	</style>
+</head>
+<body>
+
+
+<div id="tabs" style="width:220px">
+	<ul>
+		<li><a href="#tabs-1">10 Sliders</a></li>
+		<li><a href="#tabs-2">spirals</a></li>
+		<li><a href="#tabs-3">readme</a></li>
+		<li><a href="#tabs-4">hide</a></li>
+	</ul>
+	<div id="tabs-1">
+
+		<div id="bob" style="padding:10px;width:170px;background-color:#99ccff;border-radius:10px">
+			<span style="font-size:2em"><div style="padding:5px;margin-bottom:9px;background-color:#5599cc;border-radius:10px">Sliders</div></span>
+		</div>
+		<div style="margin:10px"><canvas id="myCanvas" width="150" height="150" style="padding:0px;border-radius:0px"></canvas></div>
+		<button id="button"  onclick="doFunSlider();">sin wave</button>
+	</div>
+	<div id="tabs-2">
+		<canvas id="myCanvas2" width="150" height="450" style="
+	width: 150px;
+	text-align:center;
+     height:400px;
+     padding-left: 20px ;
+     "></canvas>
+		<div style="padding-top:10px"><span>offset: </span><span id="speedValue">.</span><br><br></div>
+	<button id="button2"  onclick="lineUpdater();"><h3>spiralize</h3></button><button id="button3"  onclick="listen();"><h3>listen</h3></button>
+	</div>
+	<div id="tabs-3">This is an experiment with jquery ui</div>
+	<div id="tabs-4"></div>
+</div>
+
+
+
+
+
+
+
+
+
+<script src="external/jquery/jquery.js"></script>
+<script src="Tone.js/build/Tone.js"></script>
+
+<script src="jquery-ui.js"></script>
+<script>
+
+
+
+$( "#button" ).button();
+$( "#button2" ).button();
+$( "#button3" ).button();
+
+
+sliders = [];
+
+for(var i = 0 ; i < 10 ; i++){
+	$("#bob").append("\
+		<div style='width:110px;position:relative'>\
+	<div class='mine'></div>\
+		<div id='slider" + i + "'></div>\
+	<div id = 'text"+i+"' style='position:relative;margin-left:120px;margin-top:-1em'> hidf:"+i+"</div>\
+	</div><div style='margin-top:.4em'>\
+	");
+	sliders[i]=$( "#slider"+i ).slider({
+		range: false,
+		step:.01,
+		value:80,
+		// values: [ 17 ]
+	});
+}
+
+$( "#tabs" ).tabs();
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+
+var c2 = document.getElementById("myCanvas2");
+var ctx2 = c2.getContext("2d");
+
+var pi = 3.141592;
+osc = new Tone.Oscillator(440, "sine");
+drawSpiral();
+
+// funSliders();
+checkSlider();
+updateLine();
+funSliders();
+
+// checkSlider();
+var cd = 0;
+
+var funSlider = false;
+
+function doFunSlider(){
+	funSlider = !funSlider;
+	console.log(funSlider);
+}
+
+sliderVals = [];
+
+function setSliders(val){
+		// setTimeout(function(){
+
+	for(var i = 0 ; i < 10 ; i++){
+		// console.log(sliders[i]);
+		// sliders[i].slider('option','value',50);
+		// sliders[i].slider('option','slide')
+
+		var s = sliders[i];
+		// 	.call(sliders[i],null,{handle:$('.ui-slider-handle',hs),value:50});
+		s.slider("value",val[i]);
+		setSpan("text"+i,val[i]);
+		// s.trigger('slide',{ui:$('.ui-slider-handle',s),value:60})
+		// s.slider('refresh');
+		// console.log($( "#slider"+i ).slider("value") + " " + i);
+
+	}
+	// requestAnimationFrame(checkSlider());
+// },1000)
+}
+
+
+function funSliders(val){
+		// setTimeout(function(){
+	if(funSlider){
+		cd+=.05;
+
+		sl = [];
+
+		for(var i = 0 ; i < 10 ; i++){
+			// console.log(sliders[i]);
+			// sliders[i].slider('option','value',50);
+			// sliders[i].slider('option','slide')
+			var s = sliders[i];
+			// 	.call(sliders[i],null,{handle:$('.ui-slider-handle',hs),value:50});
+			s.slider("value",(1+Math.sin(cd+i))*50);
+			setSpan("text"+i,((1+Math.sin(cd+i))*50).toFixed(4));
+			sl.push(((1+Math.sin(cd+i))*50).toFixed(4));
+			// s.trigger('slide',{ui:$('.ui-slider-handle',s),value:60})
+			// s.slider('refresh');
+			// console.log($( "#slider"+i ).slider("value") + " " + i);
+
+		}
+		
+	// },1000)
+	}
+	requestAnimationFrame(funSliders);
+}
+
+function checkSlider(){
+	// setTimeout(function(){
+		sl = [];
+		for(var i = 0 ; i < 10 ; i++){
+			// console.log(sliders[i]);
+			// sliders[i].slider('option','value',50);
+			// sliders[i].slider('option','slide')
+
+			var s = sliders[i];
+			// // 	.call(sliders[i],null,{handle:$('.ui-slider-handle',hs),value:50});
+			// s.slider("value",90);
+			setSpan("text"+i,s.slider("value"));
+			sl.push(s.slider("value"));
+			// s.trigger('slide',{ui:$('.ui-slider-handle',s),value:60})
+			// s.slider('refresh');
+			// console.log($( "#slider"+i ).slider("value") + " " + i);
+
+		}
+		requestAnimationFrame(checkSlider);
+	// },10)
+}
+
+function setSpan(id, str) {
+    document.getElementById(id).firstChild.nodeValue = str;
+}
+
+
+
+
+function updateLine(){
+	
+	makeVectors();
+	drawVectors();
+	requestAnimationFrame(updateLine);
+}
+
+
+function makeVectors(){
+	vectors = [];
+
+	for(var i = 0 ; i < 10 ; i++){
+		var vec = {};
+		vec.x = sl[i];//Math.sin(i+cd);//*1+Math.sin(i*.032+(i/100)*pi*20)*.1;
+		vec.y = i;//*1+Math.cos(i*.032+(i/100)*pi*20)*.1;
+		vec.z = 0;
+		vectors.push(vec);
+	}
+}
+
+function drawVectors(){
+
+	// ctx.fillStyle="#ffffff";
+	// ctx.fill();
+	// ctx.moveTo(0,0);
+	ctx.clearRect(0,0,150,150);
+	ctx.fillStyle = "#558899";
+	ctx.fillRect(0,0,150,150);
+	
+	// ctx.moveTo(25+vectors[0].x,vectors[0].y*16);
+
+	for(var i = 1 ; i < vectors.length ; i++){
+		ctx.beginPath();
+		var vec = vectors[i-1];
+		// console.log(vec.x);
+		ctx.lineTo(vec.x*1.5,vec.y*16);
+		var vec = vectors[i];
+		// console.log(vec.x);
+		ctx.lineTo(vec.x*1.5,vec.y*16);
+		ctx.stroke();	
+	}
+	// ctx.endPath();
+
+}
+
+
+var lineUpdate = false;
+var sp = 0;
+var sp2 = 0;
+
+
+	vibrato = new Tone.LFO(6, -25, 25);
+	vibrato.start();
+
+	//connect it to the output
+	osc.toMaster();
+	osc.setVolume(-10);
+	vibrato.connect(osc.detune);
+
+function lineUpdater(){
+	lineUpdate=!lineUpdate;
+	drawSpiral();
+	osc.playing = true;
+	osc.start();
+}
+
+function listen(){
+	if(osc.playing){
+		osc.stop();
+		osc.playing = false;
+	}
+	else{
+		osc.start();
+		osc.playing = true;
+	}
+}
+
+function drawSpiral(){
+	vectors2 = [];
+	makeVectors2();
+	drawVectors2();
+	if(lineUpdate){
+		requestAnimationFrame(drawSpiral);
+	}
+}
+
+function makeVectors2(){
+	sp2+=.01;
+	sp+=Math.sin(sp2);
+	vectors2=[];
+	osc.oscillator.frequency.value = (1+Math.sin(sp2))*200;
+
+	for(var i = 0 ; i < 1000 ; i++){
+		var vec = {};
+		vec.x = Math.sin((i/100.0) * pi * 2 * sp);//*1+Math.sin(i*.032+(i/100)*pi*20)*.1;
+		vec.y = Math.cos((i/100.0) * pi * 2)*.1;//*1+Math.cos(i*.032+(i/100)*pi*20)*.1;
+		vec.z = .27+((i/100.0)*.27);
+		vectors2.push(vec);
+	}
+	setSpan("speedValue",1+Math.sin(sp2));
+	// console.log(vectors2.length);
+}
+
+function drawVectors2(){
+
+	// ctx2.clearRect(0,0,150,150);
+	ctx2.fillStyle = "#aaccff";
+	ctx2.fillRect(0,0,150,450);
+	ctx2.imageSmoothingEnabled= true;
+	ctx2.translate(0.5, 0.5)
+
+	ctx2.moveTo(75+vectors2[0].x*75,(vectors2[0].z*-700)+600+vectors2[0].y*75);
+
+	for(var i = 1 ; i < vectors2.length ; i++){
+		ctx2.beginPath();
+		var vec = vectors2[i-1];
+		ctx2.lineTo(75+vec.x*75,(vec.z*-400)+600+vec.y*75);
+		var vec = vectors2[i];
+		ctx2.lineTo(75+vec.x*75,(vec.z*-400)+600+vec.y*75);
+		ctx2.lineWidth = .5;
+		ctx2.stroke();	
+	}
+	ctx2.translate(-.5,-.5);
+
+}
+
+ function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
+  }
+  drawLine = false;
+
+   c.addEventListener('mousedown', function(evt) {
+   	drawLine = true;
+  }, false);
+      c.addEventListener('mouseup', function(evt) {
+   	drawLine = false;
+  }, false);
+
+  c.addEventListener('mousemove', function(evt) {
+    var mousePos = getMousePos(c, evt);
+    for(var i = 0 ; i < 10 ; i++){
+    	var p = Math.floor((mousePos.y/150)*10);
+    	sliderVals[p] = (mousePos.x/150)*100;
+    }
+    if(drawLine)
+    setSliders(sliderVals);
+    // drawLine = false;
+    // console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
+  }, false);
+
+
+</script>
+</body>
+</html>

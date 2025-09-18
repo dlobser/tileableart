@@ -1,0 +1,301 @@
+<div style="text-align:center">
+<h2>whirlyGig</h2>
+</div>
+<center>
+<canvas id=exampleCanvas width=800 height=800 tabindex="1"></canvas>
+</center>
+<p>
+
+
+<hr color=white size=100>
+
+<script>
+
+   // GET THE CANVAS ELEMENT AND ITS DRAWING CONTEXT FROM THE DOCUMENT
+
+   var canvas = document.getElementById('exampleCanvas');
+   var context = canvas.getContext('2d');
+   
+   
+	function RTSmat(x,y,z,t,s){
+   
+		var m = [];
+		m.push(x);
+		m.push(y);
+		m.push(z);
+		m.push(t);
+		m.push(s);
+
+		var r1 = jMatMult(x,y);
+		var r2 = jMatMult(z,r1);
+
+		var ts = jMatMult(t,s);
+		
+		return jMatMult(r2,ts);
+   
+   }
+   
+    function STRmat(x,y,z,t,s){
+   
+		var m = [];
+		m.push(x);
+		m.push(y);
+		m.push(z);
+		m.push(t);
+		m.push(s);
+
+		var r1 = jMatMult(y,x);
+		var r2 = jMatMult(z,r1);
+
+		var st = jMatMult(s,t);
+		
+		return jMatMult(st,r2);
+   
+   }
+   
+	function jMatMult(A,B){
+		var C = [];
+		for(var i = 0; i < 16; i++){ 
+			C.push(0);
+		}
+		for(var k=0; k<=16; k+=4){
+			for(var i=0; i<4; i++){
+				for (var j=0, bCount=0; j<4; j++, bCount+=4){
+					C[k+i] += A[k+j%4] * B[bCount+i%4];
+				}
+			}
+		}
+		return C;
+	}
+   
+   	function makeMatrix(x,y,z,xs,ys,zs,rx,ry,rz){
+	
+		this.matrix = [ 1,0,0,0, 
+						0,1,0,0, 
+						0,0,1,0, 
+						x,y,z,1 ];
+						
+		this.sMatrix = [ xs,0,0,0, 
+						0,ys,0,0, 
+						0,0,zs,0, 
+						0,0,0,1 ];
+		
+		this.rXmatrix = [ 	1,0,0,0, 
+							0,Math.cos(rx),Math.sin(rx),0, 
+							0,-Math.sin(rx),Math.cos(rx),0, 
+							0,0,0,1 ];
+		this.rYmatrix = [ 	Math.cos(ry),0,Math.sin(ry),0, 
+							0,1,0,0, 
+							-Math.sin(ry),0,Math.cos(ry),0, 
+							0,0,0,1 ];
+		this.rZmatrix = [ 
+							Math.cos(rz),Math.sin(rz),0,0, 
+							-Math.sin(rz),Math.cos(rz),0,0, 
+							0,0,1,0,
+							0,0,0,1 ];
+							
+		return STRmat(this.rXmatrix,this.rYmatrix,this.rZmatrix,this.matrix,this.sMatrix);
+	
+	}
+	
+	Object3D = function(){};
+	Object3D.prototype = new Object3D();
+	Object3D.prototype.makeObj = function(){
+		this.pts = [];
+		this.edges = [];
+		this.matrix = [];
+		this.children = [];
+		
+		this.add = function(obj){
+			this.children.push(obj);
+		}
+		return this;
+	}
+	
+	function makeSpiral(obj){
+		for(var i = -50 ; i < 50 ; i++ ){
+			obj.pts.push([Math.cos(i/Math.PI)*Math.cos(i/30),i/100,Math.sin(i/Math.PI)*Math.cos(i/30)]);
+		}
+
+	   // THE EDGES OF A UNIT CUBE (INDEXING INTO THE VERTICES)
+
+		for(var i = 0 ; i < obj.pts.length-1 ; i++ ){
+			obj.edges.push([i,i+1]);
+		
+		}
+		for(var i = 0 ; i < obj.pts.length-10 ; i++ ){
+			obj.edges.push([i,i+10]);
+		
+		}
+	}
+	function makeSpiralSimple(obj){
+		for(var i = -50 ; i < 50 ; i++ ){
+			obj.pts.push([Math.cos(i/Math.PI)*Math.cos(i/30),i/100,Math.sin(i/Math.PI)*Math.cos(i/30)]);
+		}
+
+	   // THE EDGES OF A UNIT CUBE (INDEXING INTO THE VERTICES)
+
+		for(var i = 0 ; i < obj.pts.length-1 ; i++ ){
+			obj.edges.push([i,i+1]);
+		
+		}
+
+	}
+	
+   // THE VERTICES OF A UNIT CUBE
+   	var objects = [];
+	
+	var obj = new Object3D();
+	obj.makeObj();
+	makeSpiral(obj);
+	objects.push(obj);
+	
+	var obj2 = new Object3D();
+	obj2.makeObj();
+	makeSpiralSimple(obj2);
+	objects.push(obj2);
+	
+	var obj3 = new Object3D();
+	obj3.makeObj();
+	makeSpiralSimple(obj3);
+	objects.push(obj3);
+	
+	
+
+
+
+   // YOUR FUNCTION THAT GETS CALLED EACH ANIMATION FRAME
+
+   function animate() {
+   
+   
+
+      // GET THE DIMENSIONS OF THE CANVAS
+
+      var w = canvas.width, h = canvas.height;
+
+      // CLEAR THE ENTIRE CANVAS
+
+      context.fillStyle = '#ffffff';
+      context.beginPath();
+      context.moveTo(0,0);
+      context.lineTo(w,0);
+      context.lineTo(w,h);
+      context.lineTo(0,h);
+      context.fill();
+
+      // CREATE THE MATRIX TRANSFORM FOR THIS ANIMATION FRAME.
+
+      ////////////////////////////////////////////////////////////
+
+      // NOTE: THIS IS THE PART THAT YOU WILL BE REPLACING WITH
+      // MORE GENERAL KINDS OF TRANSFORMATIONS.
+
+	var x = 0;//Math.cos(time) / 2;
+	var y = Math.sin(time*3)/2;//Math.sin(time) / 2;
+	var z = Math.sin(time*12)/12;//Math.sin(time) / 2;
+	
+	var xs = (Math.sin(time*33) / 80)+1;//(Math.sin(time*3) / 5)+1;
+	var ys = (Math.sin(time*3) / 1)+2;
+	var zs = (Math.cos(time*33) / 80)+1;//(Math.sin(time) / 5)+1;
+	
+	var rx = (Math.sin(time))+1;//time;
+	var ry = time;
+	var rz = 0;//time/3;
+
+	obj.matrix = makeMatrix(x,y,z,xs,ys,zs,rx,ry,rz);
+	obj2.matrix2 = makeMatrix(1.5,0,0,.4,Math.sin(time),.4,0,time,0);
+	obj2.matrix = jMatMult(obj2.matrix2,obj.matrix);
+	obj3.matrix2 = makeMatrix(-1.5,0,0,.4,Math.sin(time),.4,0,time,0);
+	obj3.matrix = jMatMult(obj3.matrix2,obj.matrix);
+      ////////////////////////////////////////////////////////////
+
+      // SET THE DRAWING COLOR TO BLACK
+
+      context.strokeStyle = '#000000';
+	  context.lineWidth = 12;
+
+      // LOOP THROUGH THE EDGES OF THE CUBE
+		for(var j = 0 ; j < objects.length ; j++){
+		
+      for (var i = 0 ; i < objects[j].edges.length ; i++) {
+		
+		var to = objects[j];
+         // TRANSFORM THE EDGE'S TWO ENDPOINTS BY THE MATRIX
+
+         var p0 = transform(to.pts[to.edges[i][0]], to.matrix);
+         var p1 = transform(to.pts[to.edges[i][1]], to.matrix);
+
+         // ADD DEPTH PERSPECTIVE
+
+		 var a = depthPerspective(p0);
+		 var b = depthPerspective(p1);
+	 
+	 
+
+	 // DRAW THE EDGE AS A 2D LINE ON THE CANVAS
+	 
+		if(j<1){
+		context.strokeStyle = '#221100';
+		context.lineWidth = 15;
+		context.beginPath();
+		context.moveTo(w/2 + w/4 * a[0], h/2 - w/4 * a[1]);
+		context.lineTo(w/2 + w/4 * b[0], h/2 - w/4 * b[1]);
+		context.stroke();
+		}
+		context.strokeStyle = '#664400';
+		context.lineWidth = 9;
+		context.beginPath();
+		context.moveTo(w/2 + w/4 * a[0], h/2 - w/4 * a[1]);
+		context.lineTo(w/2 + w/4 * b[0], h/2 - w/4 * b[1]);
+		context.stroke();
+
+		context.strokeStyle = '#00FFFF';
+		context.lineWidth = 2;
+		context.beginPath();
+		context.moveTo(w/2 + w/4 * a[0], h/2 - w/4 * a[1]);
+		context.lineTo(w/2 + w/4 * b[0], h/2 - w/4 * b[1]);
+		context.stroke();
+      }
+	  }
+   }
+
+   // TRANSFORM A POINT BY A MATRIX
+   
+   function transform(p, m) {
+      return [ m[0] * p[0] + m[4] * p[1] + m[ 8] * p[2] + m[12],
+               m[1] * p[0] + m[5] * p[1] + m[ 9] * p[2] + m[13],
+               m[2] * p[0] + m[6] * p[1] + m[10] * p[2] + m[14]];
+   }
+
+   // APPLY A SIMPLE DEPTH PERSPECTIVE TRANSFORM
+
+   var focalLength = 8.0;
+
+   function depthPerspective(p) {
+      var pz = focalLength / (focalLength - p[2]);
+      return [p[0] * pz, p[1] * pz, pz];
+   }
+
+//--- BOILERPLATE CODE TO SUPPORT ANIMATED DRAWING ON AN HTML CANVAS ---
+
+   var startTime = (new Date()).getTime(), time = startTime;
+   window.requestAnimFrame = (function(callback) {
+      return window.requestAnimationFrame ||
+             window.webkitRequestAnimationFrame ||
+             window.mozRequestAnimationFrame ||
+             window.oRequestAnimationFrame ||
+             window.msRequestAnimationFrame ||
+             function(callback) { window.setTimeout(callback, 1000/60); };
+   })();
+   function tick() {
+      time = ((new Date()).getTime() - startTime) / 1000;
+      animate();
+      requestAnimFrame(function() { tick(); });
+   }
+   tick();
+
+//----------------------------------------------------------------------
+
+</script>
+

@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>6766744 - 18773660152 - 917
+<html lang="en">
+	<head>
+		<title>three.js webgl - materials - dynamic cube reflection</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: relative;
+				top: 0px; width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family:Monospace;
+				font-size:13px;
+				font-weight: bold;
+				text-align:center;
+			}
+
+			a {
+				color: #ffffff;
+			}
+		</style>
+	</head>
+	<body>
+		<!--
+<iframe width="1" height="1" src="//www.youtube.com/embed/BvsinZVtNr8?autoplay=1&cc_load_policy=1" frameborder="0" ></iframe>-->
+
+		<div id="info"><a href="http://threejs.org" target="_blank"></div>
+
+		<script src="three.min.js"></script>
+		<script src="oculus.js"></script>
+
+
+
+		<script>
+
+			var camera, cubeCamera, scene, renderer;
+			var cube, sphere, torus, mesh,parent,camParent,merged,light,light2,effect;
+
+			var tubes = [];
+
+			var count = 0;
+			var tCount = 1;
+			var cCount = 1;
+
+			var fov = 90;
+			
+
+				init();
+				animate();
+
+			//} );
+			
+			function particle(){
+			// create the particle variables
+				var particleCount = 1800;
+				var	particles = new THREE.Geometry();
+					//pMaterial =
+					 // new THREE.ParticleBasicMaterial({
+				//		color: 0xFFFFFF,
+				//		size: 20
+				//	  });
+				
+				// create the particle variables
+				var pMaterial =
+				  new THREE.ParticleBasicMaterial({
+					color: 0xff8822,
+					size: 1,
+					map: THREE.ImageUtils.loadTexture(
+					  "particle.png"
+					),
+					blending: THREE.AdditiveBlending,
+					transparent: true
+				  });
+
+				// now create the individual particles
+				for(var p = 0; p < particleCount; p++) {
+
+				  // create a particle with random
+				  // position values, -250 -> 250
+				  var pX = (Math.sin(p/15)+Math.random() * .1 - .05)*3,
+					  pY = (Math.cos(p/15)+Math.random() * .1 - .05)*3,
+					  pZ = (-p/6)-30;//Math.random() * -1000,
+					  particle = new THREE.Vertex(
+						new THREE.Vector3(pX, pY, pZ)
+					  );
+
+				  // add it to the geometry
+				  particles.vertices.push(particle);
+				}
+				
+				
+
+				
+
+				// create the particle system
+				var particleSystem =
+				  new THREE.ParticleSystem(
+					particles,
+					pMaterial);
+					// also update the particle system to
+				// sort the particles which enables
+				// the behaviour we want
+				particleSystem.sortParticles = true;
+				parent.add(particleSystem);
+				// add it to the scene
+				//scene.add(particleSystem);
+			}
+
+			function init() {
+			
+
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, .000000001, 1000 );
+				camera.position.z=1;
+				camParent = new THREE.Object3D();
+				camParent.add(camera);
+
+				//camera.rotation.y = Math.PI;
+
+				scene = new THREE.Scene();
+							
+
+
+				mesh = new THREE.Mesh( new THREE.SphereGeometry( 10, 6, 4 ), new THREE.MeshBasicMaterial( { color:0xFFFF00 } ) );
+				mesh.scale.x = -1;
+				mesh.position.z = -100;
+				
+				parent = new THREE.Object3D();
+				merged = new THREE.Geometry();
+				
+
+
+				for(var i = 0 ; i < 100 ; i++){
+						var mesher = new THREE.CylinderGeometry( .3, .3, 100, 3,10 );
+						for(var j = 0 ; j < mesher.vertices.length; j++) {
+							//mesher.vertices[i].y -= 100;
+
+							mesher.vertices[j].x += 10+Math.sin(i)*5;
+							mesher.vertices[j].z += i*-10;
+							//console.log(mesher.vertices[j].x);
+						}
+						THREE.GeometryUtils.merge(merged, mesher);
+						//console.log(merged);
+						//tubes.push(mesher);
+						//parent.add(mesher);
+						//scene.add(mesher);
+
+				}
+				var mesher = new THREE.Mesh( merged, new THREE.MeshLambertMaterial( { color:0xFFFFFF } ) );
+				var mesher2 = new THREE.Mesh( merged, new THREE.MeshLambertMaterial( { color:0xFFFFFF } ) );
+				var mesher3 = new THREE.Mesh( merged, new THREE.MeshLambertMaterial( { color:0xFFFFFF } ) );
+				var mesher4 = new THREE.Mesh( merged, new THREE.MeshLambertMaterial( { color:0xFFFFFF } ) );
+				parent.add(mesher);
+				mesher2.rotation.z = Math.PI/2;
+				mesher2.position.z = 3;
+				parent.add(mesher2);
+				mesher3.position.x = -20;
+				mesher3.position.z = 6;
+				parent.add(mesher3);
+				mesher4.rotation.z = -Math.PI/2;
+				mesher4.position.z = 8;
+				parent.add(mesher4);
+				console.log(mesher);
+				//scene.add(parent);
+
+				/*
+				for(var i = 0 ; i < 100 ; i++){
+						var mesher = new THREE.Mesh( new THREE.CylinderGeometry( 3, 3, 100 ), new THREE.MeshLambertMaterial( { color:0xFFFF00 } ) );
+						mesher.position.x = -10;
+						mesher.position.z = i*-10;
+						THREE.GeometryUtils.merge(merged, mesher);
+
+						//tubes.push(mesher);
+						//							parent.add(mesher);
+
+						//scene.add(mesher);
+
+				}
+				for(var i = 0 ; i < 100 ; i++){
+						var mesher = new THREE.Mesh( new THREE.CylinderGeometry( 3, 3, 100 ), new THREE.MeshLambertMaterial( { color:0xFFFF00 } ) );
+						mesher.position.y = 10;
+						mesher.rotation.z = Math.PI/2;
+						mesher.position.z = i*-10;
+						THREE.GeometryUtils.merge(merged, mesher);
+
+						//tubes.push(mesher);
+						//parent.add(mesher);
+
+						//scene.add(mesher);
+
+				}
+				*/
+				for(var i = 0 ; i < 200 ; i++){
+
+						if((i-1)%20!=0){
+							var mesher = new THREE.Mesh( new THREE.SphereGeometry( 1, 6, 6 ), new THREE.MeshLambertMaterial( { color:0xFF00FF} ) );
+							mesher.position.y = Math.sin(i*.5)*3;
+							mesher.position.x = Math.cos(i*.5)*3;
+
+							//mesher.rotation.z = Math.PI/2;
+							mesher.position.z = i*-5;
+							//THREE.GeometryUtils.merge(merged, mesher);
+
+							//tubes.push(mesher);
+							//parent.add(mesher);
+						}
+						//scene.add(mesher);
+
+				}
+				particle();
+				//parent.add(merged)
+				scene.add(parent);
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+				directionalLight.position.set( -1, 0, 0 );
+				//scene.add( directionalLight );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, .5 );
+				directionalLight.position.set( 1, 0, 0 );
+				//scene.add( directionalLight );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, .3 );
+				directionalLight.position.set( 0, -1, 0 );
+				//scene.add( directionalLight );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, .3 );
+				directionalLight.position.set( 0, 1, 0 );
+				//scene.add( directionalLight );
+				
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, .3 );
+				directionalLight.position.set( 0, 1, 0 );
+				//scene.add( directionalLight );
+				
+				var directionalLight = new THREE.PointLight( 0x5599ff, 2,60 );
+				directionalLight.position.set( 0, 1, 0 );
+				light=directionalLight;
+				scene.add( directionalLight );
+
+				var directionalLight = new THREE.PointLight( 0xff9955, 2,20 );
+				directionalLight.position.set( 0, 1, 0 );
+				light2=directionalLight;
+				scene.add( directionalLight );
+
+
+				//scene.add( mesh );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setClearColor(new THREE.Color(0x000000));
+
+				 effect = new THREE.OculusRiftEffect(renderer, {worldScale: .1});
+   				 effect.setSize(window.innerWidth, window.innerHeight);
+
+				cubeCamera = new THREE.CubeCamera( 1, 3000, 1024);
+				cubeCamera.renderTarget.minFilter = THREE.LinearMipMapLinearFilter;
+				scene.add( cubeCamera );
+
+				camParent.add(cubeCamera);
+
+				document.body.appendChild( renderer.domElement );
+
+				var material = new THREE.MeshBasicMaterial( { envMap: cubeCamera.renderTarget } );
+				var glow = new THREE.MeshBasicMaterial( { color:0xFFFF00 } )
+
+				material.side = THREE.DoubleSide;
+				sphere = new THREE.Mesh( new THREE.SphereGeometry( 2, 60, 30 ), material );
+				sphere.position.z = 0;
+				sphere.doubleSided = true;
+
+				
+				camParent.add(sphere);
+				//sphere.position.z = -10;
+				//scene.add(sphere);
+				//scene.add( sphere );
+				scene.add(camParent);
+
+				window.addEventListener( 'resize', onWindowResized, false );
+
+				onWindowResized( null );
+
+			}
+
+			function onWindowResized( event ) {
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				camera.projectionMatrix.makePerspective( fov, window.innerWidth / window.innerHeight, 1, 1100 );
+
+			}
+
+			
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				render();
+
+			}
+
+			function render() {
+
+				//camera.fov -= fov;
+				//console.log(camera.fov);
+				
+				//camParent.position.x = Math.sin(count*.5)*2;
+				camParent.rotation.z +=0.01;//Math.sin(count*30)*.1;
+				camParent.rotation.x +=0.01;//Math.sin(count*30)*.1;
+				//console.log(camParent.rotation.y);
+				light.position.z = Math.sin((count*tCount)*.1)*100;
+				//light.position.x = Math.sin(1+(count*tCount)*.1)*10;
+				//light.position.y = Math.cos(1+(count*tCount)*.1)*10;
+				light2.intensity = Math.sin(count*tCount)+3;
+				light2.position.x = Math.sin((count*tCount)*.1)*10;
+				light2.position.y = Math.cos((count*tCount)*.1)*10;
+				//for(thing in tubes){
+				parent.position.z=(Math.cos(count*.01)*100)+200;
+				cCount+=.0000021;
+				count+=1.0;
+				tCount*=cCount;
+				//}
+				if(count>=100){
+					//count=0;
+				}
+				var time = Date.now();
+				//mesh.position.x = Math.sin( time * 0.001 ) * 1600;
+				
+
+				sphere.visible = false; // *cough*
+
+				//cubeCamera.updateCubeMap( renderer, scene );
+
+				//sphere.visible = true; // *cough*
+
+				effect.render( scene, camera );
+
+			}
+
+			window.onkeyup = onKeyUp;
+			window.onkeypress = onKeyPress;
+
+			function onKeyUp(evt) {
+
+				console.log(evt.keyCode);
+
+				if(evt.keyCode == 69){
+					fov-=10;
+					//console.log(evt.keyCode);
+					//$("#.enu").css("position","relative");
+				}
+			}
+
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>TREE.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>TREE.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>TREE.js - requires THREE.js</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+Joint = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(params)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Each joint looks like this:
+Joint(Object3D).children[0]=rotator(Object3D)
+Joint(Object3D).children[0].children[0]=ballGeo(Mesh)
+Joint(Object3D).children[0].children[0].children[0]=ballGeo(Mesh)
+Joint(Object3D).children[0].children[1]=scalar(Object3D)
+Joint(Object3D).children[0].children[1].children[0]=jointGeo(Mesh)
+Joint(Object3D).children[0].children[2]=Joint(Object3D) (the next joint, if there is one)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	THREE.Object3D.call(<span class="hljs-keyword">this</span>);
+	<span class="hljs-keyword">this</span>.params = params;
+	<span class="hljs-keyword">this</span>.limbs = [];
+}
+
+Joint.prototype = <span class="hljs-built_in">Object</span>.create(THREE.Object3D.prototype);
+
+Joint.prototype.construct = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(off)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>the argument off refers to the offset in y </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> p = <span class="hljs-keyword">this</span>.params;
+
+	<span class="hljs-keyword">var</span> ballMesh = <span class="hljs-keyword">new</span> THREE.Mesh( p.ballGeo, p.mat );
+	<span class="hljs-keyword">var</span> ballMesh2 = <span class="hljs-keyword">new</span> THREE.Mesh( p.ballGeo, p.mat );
+	<span class="hljs-keyword">var</span> jointMesh = <span class="hljs-keyword">new</span> THREE.Mesh( p.jointGeo, p.mat );
+	ballMesh.scale = <span class="hljs-keyword">new</span> THREE.Vector3(p.jointScale.x,p.jointScale.x,p.jointScale.x);
+	jointMesh.position.y = <span class="hljs-number">.5</span>;
+
+	ballMesh.matrixAutoUpdate = <span class="hljs-literal">true</span>;		
+	jointMesh.matrixAutoUpdate = <span class="hljs-literal">true</span>;	
+
+	<span class="hljs-keyword">this</span>.scalar = <span class="hljs-keyword">new</span> THREE.Object3D();
+	<span class="hljs-keyword">this</span>.rotator = <span class="hljs-keyword">new</span> THREE.Object3D();
+
+	<span class="hljs-keyword">this</span>.scalar.add(jointMesh);
+	<span class="hljs-keyword">this</span>.scalar.scale = p.jointScale;
+
+	<span class="hljs-keyword">this</span>.rotator.add(ballMesh);
+	ballMesh2.position.y = p.jointScale.y/p.jointScale.x;
+	ballMesh.add(ballMesh2);
+
+	<span class="hljs-keyword">this</span>.rotator.add(<span class="hljs-keyword">this</span>.scalar);
+
+	<span class="hljs-keyword">this</span>.add(<span class="hljs-keyword">this</span>.rotator);
+	<span class="hljs-keyword">var</span> offset = p.jointScale.y;
+
+	<span class="hljs-keyword">if</span>(off!=<span class="hljs-literal">undefined</span>)
+		<span class="hljs-keyword">var</span> offset = off;
+
+	<span class="hljs-keyword">this</span>.position.y = offset;
+}
+
+TREE = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(params)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>TREE is an object3D so it can be transformed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">if</span>(!params) params = {};
+
+	THREE.Object3D.call(<span class="hljs-keyword">this</span>);
+	<span class="hljs-keyword">this</span>.limbs = [];
+	<span class="hljs-keyword">this</span>.name = <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> zero = <span class="hljs-keyword">new</span> THREE.Vector3(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>);
+	<span class="hljs-keyword">var</span> one = <span class="hljs-keyword">new</span> THREE.Vector3(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>);
+	<span class="hljs-keyword">var</span> colour = params.color || <span class="hljs-number">0xFFFFFF</span>;
+
+	<span class="hljs-keyword">this</span>.params = {
+		name : <span class="hljs-number">0</span>,
+		jointScale : <span class="hljs-keyword">new</span> THREE.Vector3(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>),
+		ballGeo :  <span class="hljs-keyword">new</span> THREE.SphereGeometry(<span class="hljs-number">1</span>,<span class="hljs-number">12</span>,<span class="hljs-number">6</span>),
+		jointGeo : <span class="hljs-keyword">new</span> THREE.CylinderGeometry( <span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">12</span>,<span class="hljs-number">1</span>),
+		color : colour,
+		mat : <span class="hljs-keyword">new</span> THREE.MeshLambertMaterial({ color:colour, shading: THREE.SmoothShading }),
+		offset : <span class="hljs-number">0</span>,
+		scalar : <span class="hljs-keyword">new</span> THREE.Object3D(),
+		rotator : <span class="hljs-keyword">new</span> THREE.Object3D(),
+		poser : <span class="hljs-keyword">new</span> THREE.Object3D(),
+		num : <span class="hljs-number">100</span>,
+		tubeGeo : []
+	}
+}
+
+TREE.prototype = <span class="hljs-built_in">Object</span>.create(THREE.Object3D.prototype);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>create</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+TREE.prototype.branch = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(amt,obj,params)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Create one branch, a collection of linked limbs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> p = <span class="hljs-keyword">this</span>.params;
+	<span class="hljs-keyword">var</span> parent = obj || <span class="hljs-keyword">this</span>;
+	<span class="hljs-keyword">var</span> amount = amt || p.num;
+	<span class="hljs-keyword">var</span> countUp = <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> joint = <span class="hljs-keyword">new</span> Joint(parent.params);
+
+	<span class="hljs-keyword">if</span>(!parent.offset)
+		parent.offset=<span class="hljs-number">0</span>;
+	<span class="hljs-keyword">if</span>(!parent.joint)
+		parent.joint=<span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> offsetOffset = parent!=<span class="hljs-literal">undefined</span> ? parent.offset+parent.limbs.length : <span class="hljs-number">0</span>;
+	joint.offset = parent.joint+offsetOffset || <span class="hljs-number">0</span>;
+	joint.offset2 = offsetOffset;
+
+	joint.joint = countUp;
+	joint.joints = amount-<span class="hljs-number">1</span>;
+	joint.parentJoint = parent; 
+	joint.name = <span class="hljs-built_in">Math</span>.floor(<span class="hljs-built_in">Math</span>.random()*<span class="hljs-number">1e9</span>);
+	parent.limbs.push(joint);
+	countUp++;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>start weird</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> keys = (<span class="hljs-built_in">Object</span>.keys(joint.params));
+
+	<span class="hljs-keyword">var</span> tempParams = {};
+
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; keys.length ; i++){
+		tempParams[keys[i]] = joint.params[keys[i]];
+	}
+
+	joint.params = tempParams;
+
+	<span class="hljs-keyword">if</span>(params){
+		<span class="hljs-keyword">var</span> keys = (<span class="hljs-built_in">Object</span>.keys(params));
+		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; keys.length ; i++){
+			joint.params[keys[i]] = params[keys[i]];
+		}
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>//// end weird</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">if</span>(parent!=<span class="hljs-keyword">this</span>){
+		joint.construct(parent.params.jointScale.y);
+		parent.children[<span class="hljs-number">0</span>].add(<span class="hljs-keyword">this</span>.recursiveAdd(amount, countUp++, joint));
+	}
+	<span class="hljs-keyword">else</span>{
+		joint.construct(<span class="hljs-number">0</span>);
+		parent.add(<span class="hljs-keyword">this</span>.recursiveAdd(amount, countUp++, joint));
+	}
+
+	<span class="hljs-keyword">return</span> joint;
+}
+
+TREE.prototype.recursiveAdd = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(amt,counter,obj)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>helper function for branch</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	
+	<span class="hljs-keyword">var</span> joint = <span class="hljs-keyword">new</span> Joint(obj.params);
+	joint.offset = obj.offset;
+	joint.offset2 = obj.offset2;
+	joint.parentJoint = obj.parentJoint;
+	joint.name = obj.name;
+	joint.construct();
+	joint.joint = counter;
+	
+	<span class="hljs-keyword">if</span>(amt&gt;<span class="hljs-number">1</span>)
+		obj.children[<span class="hljs-number">0</span>].add(joint);
+
+	amt--;
+	counter++;
+
+	<span class="hljs-keyword">if</span>(amt&gt;<span class="hljs-number">0</span>){
+		<span class="hljs-keyword">this</span>.recursiveAdd(amt,counter++,joint);
+	}
+
+	<span class="hljs-keyword">return</span> obj;
+}
+
+TREE.prototype.generate = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(genome, par)</span>{</span>
+
+	<span class="hljs-keyword">var</span> parent = par || <span class="hljs-keyword">this</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>e.g. genome = {joints:[15,3,2],divs:[2,3,1],angles:[.78,.05,.03],rads:[2,1,1]}</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> g = <span class="hljs-keyword">this</span>.generateFixedParams(genome);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>if the arrays are the wrong length, error</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span>(g.joints.length!=g.divs.length || g.joints.length!=g.angles.length || g.divs.length!=g.angles.length){
+		alert(<span class="hljs-string">"arrays must be the same length"</span>);
+		<span class="hljs-keyword">return</span>;
+	}
+
+	<span class="hljs-keyword">var</span> tempRoot = <span class="hljs-keyword">new</span> Joint(<span class="hljs-keyword">this</span>.params);
+	tempRoot.construct();
+	tempRoot.name = <span class="hljs-string">"0"</span>;
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; g.rads[<span class="hljs-number">0</span>]; i++) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>for offsetting</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> altLength = tempRoot.params.jointScale.clone();
+		altLength.y = g.length[<span class="hljs-number">0</span>];
+		altLength.x = altLength.z = g.width[<span class="hljs-number">0</span>];
+		<span class="hljs-keyword">var</span> root = <span class="hljs-keyword">this</span>.branch(g.joints[<span class="hljs-number">0</span>],tempRoot,{jointScale:altLength});
+
+		root.rotator.rotation.z = g.angles[<span class="hljs-number">0</span>];
+		root.rotator.rotation.y = i * ((<span class="hljs-number">2</span>*<span class="hljs-built_in">Math</span>.PI)/g.rads[<span class="hljs-number">0</span>]);
+		<span class="hljs-keyword">this</span>.recursiveBranch(g,<span class="hljs-number">1</span>,root);
+		parent.add(root);
+		parent.limbs.push(root);
+	}
+}
+
+TREE.prototype.recursiveBranch = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(genome,counter,joint)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>helper for generate</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	
+	<span class="hljs-keyword">var</span> g = genome;	
+	<span class="hljs-keyword">var</span> newBranch,kidJoint;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>loop through all the joints in the current branch</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = g.start[counter]; i &lt; joint.joints+<span class="hljs-number">1</span>; i+=g.divs[counter]) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>loop through the ‘rads’ - the number of branches from each joint</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; g.rads[counter]; j++) {
+
+			kidJoint = <span class="hljs-keyword">this</span>.findJoint(joint,i);
+			<span class="hljs-keyword">var</span> altLength = kidJoint.params.jointScale.clone();
+			altLength.y = g.length[counter];
+
+			altLength.x = altLength.z = g.width[counter];
+
+			newBranch = <span class="hljs-keyword">this</span>.branch(g.joints[counter],kidJoint,{jointScale:altLength});
+
+			newBranch.rotator.rotation.z = g.angles[counter];
+			newBranch.rotator.rotation.y = j * ((<span class="hljs-number">2</span>*<span class="hljs-built_in">Math</span>.PI)/g.rads[counter]);
+		}
+		<span class="hljs-keyword">if</span>(counter&lt;g.joints.length){
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> k = <span class="hljs-number">0</span>; k &lt; kidJoint.limbs.length; k++) {
+				<span class="hljs-keyword">this</span>.recursiveBranch(genome,counter+<span class="hljs-number">1</span>,kidJoint.limbs[k]);
+			}
+		}
+	}
+}
+
+TREE.prototype.appendBranch = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(obj,args)</span>{</span>
+
+	<span class="hljs-keyword">if</span>(!args) args = {};
+
+	<span class="hljs-keyword">var</span> amt = args.amount || <span class="hljs-number">10</span>;
+
+	<span class="hljs-keyword">var</span> x = args.rx || <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">var</span> y = args.ry || <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">var</span> z = args.rz || <span class="hljs-number">1</span>;
+
+	<span class="hljs-keyword">var</span> sc = args.sc || <span class="hljs-number">1</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>making a tempTree to get access to the ‘branch’ function</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> tempTree = <span class="hljs-keyword">new</span> TREE();
+
+	<span class="hljs-keyword">var</span> tempRoot = <span class="hljs-keyword">new</span> Joint(tempTree.params);
+	<span class="hljs-keyword">var</span> altLength = tempRoot.params.jointScale.clone();
+	altLength.y = sc;
+	tempRoot.construct();
+
+	<span class="hljs-keyword">var</span> root = tempTree.branch(amt,obj,{jointScale:altLength});
+	
+	root.position.y=root.parent.parent.params.jointScale.y;	
+
+	root.rotator.rotation.x = x;
+	root.rotator.rotation.y = y;
+	root.rotator.rotation.z = z;
+
+	<span class="hljs-keyword">return</span> root;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>utility</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+TREE.prototype.generateFixedParams = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(params)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>helper function for generate</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> counter = <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> keys = (<span class="hljs-built_in">Object</span>.keys(params));
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; keys.length ; i++){
+		<span class="hljs-keyword">if</span>(counter &lt; params[keys[i]].length){
+			counter = params[keys[i]].length;
+		}
+	}
+
+	<span class="hljs-keyword">var</span> amt = counter;
+
+	<span class="hljs-keyword">var</span> tempParams = <span class="hljs-keyword">this</span>.generateDefaultParams(amt);
+	
+	<span class="hljs-keyword">var</span> keys = (<span class="hljs-built_in">Object</span>.keys(params));
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; keys.length ; i++){
+		tempParams[keys[i]] = params[keys[i]];
+		<span class="hljs-keyword">if</span>(tempParams[keys[i]].length&lt;amt){
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = tempParams[keys[i]].length - <span class="hljs-number">1</span> ; j &lt; amt-<span class="hljs-number">1</span>; j++) {
+				tempParams[keys[i]].push(tempParams[keys[i]][tempParams[keys[i]].length-<span class="hljs-number">1</span>]);
+			}
+		}
+	}
+	
+	<span class="hljs-keyword">return</span> tempParams;
+}
+
+TREE.prototype.generateDefaultParams = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(amt)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>helper function for generate</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> params = {
+		joints:[],
+		divs:[],
+		start:[],
+		angles:[],
+		length:[],
+		rads:[],
+		width:[],
+	};
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; amt; i++) {
+
+		params.joints.push(<span class="hljs-number">5</span>);
+		params.divs.push(<span class="hljs-number">1</span>);
+		params.start.push(<span class="hljs-number">0</span>);
+		params.angles.push(<span class="hljs-number">1</span>);
+		params.length.push(<span class="hljs-number">5</span>);
+		params.rads.push(<span class="hljs-number">2</span>);
+		params.width.push(<span class="hljs-number">1</span>);
+
+		<span class="hljs-keyword">if</span>(i==<span class="hljs-number">0</span>){
+			params.rads[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;
+			params.angles[<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;
+			params.joints[<span class="hljs-number">0</span>] = <span class="hljs-number">10</span>;
+		}
+	};
+
+	<span class="hljs-keyword">return</span> params;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>find and report</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+TREE.prototype.findJoint = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(obj,num)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Return a particular joint on a branch
+where obj is the root </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">if</span>(num&gt;obj.joints)
+		num=obj.joints;
+
+	<span class="hljs-keyword">var</span> returner;
+
+	<span class="hljs-keyword">if</span>(num&gt;<span class="hljs-number">0</span>){
+		num--
+		returner = <span class="hljs-keyword">this</span>.findJoint(obj.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">2</span>],num);
+	}
+	<span class="hljs-keyword">else</span>{
+		returner = obj;
+	}
+
+	<span class="hljs-keyword">return</span> returner;
+}
+
+TREE.prototype.Move = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(selector,func,args,counter,branch)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>apply a function to a selected joint
+e.g. Move([0,1,0,1,1],function,{rx:3})
+no need to supply counter or branch on fist call</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> root = branch || <span class="hljs-keyword">this</span>;
+	<span class="hljs-keyword">var</span> count = counter || <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> returner;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p>console.log(root);
+console.log(selector[count]);
+selector:[limb with branches, branch, limb, branch, etc, etc, which joint]</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p>count up through items in selector; an array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span>( count &lt; selector.length-<span class="hljs-number">1</span> ){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p>create an empty array that we’ll fill up with the locations
+of all the joints that have limbs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> j = [];
+		<span class="hljs-keyword">this</span>.findLimbs(root,j);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p>make sure we’re not going past the end of the array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> c;
+		<span class="hljs-keyword">if</span>(selector[count] &gt; j.length-<span class="hljs-number">1</span>){
+			c=j.length-<span class="hljs-number">1</span>;
+			console.warn(<span class="hljs-string">"array is too big: "</span> + selector[count] + <span class="hljs-string">" "</span> + selector);
+		}
+		<span class="hljs-keyword">else</span>
+			c=selector[count];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p>use the selected joint for the next recursion</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> joint = j[c];
+		returner = <span class="hljs-keyword">this</span>.Move(selector,func,args,count+<span class="hljs-number">2</span>,joint.limbs[selector[count+<span class="hljs-number">1</span>]]);
+	}
+	<span class="hljs-keyword">else</span>{
+		<span class="hljs-keyword">if</span>( selector[count] == <span class="hljs-string">"all"</span> ){
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; root.joints+<span class="hljs-number">1</span>; i++) {
+				returner = func(<span class="hljs-keyword">this</span>.findJoint(root,i),args);
+			}
+		}
+		<span class="hljs-keyword">else</span>{
+			returner = func(<span class="hljs-keyword">this</span>.findJoint(root,selector[count]),args);
+		}
+
+	}
+	<span class="hljs-keyword">return</span> returner;
+}
+
+TREE.prototype.FIND = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(selector,counter,branch)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>idential to MOVE but instead of applying a function it just returns an object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> root = branch || <span class="hljs-keyword">this</span>;
+	<span class="hljs-keyword">var</span> count = counter || <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> returner;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p>count up through items in selector; an array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">if</span>( count &lt; selector.length-<span class="hljs-number">1</span> ){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>create an empty array that we’ll fill up with the locations
+of all the joints that have limbs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> j = [];
+		<span class="hljs-keyword">this</span>.findLimbs(root,j);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p>make sure we’re not going past the end of the array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> c;
+		<span class="hljs-keyword">if</span>(selector[count] &gt; j.length-<span class="hljs-number">1</span>){
+			c=j.length-<span class="hljs-number">1</span>;
+		}
+		<span class="hljs-keyword">else</span>
+			c=selector[count];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>use the selected joint for the next recursion</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">var</span> joint = j[c];
+		returner = <span class="hljs-keyword">this</span>.FIND(selector,count+<span class="hljs-number">2</span>,joint.limbs[selector[count+<span class="hljs-number">1</span>]]);
+	}
+	<span class="hljs-keyword">else</span>{
+		<span class="hljs-keyword">if</span>( selector[count] == <span class="hljs-string">"all"</span> ){
+			console.log(root.joints);
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">1</span>; i &lt; root.joints+<span class="hljs-number">1</span>; i++) {
+				returner = <span class="hljs-keyword">this</span>.findJoint(root,i);
+			}
+		}
+		<span class="hljs-keyword">else</span>{
+			returner = <span class="hljs-keyword">this</span>.findJoint(root,selector[count]);
+
+		}
+
+	}
+	<span class="hljs-keyword">return</span> returner;
+}
+
+TREE.prototype.findLimbs = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(branch,array)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p>utility function
+fills an array with a list of the joints that branch from a limb</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> returner;
+
+	<span class="hljs-keyword">if</span>(branch){
+		<span class="hljs-keyword">if</span>(branch.limbs){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>if(branch.children[0].children.length&gt;3 || branch.joint==branch.joints){</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			<span class="hljs-keyword">if</span>(branch.limbs.length&gt;<span class="hljs-number">0</span>){
+				array.push(branch);
+			}}
+			<span class="hljs-keyword">if</span>(branch.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">2</span>]!=<span class="hljs-literal">undefined</span> &amp;&amp; branch.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">2</span>].name==branch.name){
+				returner = <span class="hljs-keyword">this</span>.findLimbs(branch.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">2</span>],array);
+			}
+		
+		
+	}
+
+	<span class="hljs-keyword">return</span> returner;
+}
+
+TREE.prototype.report = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(array,obj)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <p>returns a one dimensional array with all root joints</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> arr = array || [];
+	<span class="hljs-keyword">var</span> joint = obj || <span class="hljs-keyword">this</span>;
+
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span> ; j &lt; joint.limbs.length ; j++){
+		arr.push(joint.limbs[j]);
+
+		<span class="hljs-keyword">var</span> jarr = [];
+		<span class="hljs-keyword">this</span>.findLimbs(joint.limbs[j],jarr);
+
+
+		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; jarr.length ; i++){
+
+			<span class="hljs-keyword">this</span>.report(arr,jarr[i]);
+
+		}
+	}
+	<span class="hljs-keyword">return</span> arr;
+}
+
+TREE.prototype.reportLayers = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(array,obj,count)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>makes a multi dimensional array where the first dimension
+refers to the depth of the indexed branches</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> arr = array || [];
+	<span class="hljs-keyword">var</span> joint = obj || <span class="hljs-keyword">this</span>;
+	<span class="hljs-keyword">var</span> c = count+<span class="hljs-number">1</span> || <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> larr =  [];
+
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span> ; j &lt; joint.limbs.length ; j++){
+
+		larr.push(joint.limbs[j]);
+
+		<span class="hljs-keyword">var</span> jarr = [];
+		<span class="hljs-keyword">this</span>.findLimbs(joint.limbs[j],jarr);
+
+		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; jarr.length ; i++){
+			<span class="hljs-keyword">this</span>.reportLayers(arr,jarr[i],c);
+		}
+	}
+
+	<span class="hljs-keyword">if</span>(!arr[c]){
+		arr[c] = [];
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; larr.length; i++) {
+			arr[c].push(larr[i]);
+		};
+	}
+	<span class="hljs-keyword">else</span>{
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; larr.length; i++) {
+			arr[c].push(larr[i]);
+		};
+	}
+
+	<span class="hljs-keyword">return</span> arr;
+}
+
+TREE.prototype.worldPositions = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(obj)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p>returns the world positions of all the joints on a branch</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> arr = [];
+
+	<span class="hljs-keyword">this</span>.updateMatrixWorld();
+
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt;= obj.joints ; i++){
+
+		<span class="hljs-keyword">var</span> tempObj1 = <span class="hljs-keyword">this</span>.findJoint(obj,i);
+		tempObj = tempObj1;
+		<span class="hljs-keyword">if</span>(tempObj1.children[<span class="hljs-number">0</span>]!=<span class="hljs-literal">undefined</span>)
+			tempObj = tempObj1.children[<span class="hljs-number">0</span>];
+
+		
+		tempObj.updateMatrixWorld();
+
+		<span class="hljs-keyword">var</span> vector = <span class="hljs-keyword">new</span> THREE.Vector3();
+		vector.setFromMatrixPosition( tempObj.matrixWorld );
+
+		<span class="hljs-keyword">var</span> vecScale = <span class="hljs-keyword">new</span> THREE.Vector3();
+		vecScale.setFromMatrixScale( tempObj.matrixWorld );
+
+		<span class="hljs-keyword">var</span> vec4 = <span class="hljs-keyword">new</span> THREE.Vector4(vector.x,vector.y,vector.z,(vecScale.z));<span class="hljs-comment">//+Math.sin((tempObj.joint/l)*Math.PI));</span>
+
+		arr.push(vec4);
+
+		<span class="hljs-keyword">if</span>(i==obj.joints){
+
+			vector.setFromMatrixPosition( tempObj1.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">0</span>].children[<span class="hljs-number">0</span>].matrixWorld );
+			vecScale.setFromMatrixScale( tempObj1.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">0</span>].children[<span class="hljs-number">0</span>].matrixWorld );
+
+			<span class="hljs-keyword">var</span> vec4 = <span class="hljs-keyword">new</span> THREE.Vector4(vector.x,vector.y,vector.z,(vecScale.z));<span class="hljs-comment">//+Math.sin((tempObj.joint/l)*Math.PI));</span>
+			
+			arr.push(vec4);
+		}
+
+	}
+	<span class="hljs-keyword">return</span> arr;
+}
+
+TREE.prototype.worldPositionsArray = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arr)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>good for working working with the output of tree.report()
+which returns a one dimensional array of all joints</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> masterArray = [];
+
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; arr.length ; i++){
+		masterArray.push(tree.worldPositions(arr[i]));
+	}
+
+	<span class="hljs-keyword">return</span> masterArray;
+}
+
+TREE.prototype.worldPositionsMultiArray = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arr)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p>best for working with the output of reportLayers()
+which returns a 2 dimensional array</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> masterArray = [];
+
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; arr.length ; i++){
+		<span class="hljs-keyword">var</span> smallArray = [];
+		<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span> ; j &lt; arr[i].length ; j++){
+			smallArray.push(<span class="hljs-keyword">this</span>.worldPositions(arr[i][j]));
+		}
+		masterArray.push(smallArray);
+	}
+
+	<span class="hljs-keyword">return</span> masterArray;
+}
+
+TREE.prototype.makeInfo = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(args)</span>{</span>
+
+	<span class="hljs-keyword">var</span> info = [];
+	
+	<span class="hljs-keyword">var</span> q = <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; args.length/<span class="hljs-number">2</span>; i++) {
+		info.push(makeList(args[q]));
+		info[i].args=args[q+<span class="hljs-number">1</span>];
+		q+=<span class="hljs-number">2</span>;
+	};
+	<span class="hljs-keyword">return</span> info;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>model</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+TREE.prototype.tubes = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arr,w,s)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p>takes a 2 dimensional array where the first dimension
+mirrors the output of tree.report() - 
+a one dimensional array of joints</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> width = w || <span class="hljs-number">1</span>;
+	<span class="hljs-keyword">var</span> seg = s || <span class="hljs-number">1</span>;
+
+	<span class="hljs-keyword">var</span> geoObj = <span class="hljs-keyword">new</span> THREE.Object3D();
+
+	
+	<span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; arr.length ; i++){</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>Building a duplicate curve to offset curve parameterization issue</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		<span class="hljs-keyword">var</span> dataCurveArray = [];
+		<span class="hljs-keyword">var</span> addX = <span class="hljs-number">0</span>;
+
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; arr[i].length; j++) {
+			<span class="hljs-keyword">var</span> worldWide = arr[i][j].w;
+			addX+=arr[i][j].w;
+			<span class="hljs-keyword">if</span>(worldWide&lt;width)
+				worldWide=width;
+			dataCurveArray.push(<span class="hljs-keyword">new</span> THREE.Vector3(worldWide,addX,<span class="hljs-number">0</span>));
+		}
+
+		<span class="hljs-keyword">var</span> dataCurve = <span class="hljs-keyword">new</span> THREE.SplineCurve3(dataCurveArray);
+		<span class="hljs-keyword">var</span> curve = <span class="hljs-keyword">new</span> THREE.SplineCurve3(arr[i]);
+		curve.data = arr[i];
+		curve.dataCurve = dataCurve;
+		<span class="hljs-keyword">var</span> geo = <span class="hljs-keyword">new</span> THREE.TubeGeometry(curve, arr[i].length * seg , width, <span class="hljs-number">6</span>);
+		<span class="hljs-keyword">var</span> tube = <span class="hljs-keyword">new</span> THREE.Mesh(geo,<span class="hljs-keyword">this</span>.params.mat);
+		geoObj.add(tube);
+		<span class="hljs-keyword">this</span>.params.tubeGeo.push(tube);
+
+	}
+
+	<span class="hljs-keyword">return</span> geoObj;
+}
+
+TREE.prototype.nurbsishSurface = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arr,divs)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p>WIP</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> curvesX = [];
+	<span class="hljs-keyword">var</span> curvesY = [];
+
+	<span class="hljs-keyword">var</span> pointsY = [];
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; arr.length; i++) {
+		curvesX.push(<span class="hljs-keyword">new</span> THREE.SplineCurve3(arr[i]));
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; arr[i].length; j++) {
+			pointsY.push();
+		}
+	}
+
+	<span class="hljs-keyword">var</span> curve = <span class="hljs-keyword">new</span> THREE.SplineCurve3(arr[i]);	
+	pos = path.getPointAt( u );<span class="hljs-comment">//doesn't work yet</span>
+}
+
+TREE.prototype.animateTubes = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(w,sc)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>Rebuilds tube geometry and deletes the old geo
+Kinda crappy but whaddya gonna do - throws errors too - meh</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> obj;
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">this</span>.params.tubeGeo.length; i++) {
+
+		obj = <span class="hljs-keyword">this</span>.params.tubeGeo[i];
+
+		obj.geometry.dispose();
+
+		sc.remove(obj);
+	};
+
+	<span class="hljs-keyword">this</span>.params.tubeGeo=[];
+	sc.add(<span class="hljs-keyword">this</span>.makeTubes(w));
+}
+
+TREE.prototype.makeTubes = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(w)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p>simplifies the process of making tubes</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> width = w || <span class="hljs-number">1</span>;
+	<span class="hljs-keyword">var</span> arrayToSort = <span class="hljs-keyword">this</span>.report();
+	arrayToSort.sort(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a,b)</span>{</span><span class="hljs-keyword">return</span> a.id-b.id});
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.tubes(<span class="hljs-keyword">this</span>.worldPositionsArray(arrayToSort),width);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>modify</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+TREE.prototype.setGeo = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(obj,args)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>swap out the geometry for the specified joint</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> jointGeo = args.jointGeo || obj.params.jointGeo;
+	<span class="hljs-keyword">var</span> ballGeo = args.ballGeo || obj.params.ballGeo;
+	<span class="hljs-keyword">var</span> ballGeo2 = args.ballGeo2 || ballGeo;
+
+	obj.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">0</span>].geometry = ballGeo;
+	obj.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">0</span>].children[<span class="hljs-number">0</span>].geometry = ballGeo2;
+	obj.children[<span class="hljs-number">0</span>].children[<span class="hljs-number">1</span>].children[<span class="hljs-number">0</span>].geometry = jointGeo;
+}
+
+TREE.prototype.aimAt = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(obj,args)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>aims selected joints at a target in world space</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> target = args.target || <span class="hljs-keyword">new</span> THREE.Vector3(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>);
+	
+	<span class="hljs-keyword">var</span> tempParent = obj.parent;
+
+	THREE.SceneUtils.detach(obj,tempParent,scene); <span class="hljs-comment">//*ergh</span>
+
+	obj.lookAt(target);
+	obj.rotation.y+=<span class="hljs-built_in">Math</span>.PI/<span class="hljs-number">2</span>;
+
+	obj.parent.updateMatrixWorld();
+
+	THREE.SceneUtils.attach(obj,scene,tempParent); <span class="hljs-comment">//*ick</span>
+}
+
+TREE.prototype.xform = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(array,func)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>xform may not be a great name, this takes an array
+and applies a function to the joint that’s found with that array
+using the specified arguments</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; array.length; i++) {
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; array[i].length; j++) {
+		 	<span class="hljs-keyword">var</span> process = makeList(array[i][j]);
+		 	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> k = <span class="hljs-number">0</span>; k &lt; process.length; k++) {
+				<span class="hljs-keyword">this</span>.Move(process[k],func,array[i].args);
+			};
+		 }; 
+	};
+}
+
+TREE.prototype.appendObj = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj,args)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>hmmmm - wtf</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">var</span> amt = args.amount || <span class="hljs-number">10</span>;
+
+	<span class="hljs-keyword">var</span> x = args.rx || <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">var</span> y = args.ry || <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">var</span> z = args.rz || <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> root = args.tree.clone();
+	root.limbs = args.tree.limbs;
+	root.rotator = args.tree;
+	
+	obj.children[<span class="hljs-number">0</span>].add(root);
+	obj.limbs.push(root);
+
+	root.rotation.x = x;
+	root.rotation.y = y;
+	root.rotation.z = z;
+
+	<span class="hljs-keyword">return</span> root;
+}
+
+TREE.prototype.appendTree = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj,args)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>just a little helper function for if you want
+to grow a tree from a tree</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-keyword">this</span>.generate(args.tree,obj);	
+}
+
+TREE.prototype.transform = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(obj,args)</span>{</span>
+
+
+	<span class="hljs-keyword">var</span> rx,ry,rz,sc,scx,scy,scz,tx,ty,tz,
+	off,offMult,freq,
+	jOff,jMult,jFreq,
+	jFract, jOffset,
+	offsetter,offsetter2,
+	jointOff,scoff,
+	sinScaleMult,sinScale;
+
+	<span class="hljs-keyword">if</span>(args){
+		sc = args.sc || <span class="hljs-number">1</span>;
+
+		<span class="hljs-keyword">if</span>(args.sc){
+			scx = scy = scz = args.sc;
+		}
+		<span class="hljs-keyword">else</span>{
+			scx = args.scx || <span class="hljs-number">1</span> ;
+			scy = args.scy || <span class="hljs-number">1</span> ;
+			scz = args.scz || <span class="hljs-number">1</span> ;
+			
+		}
+		rx = args.rx || <span class="hljs-number">0</span> ;
+		ry = args.ry || <span class="hljs-number">0</span> ;
+		rz = args.rz || <span class="hljs-number">0</span> ;
+		tx = args.tx || <span class="hljs-number">0</span> ;
+		ty = args.ty || <span class="hljs-number">0</span> ;
+		tz = args.tz || <span class="hljs-number">0</span> ;
+
+		off = args.off || <span class="hljs-number">0</span>;
+		offMult = args.offMult || <span class="hljs-number">0</span>;
+		freq = args.freq || <span class="hljs-number">0</span>;
+		jOff = args.jOff || <span class="hljs-number">0</span>;
+		jMult = args.jMult || <span class="hljs-number">0</span>;
+		jFreq = args.jFreq || <span class="hljs-number">0</span>;
+		jFract = args.jFract * obj.joint || <span class="hljs-number">1</span>;
+		jOffset = args.jOffset || <span class="hljs-number">0</span>;
+		offsetter = args.offsetter || <span class="hljs-number">0</span>;
+		offsetter2 = args.offsetter2 || <span class="hljs-number">0</span>;
+		sinScale = args.sinScale || <span class="hljs-number">1</span>;
+		sinScaleMult = args.sinScaleMult || <span class="hljs-number">1</span>;
+
+	}
+	<span class="hljs-keyword">else</span>{
+
+		rx = ry = rz = tx = ty = tz = <span class="hljs-number">0</span>;
+		sc = scx = scy = scz = freq = jFreq = jFract  = <span class="hljs-number">1</span>;
+		off = offMult = jOff = jMult = jOffset = offsetter = offsetter2 = sinScale = sinScaleMult = <span class="hljs-number">0</span>;
+
+	}
+	
+	<span class="hljs-keyword">var</span> objOffset = obj.offset;
+	<span class="hljs-keyword">var</span> objOffsetter = offsetter;
+	
+	<span class="hljs-keyword">if</span>(offsetter2){
+		objOffset = obj.offset2;
+		objOffsetter = offsetter2;
+	}
+
+	<span class="hljs-keyword">if</span>(jMult||jOff||jMult||offMult||offsetter||offsetter2){
+
+		<span class="hljs-keyword">var</span> off1 = jFract * <span class="hljs-built_in">Math</span>.sin( (jOffset * objOffset) + jOff + ( ( jFreq * obj.joint + <span class="hljs-number">1</span> ) ) ) * jMult;
+		<span class="hljs-keyword">var</span> off2 = <span class="hljs-built_in">Math</span>.sin( off + ( freq * objOffset ) ) * offMult;
+		<span class="hljs-keyword">var</span> off3 = objOffset * objOffsetter;
+		jointOff = off3 + off2 + off1;
+
+	}
+	<span class="hljs-keyword">else</span>
+		jointOff = <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">if</span>(args.sinScale||args.sinScaleMult){
+		scoff = ( <span class="hljs-built_in">Math</span>.sin ( obj.joint * sinScale ) ) * sinScaleMult;
+	}
+	<span class="hljs-keyword">else</span>
+		scoff = <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">if</span>(args.rx != <span class="hljs-literal">undefined</span>)
+		obj.rotator.rotation.x=rx+jointOff;
+	<span class="hljs-keyword">if</span>(args.ry != <span class="hljs-literal">undefined</span>) 
+		obj.rotator.rotation.y=ry+jointOff;
+	<span class="hljs-keyword">if</span>(args.rz != <span class="hljs-literal">undefined</span>)
+		obj.rotator.rotation.z=rz+jointOff;
+	
+	<span class="hljs-keyword">if</span>(args.tx != <span class="hljs-literal">undefined</span>)
+		obj.rotator.position.x=tx+jointOff;
+	<span class="hljs-keyword">if</span>(args.ty != <span class="hljs-literal">undefined</span>) 
+		obj.rotator.position.y=ty+jointOff;
+	<span class="hljs-keyword">if</span>(args.tz != <span class="hljs-literal">undefined</span>)
+		obj.rotator.position.z=tz+jointOff;
+
+	<span class="hljs-keyword">if</span>(args.sc || args.scx || args.scy || args.scz);
+		obj.rotator.scale = <span class="hljs-keyword">new</span> THREE.Vector3(scx,scy,scz).addScalar(scoff);
+
+	<span class="hljs-keyword">return</span> obj;
+}
+
+TREE.prototype.setScale = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(sc)</span>{</span>
+	<span class="hljs-keyword">this</span>.scale.x = sc;
+	<span class="hljs-keyword">this</span>.scale.y = sc;
+	<span class="hljs-keyword">this</span>.scale.z = sc;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>needs to prototype</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">append</span><span class="hljs-params">(obj,args)</span>{</span>
+
+	<span class="hljs-keyword">if</span>(!args) args = {};
+
+	<span class="hljs-keyword">var</span> amt = args.amount || <span class="hljs-number">10</span>;
+
+	<span class="hljs-keyword">var</span> x = args.rx || <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">var</span> y = args.ry || <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">var</span> z = args.rz || <span class="hljs-number">1</span>;
+
+	<span class="hljs-keyword">var</span> sc = args.sc || <span class="hljs-number">1</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>making a tempTree to get access to the ‘branch’ function</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> tempTree = <span class="hljs-keyword">new</span> TREE();
+
+	<span class="hljs-keyword">var</span> tempRoot = <span class="hljs-keyword">new</span> Joint(tempTree.params);
+	<span class="hljs-keyword">var</span> altLength = tempRoot.params.jointScale.clone();
+	altLength.y = sc;
+	tempRoot.construct();
+
+	<span class="hljs-keyword">var</span> root = tempTree.branch(amt,tempRoot,{jointScale:altLength});
+	
+	obj.children[<span class="hljs-number">0</span>].add(root);
+	obj.limbs.push(root);
+	root.position.y=root.parent.parent.params.jointScale.y;	
+
+	root.rotator.rotation.x = x;
+	root.rotator.rotation.y = y;
+	root.rotator.rotation.z = z;
+
+	<span class="hljs-keyword">return</span> root;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pushNoRepeat</span><span class="hljs-params">(array,child)</span>{</span>
+	<span class="hljs-keyword">var</span> temp = child;
+	<span class="hljs-keyword">var</span> push = <span class="hljs-literal">true</span>;
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; array.length; i++) {
+		<span class="hljs-keyword">if</span>(array[i]==child)
+			push=<span class="hljs-literal">false</span>;
+	};
+	<span class="hljs-keyword">if</span>(push)
+		array.push(child);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeList</span><span class="hljs-params">(range)</span> {</span>
+	<span class="hljs-keyword">var</span> result = [];
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = range.length-<span class="hljs-number">1</span>; i &gt;= <span class="hljs-number">0</span>; i--) {
+		<span class="hljs-keyword">var</span> min, max;
+		<span class="hljs-keyword">var</span> newResult = [];
+		<span class="hljs-keyword">if</span> (range[i] <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Array</span>) {
+			min = range[i][<span class="hljs-number">0</span>];
+			max = range[i][<span class="hljs-number">1</span>];
+		} <span class="hljs-keyword">else</span> {
+			min = max = range[i];
+		}
+        <span class="hljs-keyword">if</span> (result.length == <span class="hljs-number">0</span>) {
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = min; j &lt;= max; j++)
+                newResult.push([j]);
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = min; j &lt;= max; j++) {
+                <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> k = <span class="hljs-number">0</span>; k &lt; result.length; k++)
+                    newResult.push([j].concat(result[k]));
+            }
+        }
+		result = newResult;
+	}
+    
+    <span class="hljs-keyword">return</span> result;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">xform</span><span class="hljs-params">(array,obj,func)</span>{</span>
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; array.length; i++) {
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; array[i].length; j++) {
+		 	<span class="hljs-keyword">var</span> process = makeList(array[i][j]);
+		 	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> k = <span class="hljs-number">0</span>; k &lt; process.length; k++) {
+				obj.Move(process[k],func,array[i].args);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>console.log(obj.FIND(process[k]));
+var tempObj = obj.FIND(process[k]);
+func(tempObj,array[i].args);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			};
+		 }; 
+	};
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">go3</span><span class="hljs-params">(obj,args)</span>{</span>
+
+	<span class="hljs-keyword">var</span> rx,ry,rz,sc,scx,scy,scz,tx,ty,tz,
+	off,offMult,freq,
+	jOff,jMult,jFreq,
+	jFract, jOffset,
+	offsetter,
+	jointOff;
+
+	<span class="hljs-keyword">if</span>(args){
+		sc = args.sc || <span class="hljs-number">1</span>;
+
+		<span class="hljs-keyword">if</span>(args.sc){
+			scx = scy = scz = args.sc;
+		}
+		<span class="hljs-keyword">else</span>{
+			scx = args.scx || <span class="hljs-number">1</span> ;
+			scy = args.scy || <span class="hljs-number">1</span> ;
+			scz = args.scz || <span class="hljs-number">1</span> ;
+			
+		}
+		rx = args.rx || <span class="hljs-number">0</span> ;
+		ry = args.ry || <span class="hljs-number">0</span> ;
+		rz = args.rz || <span class="hljs-number">0</span> ;
+		tx = args.tx || <span class="hljs-number">0</span> ;
+		ty = args.ty || <span class="hljs-number">0</span> ;
+		tz = args.tz || <span class="hljs-number">0</span> ;
+
+		off = args.off || <span class="hljs-number">0</span>;
+		offMult = args.offMult || <span class="hljs-number">0</span>;
+		freq = args.freq || <span class="hljs-number">0</span>;
+		jOff = args.jOff || <span class="hljs-number">0</span>;
+		jMult = args.jMult || <span class="hljs-number">0</span>;
+		jFreq = args.jFreq || <span class="hljs-number">0</span>;
+		jFract = args.jFract * obj.joint || <span class="hljs-number">1</span>;
+		jOffset = args.jOffset * obj.offset || <span class="hljs-number">0</span>;
+		offsetter = args.offsetter || <span class="hljs-number">0</span>;
+
+	}
+	<span class="hljs-keyword">else</span>{
+		rx = ry = rz = tx = ty = tz = <span class="hljs-number">0</span>;
+		sc = scx = scy = scz = freq = jFreq = jFract = <span class="hljs-number">1</span>;
+		off = offMult = jOff = jMult = jOffset = offsetter = <span class="hljs-number">0</span>;
+	}
+
+	<span class="hljs-keyword">if</span>(jMult||jOff||jMult||offMult||offsetter){
+		<span class="hljs-keyword">var</span> off1 = (jFract) * <span class="hljs-built_in">Math</span>.sin(jOffset+jOff+( ( jFreq * obj.joint+<span class="hljs-number">1</span>)))*jMult;
+		<span class="hljs-keyword">var</span> off2 = <span class="hljs-built_in">Math</span>.sin(off+(freq*obj.offset))*offMult;
+		<span class="hljs-keyword">var</span> off3 = obj.offset*offsetter;
+		jointOff = off3+off2+off1;
+	}
+	<span class="hljs-keyword">else</span>
+		jointOff = <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">if</span>(args.rx != <span class="hljs-literal">undefined</span>)
+		obj.rotator.rotation.x=rx+jointOff;<span class="hljs-comment">//(Math.sin(off+(obj.offset*offMult))) + (idMult*obj.id);</span>
+	<span class="hljs-keyword">if</span>(args.ry != <span class="hljs-literal">undefined</span>) 
+		obj.rotator.rotation.y=ry+jointOff;<span class="hljs-comment">//(Math.sin(off+(obj.offset*offMult)))+Math.sin((ioff+(iMult*(obj.joint-1)))) + (idMult*obj.id);</span>
+	<span class="hljs-keyword">if</span>(args.rz != <span class="hljs-literal">undefined</span>)
+		obj.rotator.rotation.z=rz+jointOff;<span class="hljs-comment">//(Math.sin(off+(obj.offset*offMult)))+(ioff+(iMult*(obj.joint-1))) + (idMult*obj.id);</span>
+	
+	<span class="hljs-keyword">if</span>(args.tx != <span class="hljs-literal">undefined</span>)
+		obj.rotator.position.x=tx+jointOff;<span class="hljs-comment">//(Math.sin(off+(obj.offset*offMult))) + (idMult*obj.id);</span>
+	<span class="hljs-keyword">if</span>(args.ty != <span class="hljs-literal">undefined</span>) 
+		obj.rotator.position.y=ty+jointOff;<span class="hljs-comment">//(Math.sin(off+(obj.offset*offMult)))+Math.sin((ioff+(iMult*(obj.joint-1)))) + (idMult*obj.id);</span>
+	<span class="hljs-keyword">if</span>(args.tz != <span class="hljs-literal">undefined</span>)
+		obj.rotator.position.z=tz+jointOff;<span class="hljs-comment">//(Math.sin(off+(obj.offset*offMult)))+(ioff+(iMult*(obj.joint-1))) + (idMult*obj.id);</span>
+
+	<span class="hljs-keyword">if</span>(args.sc || args.scx || args.scy || args.scz);
+		obj.rotator.scale = <span class="hljs-keyword">new</span> THREE.Vector3(scx,scy,scz);
+
+	<span class="hljs-keyword">return</span> obj;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeInfo</span><span class="hljs-params">(args)</span>{</span>
+
+	<span class="hljs-keyword">var</span> info = [];
+	
+	<span class="hljs-keyword">var</span> q = <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; args.length/<span class="hljs-number">2</span>; i++) {
+
+		info.push(makeList(args[q]));
+		info[i].args=args[q+<span class="hljs-number">1</span>];
+		q+=<span class="hljs-number">2</span>;
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>console.log(args);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">return</span> info;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">looker</span><span class="hljs-params">(obj,args)</span>{</span>
+
+	<span class="hljs-keyword">var</span> vx = args.x || <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">var</span> vy = args.y || <span class="hljs-number">0</span>;
+	<span class="hljs-keyword">var</span> vz = args.z || <span class="hljs-number">0</span>;
+
+	<span class="hljs-keyword">var</span> vec = <span class="hljs-keyword">new</span> THREE.Vector3(vx,vy,vz);
+
+	<span class="hljs-keyword">var</span> tempParent = obj.parent;
+
+	obj.updateMatrixWorld();
+
+	THREE.SceneUtils.detach(obj,tempParent,scene);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>obj.lookAt(vec);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	obj._rotation = vec;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>console.log(obj);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	obj.updateMatrixWorld();
+	tempParent.updateMatrixWorld();
+
+	THREE.SceneUtils.attach(obj,scene,tempParent);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeSurface</span><span class="hljs-params">(points,x,y)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>points is a 2 dimensional array of vectors</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeSheet</span><span class="hljs-params">(u,v)</span>{</span>
+		<span class="hljs-keyword">var</span> c = points;
+		<span class="hljs-keyword">var</span> tempU = <span class="hljs-built_in">Math</span>.round(u*(c.length));
+		<span class="hljs-keyword">var</span> tempV = <span class="hljs-built_in">Math</span>.round(v*(c[<span class="hljs-number">0</span>].length-<span class="hljs-number">1</span>));
+		
+		<span class="hljs-keyword">if</span>(u*(c.length)&gt;c.length-<span class="hljs-number">1</span>){
+			tempU = <span class="hljs-number">0</span>;
+		}
+		<span class="hljs-keyword">return</span>(c[tempU][tempV]);
+	}
+
+	<span class="hljs-keyword">var</span> geo = <span class="hljs-keyword">new</span> THREE.ParametricGeometry( makeSheet, x,y );
+	geo.mergeVertices();
+	geo.computeVertexNormals();
+
+	<span class="hljs-keyword">return</span> geo;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeOpenSurface</span><span class="hljs-params">(points)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <p>points is a 2 dimensional array of vectors</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeSheet</span><span class="hljs-params">(u,v)</span>{</span>
+		<span class="hljs-keyword">var</span> c = points;
+
+		<span class="hljs-keyword">var</span> tempU = <span class="hljs-built_in">Math</span>.round(u*(c.length));
+		<span class="hljs-keyword">var</span> tempV = <span class="hljs-built_in">Math</span>.round(v*(c[<span class="hljs-number">0</span>].length));
+		
+		<span class="hljs-keyword">if</span>(u*(c.length)&gt;c.length-<span class="hljs-number">1</span>){
+			tempU = c.length-<span class="hljs-number">1</span>;
+		}
+		<span class="hljs-keyword">if</span>(v*(c[<span class="hljs-number">0</span>].length)&gt;c[<span class="hljs-number">0</span>].length-<span class="hljs-number">1</span>){
+			tempV = c[<span class="hljs-number">0</span>].length-<span class="hljs-number">1</span>;
+		}
+
+		<span class="hljs-keyword">return</span>(c[tempU][tempV]);
+	}
+
+
+	<span class="hljs-keyword">var</span> geo = <span class="hljs-keyword">new</span> THREE.ParametricGeometry( makeSheet, points.length, points[<span class="hljs-number">0</span>].length );</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>console.log(geo.vertices.length);
+// geo.mergeVertices();
+console.log(geo.vertices.length);</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+	geo.computeVertexNormals();
+
+	<span class="hljs-keyword">return</span> geo;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">closeVerts</span><span class="hljs-params">(geo,dist)</span>{</span>
+
+	<span class="hljs-keyword">var</span> distance = dist || <span class="hljs-number">.0001</span>;
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; geo.vertices.length; i++) {
+		<span class="hljs-keyword">var</span> tempi = <span class="hljs-keyword">new</span> THREE.Vector3(geo.vertices[i].x,geo.vertices[i].y,geo.vertices[i].z);
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; geo.vertices.length; j++) {
+			<span class="hljs-keyword">var</span> tempj = <span class="hljs-keyword">new</span> THREE.Vector3(geo.vertices[j].x,geo.vertices[j].y,geo.vertices[j].z);
+			<span class="hljs-keyword">if</span>(j==i)
+				j++;
+			<span class="hljs-keyword">else</span>{
+				<span class="hljs-keyword">if</span>(tempi.distanceTo(tempj)&lt;distance){
+					geo.vertices[i].x = geo.vertices[j].x;
+					geo.vertices[i].y = geo.vertices[j].y;
+					geo.vertices[i].z = geo.vertices[j].z;
+
+				}
+			}
+
+		}
+	}
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">solidify</span><span class="hljs-params">(geo,offset,w,h)</span>{</span>
+
+	<span class="hljs-keyword">var</span> width = w || <span class="hljs-number">10</span>;
+	<span class="hljs-keyword">var</span> height = h || <span class="hljs-number">10</span>;
+
+	<span class="hljs-keyword">var</span> vertsize = geo.vertices.length;
+	<span class="hljs-keyword">var</span> facesize = geo.faces.length;
+
+	<span class="hljs-keyword">var</span> tempVerts = [];
+	<span class="hljs-keyword">var</span> tempFaces = [];
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; vertsize; i++) {
+		geo.vertices.push(geo.vertices[i].clone());
+	}
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; facesize; i++) {
+		geo.faces.push(geo.faces[i].clone());
+	}
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = facesize; i &lt; geo.faces.length; i++) {
+
+		geo.faces[i].a = geo.faces[i].a + vertsize;
+		geo.faces[i].b = geo.faces[i].b + vertsize;
+		geo.faces[i].c = geo.faces[i].c + vertsize;
+
+		<span class="hljs-keyword">if</span>(geo.vertices[geo.faces[i].a].off!=<span class="hljs-literal">true</span>){
+			geo.vertices[geo.faces[i].a].sub(geo.faces[i].normal.multiplyScalar(offset));
+			geo.vertices[geo.faces[i].a].off=<span class="hljs-literal">true</span>;
+		}
+		<span class="hljs-keyword">if</span>(geo.vertices[geo.faces[i].b].off!=<span class="hljs-literal">true</span>){
+			<span class="hljs-keyword">if</span>(i==facesize)<span class="hljs-comment">//don't know why I have to do this - looks messy</span>
+				geo.vertices[geo.faces[i].b].sub(geo.faces[i].normal.multiplyScalar(offset/offset));
+			<span class="hljs-keyword">else</span>
+			geo.vertices[geo.faces[i].b].sub(geo.faces[i].normal.multiplyScalar(offset));
+			geo.vertices[geo.faces[i].b].off=<span class="hljs-literal">true</span>;
+		}	
+		<span class="hljs-keyword">if</span>(geo.vertices[geo.faces[i].c].off!=<span class="hljs-literal">true</span>){
+			<span class="hljs-keyword">if</span>(i==facesize)
+				geo.vertices[geo.faces[i].c].sub(geo.faces[i].normal.multiplyScalar(offset/offset));
+			<span class="hljs-keyword">else</span>
+			geo.vertices[geo.faces[i].c].sub(geo.faces[i].normal.multiplyScalar(offset));
+			geo.vertices[geo.faces[i].c].off=<span class="hljs-literal">true</span>;
+		
+		}
+			
+		
+	}
+
+	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; (geo.vertices.length); i++) {
+
+		<span class="hljs-keyword">if</span>(i&lt;width-<span class="hljs-number">1</span>){
+
+			<span class="hljs-keyword">var</span> a = i;
+			<span class="hljs-keyword">var</span> b = i+<span class="hljs-number">1</span>;
+			<span class="hljs-keyword">var</span> c = i+vertsize;
+			<span class="hljs-keyword">var</span> d = i+<span class="hljs-number">1</span>+vertsize;
+			geo.faces.push(<span class="hljs-keyword">new</span> THREE.Face3(a,b,c));
+			geo.faces.push(<span class="hljs-keyword">new</span> THREE.Face3(d,c,b));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <p>var a = i+((width<em>height)-width);
+var b = i+1+((width</em>height)-width);
+var c = i+vertsize+((width<em>height)-width);
+var d = i+1+vertsize+((width</em>height)-width);
+geo.faces.push(new THREE.Face3(a,b,c));
+geo.faces.push(new THREE.Face3(d,c,b));</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		}
+		<span class="hljs-keyword">if</span>(i&lt;height-<span class="hljs-number">1</span>){
+
+			<span class="hljs-keyword">var</span> a = i*(width+<span class="hljs-number">1</span>);
+			<span class="hljs-keyword">var</span> b = (i+<span class="hljs-number">1</span>)*(width+<span class="hljs-number">1</span>);
+			<span class="hljs-keyword">var</span> c = (i*(width+<span class="hljs-number">1</span>))+vertsize;
+			<span class="hljs-keyword">var</span> d = (i*(width+<span class="hljs-number">1</span>))+(width+<span class="hljs-number">1</span>)+vertsize;
+			geo.faces.push(<span class="hljs-keyword">new</span> THREE.Face3(c,b,a));
+			geo.faces.push(<span class="hljs-keyword">new</span> THREE.Face3(b,c,d));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>var a = width-1+(i<em>width);
+var b = width-1+((i+1)</em>width);
+var c = width-1+((i<em>width)+vertsize);
+var d = width-1+((i</em>width)+width+vertsize);
+geo.faces.push(new THREE.Face3(a,b,c));
+geo.faces.push(new THREE.Face3(d,c,b));</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		
+		}
+	};
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">solidSurface</span><span class="hljs-params">(points,offset)</span>{</span>
+
+
+	<span class="hljs-keyword">var</span> w = points.length;
+	<span class="hljs-keyword">var</span> h = points[<span class="hljs-number">0</span>].length;
+
+	<span class="hljs-keyword">var</span> geometry;
+	geometry = makeOpenSurface(points);
+	solidify(geometry,offset,w,h);
+
+	geometry.mergeVertices();
+	geometry.computeFaceNormals();
+	geometry.computeVertexNormals();
+
+	<span class="hljs-keyword">return</span> geometry;
+
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+---
+layout: default
+---
+
+<script>var scriptSource = "sketches/smiles_05.js"</script>
+
+
+
+<div class="row">
+  <div class="col-md-8"><br><br>
+    <h3>Fun with Functions</h3>
+    <p>Let's make our face and petals into functions!</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12" style="text-align:center">
+    <canvas data-processing-sources="sketches/smiles_05.js"></canvas>
+  </div>
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+        Show Code
+        </a>
+        </h4>
+      </div>
+    <div id="collapseOne" class="panel-collapse collapse out">
+      <div class="panel-body">
+        <pre>  
+        <code  id="coder">
+        </code>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+

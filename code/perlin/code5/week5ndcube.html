@@ -1,0 +1,170 @@
+<div style="text-align:left;font-family:sans-serif;padding-left:20%">
+<center>
+<canvas id=exampleCanvas width=800 height=800 tabindex="1"></canvas>
+</center>
+<p>
+
+<hr color=white size=100>
+<script>
+
+   // GET THE CANVAS ELEMENT AND ITS DRAWING CONTEXT FROM THE DOCUMENT
+
+   var canvas = document.getElementById('exampleCanvas');
+   var context = canvas.getContext('2d');
+
+   // THE VERTICES OF A UNIT CUBE
+   function makepts(dimnm){
+       var initpt = [];
+       var outpts = [];
+       var catvec = [];
+       var edges  = [];
+       for(var i=0; i<dimnm; i++)
+           initpt.push(-1); 
+       outpts.push(initpt);
+       for(var i=1; i<=dimnm; i++){
+           var initval = Math.pow(2,i-1);
+           for(var j=initval; j<Math.pow(2,i); j++){
+	       catvec = [];
+               for(var k=0; k<dimnm; k++)
+	           if(k==i-1)
+		       catvec.push(1);
+                   else 
+		       catvec.push(outpts[j-initval][k]);
+               outpts.push(catvec);
+           }
+       }
+       return outpts;
+    }
+
+    function subarr(arr1,arr2){
+	    var outarr = [];
+	    for(var i=0; i < arr1.length; i++)
+	        outarr.push(Math.abs(arr1[i]-arr2[i]));
+	    return outarr;
+    }
+ 
+    function sumarr(arry){
+	    var out = 0;
+	    for(var i=0; i<arry.length; i++)
+	        out += arry[i];
+	    return out;
+    }
+
+    function findedges(pts){
+	var ptlen = pts.length;
+	var edgeout = [];
+	for(var i=0; i<ptlen-1; i++)
+            for(var j=i+1; j<ptlen; j++)
+	        if(sumarr(subarr(pts[i],pts[j])) == 2)
+		    edgeout.push([j,i]);
+	return edgeout;
+    }
+
+   var pts = makepts(5);
+   var edges = findedges(pts);
+
+   // THE EDGES OF A UNIT CUBE (INDEXING INTO THE VERTICES)
+
+   // YOUR FUNCTION THAT GETS CALLED EACH ANIMATION FRAME
+
+   function animate() {
+
+      // GET THE DIMENSIONS OF THE CANVAS
+
+      var w = canvas.width, h = canvas.height;
+
+      // CLEAR THE ENTIRE CANVAS
+
+      context.fillStyle = '#ffffff';
+      context.beginPath();
+      context.moveTo(0,0);
+      context.lineTo(w,0);
+      context.lineTo(w,h);
+      context.lineTo(0,h);
+      context.fill();
+
+      // CREATE THE MATRIX TRANSFORM FOR THIS ANIMATION FRAME.
+
+      ////////////////////////////////////////////////////////////
+
+      // NOTE: THIS IS THE PART THAT YOU WILL BE REPLACING WITH
+      // MORE GENERAL KINDS OF TRANSFORMATIONS.
+
+      var x = Math.cos(time) / 2;
+      var y = Math.sin(time) / 2;
+      var z = Math.sin(2.1*time);
+      var matrix = [ 1,0,0,0, 0,1,0,0, 0,0,1,0, x,0,0,y ];
+      var matrix2 = [y,x,x+y,y,z,
+                     x*y,x,x,z,y,
+		     z/1.4,y,.5,x*x*x,0,
+		     x,0,y*y,x/10,0,
+		     0,-y,0,y*x,x/10];
+      
+      ////////////////////////////////////////////////////////////
+
+      // SET THE DRAWING COLOR TO BLACK
+
+      context.strokeStyle = '#000000';
+
+      // LOOP THROUGH THE EDGES OF THE CUBE
+
+      for (var i = 0 ; i < edges.length ; i++) {
+
+         // TRANSFORM THE EDGE'S TWO ENDPOINTS BY THE MATRIX
+
+         var p0 = transform(pts[edges[i][0]], matrix2);
+         var p1 = transform(pts[edges[i][1]], matrix2);
+
+         // ADD DEPTH PERSPECTIVE
+
+	 var a = depthPerspective(p0);
+	 var b = depthPerspective(p1);
+
+	 // DRAW THE EDGE AS A 2D LINE ON THE CANVAS
+
+         context.beginPath();
+         context.moveTo(w/2 + w/4 * a[0], h/2 - w/4 * a[1]);
+         context.lineTo(w/2 + w/4 * b[0], h/2 - w/4 * b[1]);
+         context.stroke();
+      }
+   }
+
+   // TRANSFORM A POINT BY A MATRIX
+
+   function transform(p, m) {
+      return [ m[0]*p[0] + m[5]*p[1] + m[10]*p[2] + m[15]*p[3] + m[20]*p[4],
+               m[1]*p[0] + m[6]*p[1] + m[11]*p[2] + m[16]*p[3] + m[21]*p[4],
+               m[2]*p[0] + m[7]*p[1] + m[12]*p[2] + m[17]*p[3] + m[22]*p[4]];
+   }
+
+   // APPLY A SIMPLE DEPTH PERSPECTIVE TRANSFORM
+
+   var focalLength = 8.0;
+
+   function depthPerspective(p) {
+      var pz = focalLength / (focalLength - p[2]);
+      return [p[0] * pz, p[1] * pz, pz];
+   }
+
+//--- BOILERPLATE CODE TO SUPPORT ANIMATED DRAWING ON AN HTML CANVAS ---
+
+   var startTime = (new Date()).getTime(), time = startTime;
+   window.requestAnimFrame = (function(callback) {
+      return window.requestAnimationFrame ||
+             window.webkitRequestAnimationFrame ||
+             window.mozRequestAnimationFrame ||
+             window.oRequestAnimationFrame ||
+             window.msRequestAnimationFrame ||
+             function(callback) { window.setTimeout(callback, 1000/60); };
+   })();
+   function tick() {
+      time = ((new Date()).getTime() - startTime) / 1000;
+      animate();
+      requestAnimFrame(function() { tick(); });
+   }
+   tick();
+
+//----------------------------------------------------------------------
+
+</script>
+

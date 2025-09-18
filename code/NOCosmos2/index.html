@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>NPVR Three.js Boxes Demo</title>
+		<style>
+			html, body {
+				width: 100%;
+				height: 100%;
+			}
+
+			body {
+				background-color: #ffffff;
+				margin: 0;
+				overflow: hidden;
+				font-family: arial;
+			}
+
+			#help {
+				position: absolute;
+				top: 800px;
+			}
+			#info {
+				position: absolute;
+				top: 820px;
+			}
+
+			canvas {
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+
+		</style>
+	</head>
+	<body>
+		<script src="vr.js"></script>
+		<script src="three.js"></script>
+		<script src="OculusRiftControls.js"></script>
+		<script src="OculusRiftEffect.js"></script>
+
+    <div id="help">Move this window to your Rift (use the Windows key + arrows to get it there fast) then hit 'f' to make it fullscreen.</div>
+		<div id="info">IPD: <span id='ipd'>0</span> (+o/-p)</div>
+
+		<script>
+		(function() {
+			var camera, scene, renderer;
+			var geometry, material, mesh,count,tCount,cCount;
+			var controls, time = Date.now();
+
+			var effect; // rift effect
+
+			var objects = [];
+
+			var ray;
+
+
+			if (!vr.isInstalled()) {
+				//statusEl.innerText = 'NPVR plugin not installed!';
+				alert('NPVR plugin not installed!');
+			}
+			vr.load(function(error) {
+				if (error) {
+					//statusEl.innerText = 'Plugin load failed: ' + error.toString();
+					alert('Plugin load failed: ' + error.toString());
+				}
+
+				try {
+					init();
+					animate();
+				} catch (e) {
+					//statusEl.innerText = e.toString();
+					console.log(e);
+				}
+			});
+
+			function particle(){
+			// create the particle variables
+				var particleCount = 1800;
+				var	particles = new THREE.Geometry();
+					//pMaterial =
+					 // new THREE.ParticleBasicMaterial({
+				//		color: 0xFFFFFF,
+				//		size: 20
+				//	  });
+				
+				// create the particle variables
+				var pMaterial =
+				  new THREE.ParticleBasicMaterial({
+					color: 0xff8822,
+					size: 1,
+					map: THREE.ImageUtils.loadTexture(
+					  "particle.png"
+					),
+					blending: THREE.AdditiveBlending,
+					transparent: true
+				  });
+
+				// now create the individual particles
+				for(var p = 0; p < particleCount; p++) {
+
+				  // create a particle with random
+				  // position values, -250 -> 250
+				  var pX = (Math.sin(p/15)+Math.random() * .1 - .05)*3,
+					  pY = (Math.cos(p/15)+Math.random() * .1 - .05)*3,
+					  pZ = (-p/6)-30;//Math.random() * -1000,
+					  particle = new THREE.Vertex(
+						new THREE.Vector3(pX, pY, pZ)
+					  );
+
+				  // add it to the geometry
+				  particles.vertices.push(particle);
+				}
+				
+				
+
+				
+
+				// create the particle system
+				var particleSystem =
+				  new THREE.ParticleSystem(
+					particles,
+					pMaterial);
+					// also update the particle system to
+				// sort the particles which enables
+				// the behaviour we want
+				particleSystem.sortParticles = true;
+				parent.add(particleSystem);
+				// add it to the scene
+				//scene.add(particleSystem);
+			}
+
+
+			function init() {
+
+				count=0;
+				tCount=1;
+				cCount=1;
+
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+
+				scene = new THREE.Scene();
+				
+
+				controls = new THREE.OculusRiftControls( camera );
+				scene.add( controls.getObject() );
+
+				// var cameraHelper = new THREE.CameraHelper(camera);
+				// scene.add(cameraHelper);
+
+				ray = new THREE.Raycaster();
+				ray.ray.direction.set( 0, -1, 0 );
+
+				// floor
+
+				
+
+				
+
+
+
+
+				mesh = new THREE.Mesh( new THREE.SphereGeometry( 10, 6, 4 ), new THREE.MeshBasicMaterial( { color:0xFFFF00 } ) );
+				mesh.scale.x = -1;
+				mesh.position.z = -100;
+				
+				parent = new THREE.Object3D();
+				merged = new THREE.Geometry();
+				
+
+
+				for(var i = 0 ; i < 1000 ; i++){
+						var mesher = new THREE.CylinderGeometry( .5, .5, 100, 6,10 );
+						for(var j = 0 ; j < mesher.vertices.length; j++) {
+							//mesher.vertices[i].y -= 100;
+
+							mesher.vertices[j].x += 10+Math.sin(i)*5;
+							mesher.vertices[j].z += i*-2;
+							//console.log(mesher.vertices[j].x);
+						}
+						THREE.GeometryUtils.merge(merged, mesher);
+						//console.log(merged);
+						//tubes.push(mesher);
+						//parent.add(mesher);
+						//scene.add(mesher);
+
+				}
+				var mesher = new THREE.Mesh( merged, new THREE.MeshLambertMaterial( { color:0xFFFFFF } ) );
+				var mesher2 = new THREE.Mesh( merged, new THREE.MeshLambertMaterial( { color:0xFFFFFF } ) );
+				var mesher3 = new THREE.Mesh( merged, new THREE.MeshLambertMaterial( { color:0xFFFFFF } ) );
+				var mesher4 = new THREE.Mesh( merged, new THREE.MeshLambertMaterial( { color:0xFFFFFF } ) );
+				parent.add(mesher);
+				mesher2.rotation.z = Math.PI/2;
+				mesher2.position.z = 3;
+				parent.add(mesher2);
+				mesher3.position.x = -20;
+				mesher3.position.z = 6;
+				parent.add(mesher3);
+				mesher4.rotation.z = -Math.PI/2;
+				mesher4.position.z = 8;
+				parent.add(mesher4);
+				console.log(mesher);
+				//scene.add(parent);
+
+				/*
+				for(var i = 0 ; i < 100 ; i++){
+						var mesher = new THREE.Mesh( new THREE.CylinderGeometry( 3, 3, 100 ), new THREE.MeshLambertMaterial( { color:0xFFFF00 } ) );
+						mesher.position.x = -10;
+						mesher.position.z = i*-10;
+						THREE.GeometryUtils.merge(merged, mesher);
+
+						//tubes.push(mesher);
+						//							parent.add(mesher);
+
+						//scene.add(mesher);
+
+				}
+				for(var i = 0 ; i < 100 ; i++){
+						var mesher = new THREE.Mesh( new THREE.CylinderGeometry( 3, 3, 100 ), new THREE.MeshLambertMaterial( { color:0xFFFF00 } ) );
+						mesher.position.y = 10;
+						mesher.rotation.z = Math.PI/2;
+						mesher.position.z = i*-10;
+						THREE.GeometryUtils.merge(merged, mesher);
+
+						//tubes.push(mesher);
+						//parent.add(mesher);
+
+						//scene.add(mesher);
+
+				}
+				*/
+				for(var i = 0 ; i < 200 ; i++){
+
+						if((i-1)%20!=0){
+							var mesher = new THREE.Mesh( new THREE.SphereGeometry( 1, 6, 6 ), new THREE.MeshLambertMaterial( { color:0xFF00FF} ) );
+							mesher.position.y = Math.sin(i*.5)*3;
+							mesher.position.x = Math.cos(i*.5)*3;
+
+							//mesher.rotation.z = Math.PI/2;
+							mesher.position.z = i*-5;
+							//THREE.GeometryUtils.merge(merged, mesher);
+
+							//tubes.push(mesher);
+							//parent.add(mesher);
+						}
+						//scene.add(mesher);
+
+				}
+				particle();
+				//parent.add(merged)
+				scene.add(parent);
+
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+				directionalLight.position.set( -1, 0, 0 );
+				//scene.add( directionalLight );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, .5 );
+				directionalLight.position.set( 1, 0, 0 );
+				//scene.add( directionalLight );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, .3 );
+				directionalLight.position.set( 0, -1, 0 );
+				//scene.add( directionalLight );
+
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, .3 );
+				directionalLight.position.set( 0, 1, 0 );
+				//scene.add( directionalLight );
+				
+				var directionalLight = new THREE.DirectionalLight( 0xffffff, .3 );
+				directionalLight.position.set( 0, 1, 0 );
+				//scene.add( directionalLight );
+				
+				var directionalLight = new THREE.PointLight( 0x5599ff, 2,60 );
+				directionalLight.position.set( 0, 1, 0 );
+				light=directionalLight;
+				scene.add( directionalLight );
+
+				var directionalLight = new THREE.PointLight( 0xff9955, 2,20 );
+				directionalLight.position.set( 0, 1, 0 );
+				light2=directionalLight;
+				scene.add( directionalLight );
+
+				//
+
+				renderer = new THREE.WebGLRenderer({
+					devicePixelRatio: 1,
+					alpha: false,
+					clearColor: 0x000000,
+					antialias: true
+				});
+
+				effect = new THREE.OculusRiftEffect( renderer );
+
+				document.getElementById('ipd').innerHTML =
+						effect.getInterpupillaryDistance().toFixed(3);
+
+				document.body.appendChild( renderer.domElement );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+				document.addEventListener( 'keydown', keyPressed, false );
+			}
+
+			function onWindowResize() {
+			}
+
+			function keyPressed (event) {
+				switch ( event.keyCode ) {
+					case 79: // o
+						effect.setInterpupillaryDistance(
+								effect.getInterpupillaryDistance() - 0.001);
+						document.getElementById('ipd').innerHTML =
+								effect.getInterpupillaryDistance().toFixed(3);
+						break;
+					case 80: // p
+						effect.setInterpupillaryDistance(
+								effect.getInterpupillaryDistance() + 0.001);
+						document.getElementById('ipd').innerHTML =
+								effect.getInterpupillaryDistance().toFixed(3);
+						break;
+
+					case 70: // f
+						if (!vr.isFullScreen()) {
+							vr.enterFullScreen();
+						} else {
+							vr.exitFullScreen();
+						}
+						e.preventDefault();
+						break;
+
+					case 32: // space
+						vr.resetHmdOrientation();
+						e.preventDefault();
+						break;
+				}
+			}
+
+			var vrstate = new vr.State();
+			function animate() {
+
+				light.position.z = Math.sin((count*tCount)*.01)*100;
+				//light.position.x = Math.sin(1+(count*tCount)*.1)*10;
+				//light.position.y = Math.cos(1+(count*tCount)*.1)*10;
+				light2.intensity = Math.sin(count*tCount)+3;
+				light2.position.x = Math.sin((count*tCount)*.1)*10;
+				light2.position.y = Math.cos((count*tCount)*.1)*10;
+				//for(thing in tubes){
+				parent.position.z=(Math.cos(count*.01)*100)+200;
+				parent.position.y=10;
+				cCount+=.00000021;
+				count+=.1;
+				tCount*=cCount;
+				//}
+				if(count>=100){
+					//count=0;
+				}
+				var time = Date.now();
+
+
+				vr.requestAnimationFrame(animate);
+
+				controls.isOnObject( false );
+
+				ray.ray.origin.copy( controls.getObject().position );
+				ray.ray.origin.y -= 10;
+
+				var intersections = ray.intersectObjects( objects );
+				if ( intersections.length > 0 ) {
+					var distance = intersections[ 0 ].distance;
+					if ( distance > 0 && distance < 10 ) {
+						controls.isOnObject( true );
+					}
+				}
+
+				// Poll VR, if it's ready.
+				var polled = vr.pollState(vrstate);
+				controls.update( Date.now() - time, polled ? vrstate : null );
+
+				//renderer.render( scene, camera );
+				effect.render( scene, camera, polled ? vrstate : null );
+
+				time = Date.now();
+			}
+		})();
+		</script>
+	</body>
+</html>

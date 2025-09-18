@@ -1,0 +1,148 @@
+
+<!! ASSIGNMENT DUE WEDNESDAY SEPTEMBER 18, 2013 FOR KEN PERLIN'S GRAPHICS CLASS>
+
+<script src="script.js"></script>
+
+<!! REPLACE THE TEXT BELOW WITH A TITLE FOR YOUR SHADER>
+
+<script id="title" type="text/plain">
+Old VHS meets film strip
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH A BRIEF DESCRIPTION OF YOUR SHADER>
+
+<script id="description" type="text/plain">
+Your homework this week is to write a more interesting shader than the one below.
+
+A fragment shader can use time plus position as input, and produce color as output.
+
+NOTE 1: Allowable data types: float, vec2, vec3 and vec4.
+NOTE 2: Constants must have decimal points. Example: "4.0", not "4".
+
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH YOUR SHADER CODE>
+
+
+<script id="shader" type="x-shader/x-fragment">
+
+  
+  float time = uTime;
+
+
+  vec3 nSphere( in vec3 pos, in vec4 sph )
+  {
+    return ( pos - sph.xyz ) / sph.w;
+  }
+
+vec4 sph1 = vec4(sin(time*2.1), sin(time*1.2), 0.0, 1.0); // sphere
+vec4 sph2 = vec4(sin(time), sin(time*3.2), 0.0, 1.0); // sphere
+
+
+//ro = ray origin
+//rd = ray direction
+
+float iSphere( in vec3 ro, in vec3 rd, in vec4 sph )
+{
+    //oc = ray origin - sphere position
+    //a point minus a point gives a vector
+    vec3 oc = ro - sph.xyz; 
+
+    float b = 2.0 *dot( oc, rd );
+
+    float c = 4.;//dot(ro, ro) ; // w should be size
+
+    float h = b*b - 4.0 * c;
+
+    if (h<0.0) { return -1.0; }
+
+    float t = (-b - sqrt(h)) / 2.0;
+
+    return t;
+}
+
+// should be int for comparisons
+float intersect( in vec3 ro, in vec3 rd, out float resT ) 
+{
+      resT = 1000.;
+      float id = -1.0;
+      float tmin = -1.0;
+
+      float tsph = iSphere( ro, rd, sph1 );
+      float sphere2 = iSphere(ro,rd,sph2);
+     
+      if ( tsph > 0.0 ) {
+          resT = tsph;
+          id = 1.0;
+      }
+
+      if ( sphere2 > 0.0 ) {
+          resT = sphere2;
+          id = 2.0;
+      }
+
+      return id;
+    }
+ 
+
+    void main(void) 
+    {
+
+    vec2 resolution = uViewportSize;
+
+    vec3 light = normalize( vec3(sin(time*2.),cos(time*2.),0.4) );  // light position
+
+     
+    vec2 uv = ( gl_FragCoord.xy / vec2(resolution.x,resolution.y) );
+ 
+
+    //sph1.xz = vec2 (0.0,  0.0); 
+
+    vec3 ro = vec3( 0.0, 0.0, 2.0 ); // ray origin
+
+    vec3 rd = normalize( vec3( -0.5 + uv, -0.5) ); //ray direction
+
+    float t;
+
+    float id = intersect( ro, rd, t ); 
+    
+    /*alternate
+    float fl = 5.0;
+    vec4 camPos = vec4(0.0,0.0,-fl,1.0);
+    vec4 camDir = normalize(vec4(-0.5, 0.5, -fl,0.0));
+    */
+    
+
+    vec3 col = vec3(0.65,0.5,0.2);
+
+    // the result of returning a float for id
+    if ( id > 0.5 && id < 1.5  ) // sphere
+    {
+       vec3 pos = ro + t * rd;
+       vec3 nor = nSphere( pos, sph1 );
+       float dif = clamp( dot( nor, light ), 0.0, 1.0); // lumiere diffuse
+       float ao = 1.;//0.5 + 0.5 * nor.y;
+       col = vec3( 0.8, 0.8, 0.6) * dif * ao + vec3(0.1, 0.2, 0.4) * ao;
+    }
+
+     if ( id > 1.5 ) // sphere2
+    {
+       vec3 pos = ro + t * rd;
+       vec3 nor = nSphere( pos, sph2 );
+       float dif = clamp( dot( nor, light ), 0.0, 1.0); // lumiere diffuse
+       float ao = 1.;//0.5 + 0.5 * nor.y;
+       col = vec3( 0.8, 0.1, 0.6) * dif * ao + vec3(0.1, 0.2, 0.4) * ao;
+    }
+
+    gl_FragColor = vec4( col, 1.0 ); // Couleur final du pixel
+
+    }
+
+
+
+
+
+
+</script>
+
+<script>start()</script>

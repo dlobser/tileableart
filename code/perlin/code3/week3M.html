@@ -1,0 +1,593 @@
+
+<!! ASSIGNMENT DUE WEDNESDAY SEPTEMBER 18, 2013 FOR KEN PERLIN'S GRAPHICS CLASS>
+
+<script src="script.js"></script>
+
+<!! REPLACE THE TEXT BELOW WITH A TITLE FOR YOUR SHADER>
+
+<script id="title" type="text/plain">
+Chinese Medicine Balls
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH A BRIEF DESCRIPTION OF YOUR SHADER>
+
+<script id="description" type="text/plain">
+
+Because one ball is never enough.
+
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH YOUR SHADER CODE>
+
+<script id="shader" type="x-shader/x-fragment">
+
+//make a struct that stores info about the ray - this includes whether the hit happened, the t value, the color and normal
+
+//define sphere positions and scale
+vec4 sph1 = vec4(sin(uTime), cos(uTime)*0.5, sin(uTime)*-2.,
+abs(sin(uTime*5.5)+5.0)*0.15);
+vec4 sph2 = vec4(sin(uTime+3.14), cos(uTime+3.14), 0.0,
+abs(sin(uTime*5.0)+5.0)*0.15);
+
+vec4 cyl = vec4(0.0,0.0,0.0,1.0);  //if w is 1 it's a point
+
+vec4 cube[6];
+float tEnter[6];
+float tExit[6];
+
+mat4 tsMatrix(vec3 t, vec3 s) {
+        return mat4(s.x,0.,0.,0., 0.,s.y,0.,0., 0.,0.,s.z,0., t.x,t.y,t.z,1.);
+}
+
+mat4 rotmatYaxis(float theta){
+ return mat4(cos(theta), 0.0, sin(theta), 0.0, 0.0, 1.0, 0.0, 0.0, -sin(theta), 0.0, cos(theta), 0.0, 0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 rotmatXaxis(float theta){
+ return mat4(1.0, 0.0, 0.0, 0.0, 0.0, cos(theta), sin(theta), 0.0, 0.0, -sin(theta), cos(theta), 0.0, 0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 rotmatZaxis(float theta){
+ return mat4(cos(theta), sin(theta), 0.0, 0.0, -sin(theta), cos(theta), 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+}
+
+mat4 TSRmat(float x, float y, float z, vec3 T, vec3 S){
+	//mat4 mat =  rotmatXaxis(x) * rotmatYaxis(y) * rotmatZaxis(z) * tsMatrix(-T/S, 1.0/S);
+	mat4 mat =  rotmatXaxis(x) * rotmatYaxis(y) * rotmatZaxis(z) * tsMatrix(T, S);
+	return mat;
+}
+
+mat4 matrix;
+mat4 inverseMatrix;
+
+// init transform and scale
+vec3 T;
+vec3 S;
+
+	
+struct Ray{
+	float t;
+	vec3 n;
+	bool hit;
+	vec3 color;
+	float testFloat;
+	vec3 testVec3;
+};
+
+//cube struct
+struct sCube{
+	vec4 cube[6];
+	vec4 rotCube[6];
+	vec3 color;
+};
+
+struct pSphere{
+	vec3 pos;
+	float rad;
+	vec3 color;
+};
+
+struct Cam{
+	vec4 V;
+	vec4 W;
+};
+
+struct Transform{
+	float x;
+	float y;
+	float z;
+	vec3 T;
+	vec3 S;
+};
+
+struct Lights{
+	vec4 directional[10];
+	vec3 ambient;
+	int numDir;
+};
+
+struct Cylinder{
+	vec3 color;
+	float A,B,C,D,E,F,G,H,I,J;
+	mat4 matrix;
+
+};
+//****---------------------****//
+
+Cylinder makeCylinder(){
+	
+	Cylinder cyl;
+	
+	cyl.A = 1.0;
+	cyl.B = 0.0;
+	cyl.C = 1.0;
+	cyl.D = 0.0;
+	cyl.E = 0.0;
+	cyl.F = 0.0;
+	cyl.G = 0.0;
+	cyl.H = 0.0;
+	cyl.I = 0.0;
+	cyl.J = -1.0;
+	
+	cyl.matrix = mat4(cyl.A,cyl.F,cyl.E,cyl.G,0.0,cyl.B,cyl.D,cyl.H,0.0,0.0,cyl.C,cyl.I,0.0,0.0,0.0,cyl.J);
+	
+	return cyl;
+
+}
+
+void xFormCylinder(Transform xform, inout Cylinder cyl){
+
+    mat4 m = mat4(
+          cyl.A, 	cyl.F, 	cyl.E, 	cyl.G,
+          0., 		cyl.B, 	cyl.D, 	cyl.H,
+          0., 		0., 	cyl.C, 	cyl.I,
+          0., 		0., 	0., 	cyl.J
+          );
+	mat4 ident = mat4(
+	  1., 0., 0., 0.,
+	  0., 1.0, 0., 0.,
+	  0., 0., 1., 0.,
+	  0., 0., 0., 1.0
+	  );
+		  
+	mat4 m2 = TSRmat(xform.x,xform.y,xform.z,xform.T,xform.S);
+	mat4 matrix = m*m2;
+	
+	cyl.A = matrix[0][0];
+	cyl.B = matrix[1][1];
+	cyl.C = matrix[2][2];
+	cyl.D = matrix[2][1]+matrix[1][2];
+	cyl.E = matrix[2][0]+matrix[0][2];
+	cyl.F = matrix[1][0]+matrix[0][1];
+	cyl.G = matrix[3][0]+matrix[0][3];
+	cyl.H = matrix[3][1]+matrix[1][3];
+	cyl.I = matrix[3][2]+matrix[2][3];
+	cyl.J = matrix[3][3];
+
+}
+
+Ray iCyl(Cam cam, Cylinder cyl, Lights lights){
+
+	Ray ray;// = makeDefaultRay(); // ARGH - this function isn't working here for some reason
+	//so I'm setting all this stuff here
+	ray.n = vec3(0.0);
+	ray.t = 1e6;
+	ray.hit = false;
+	ray.color = vec3(0.0,0.3,0.0);
+	ray.testFloat = 1.0;
+	ray.testVec3 = vec3(1.0);
+	
+	vec3 W = cam.W.xyz;
+	vec3 V = cam.V.xyz;
+	
+	/* From Ken
+	A   =	aWx2 + 
+			bWy2 + 
+			cWz2 + 
+			dWyWz + 
+			eWzWx + 
+			fWxWy
+ 
+	B   =	2(aVxWx + bVyWy + cVzWz) + 
+			d(VyWz+VzWy) + 
+			e(VzWx+VxWz) + 
+			f(VxWy+VyWx) + 
+			gWx + 
+			hWy + 
+			iWz
+ 
+	C   =	aVx2 + 
+			bVy2 + 
+			cVz2 + 
+			dVyVz + 
+			eVzVx + 
+			fVxVy + 
+			gVx + 
+			hVy + 
+			iVz + 
+			j
+	*/
+	float bob = cyl.A;
+
+	float a = 	cyl.A*(W.x*W.x) +
+				cyl.B*(W.y*W.y) +
+				cyl.C*(W.z*W.z) +
+				cyl.D*(W.y*W.z) +
+				cyl.E*(W.z*W.x) +
+				cyl.F*(W.x*W.y);
+				
+	
+	float b = 	2.0 * (cyl.A*V.x*W.x + cyl.B * V.y * W.y + cyl.C * V.z * W.z) +
+				cyl.D * (V.y*W.z + V.z*W.y) +
+				cyl.E * (V.z*W.x + V.x*W.z) +
+				cyl.F * (V.x*W.y + V.y*W.x) +
+				cyl.G * W.x +
+				cyl.H * W.y +
+				cyl.I;
+	
+	float c = 	cyl.A * (V.x*V.x) +
+				cyl.B * (V.y*V.y) +
+				cyl.C * (V.z*V.z) +
+				cyl.D * (V.y*V.z) +
+				cyl.E * (V.z*V.x) +
+				cyl.F * (V.x*V.y) +
+				cyl.G * V.x +
+				cyl.H * V.y +
+				cyl.I * V.z +
+				cyl.J;
+		
+		
+	float h = b * b - 4.0 * a * c;
+	
+	if (h > 0.0) { 
+	
+		ray.hit = true;
+		ray.t = (-b - sqrt(h)) / 2.0;
+		vec3 pos = cam.V.xyz + ray.t * cam.W.xyz;
+		
+		ray.n =  normalize(vec3(2.0 * cyl.A * pos.x + cyl.E * pos.z + cyl.F * pos.y + cyl.G, 2.0 * cyl.B * pos.y + cyl.D * pos.z + cyl.F * pos.x + cyl.H, 2.0 * cyl.C * pos.z + cyl.D * pos.y + cyl.E * pos.x + cyl.I )) ;
+		
+		//from Ken
+		//f'(x,y,z) = [  2ax + ez + fy + g  ,  2by + dz + fx + h  ,  2cz + dy + ex + i  ]
+		
+		float col = 0.0;
+		/*
+		for(int i = 0 ; i < 10 ; i++){
+			if(i<=lights.numDir){
+				float tempCol=dot(normalize(ray.n),normalize(lights.directional[i].xyz))*lights.directional[i].w;
+				if(tempCol>0.0){
+					col+=tempCol;
+				}
+			}	
+			else{
+				col+=0.0;
+			}
+		}	
+		*/
+		ray.color = ray.n;//(sphere.color*col)+lights.ambient;
+		
+	}
+
+	return ray;
+}
+
+Lights makeLights(in vec3 amb, in vec4 dir[10], in int num){
+	
+	Lights lights;	
+	//lights.ambient = vec3(0.0);
+	lights.numDir = num;
+
+	for (int i = 0 ; i < 10 ; i++){
+	
+		if(i<=num){
+			lights.directional[i] = dir[i];
+		}
+		else{
+			lights.directional[i] = vec4(0.0);
+		}
+	}
+
+	lights.ambient = amb;
+	return lights;
+
+}
+
+sCube makeCube(vec3 color, Transform xform){
+
+	sCube cube;
+	
+	mat4 inverseMatrix = TSRmat(xform.x,xform.y,xform.z,xform.T,xform.S);
+	
+	cube.cube[0] = vec4(-1.0,0.0,0.0,-1.0) * inverseMatrix;
+    cube.cube[1] = vec4(1.0,0.0,0.0,-1.0) * inverseMatrix;
+    cube.cube[2] = vec4(0.0,-1.0,0.0,-1.0) * inverseMatrix;
+    cube.cube[3] = vec4(0.0,1.0,0.0,-1.0) * inverseMatrix;
+    cube.cube[4] = vec4(0.0,0.0,-1.0,-1.0) * inverseMatrix;
+    cube.cube[5] = vec4(0.0,0.0,1.0,-1.0) * inverseMatrix;
+	
+	cube.color = color;
+	
+	return cube;
+}
+
+Ray makeDefaultRay(){
+
+	Ray ray;
+
+	ray.n = vec3(0.0);
+	ray.t = 1e6;
+	ray.hit = false;
+	ray.color = vec3(0.0,0.3,0.0);
+	ray.testFloat = 1.0;
+	ray.testVec3 = vec3(1.0);
+	
+	return ray;
+}
+
+Ray pCube(in Cam cam, in sCube cube, in Lights lights){
+
+	float LV;
+	float LW;
+
+	float maxEnter;
+	float minExit;
+
+	int maxIndex;
+	int minIndex;
+
+	Ray ray;
+	
+	ray.n = cube.cube[0].xyz;
+	ray.t = 0.4;
+	ray.hit = false;
+	ray.color = lights.ambient;
+	ray.testFloat = 1.0;
+	ray.testVec3 = cube.cube[0].xyz;
+	
+	float eps = 0.000001;
+	bool miss = false;
+
+    for(int i = 0 ; i < 6 ; i ++){
+
+        tEnter[i] = 0.0;
+        tExit[i] = 0.0;
+
+        LW = ( dot( cube.cube[i], cam.W ));
+        LV = ( dot( cube.cube[i], cam.V ));
+
+        //degenerate cases
+		
+        //The entire ray lies inside the half space - ignore this L
+		//this doesn't seem to do anything
+		if( abs(LW) < eps && LV < -eps ){
+			//ray.hit = false;
+		//	break;
+		}
+		
+		//The entire ray lies outside the half space - missed
+		if( abs(LW) < eps && LV > 0.0 ){
+			miss = true;
+			//continue;
+		}
+
+		// enter the half space
+		if ( LW < -eps ){
+			tEnter[i] = -LV/LW;
+		}
+
+		// exit the half space
+		if (LW > eps){
+			tExit[i] = -LV/LW;
+		}
+
+	}
+
+    maxEnter = -1e20;
+    minExit = 1e20;
+	ray.t = 1e6;
+
+    maxIndex = 0;
+    minIndex = 0;
+
+    for (int i = 0 ; i < 6 ; i++){
+
+        // entering rays
+       if(tEnter[i] > maxEnter && tEnter[i] != 0.0){
+            maxEnter = tEnter[i];
+            maxIndex = i;
+			ray.n = normalize(cube.cube[i].xyz);
+        }
+
+        //exiting rays
+        if(tExit[i] < minExit && tExit[i] != 0.0){
+
+            minExit = tExit[i];
+            minIndex = i;
+
+        }
+    }
+	
+    if( miss == false && maxEnter < minExit ){
+		ray.t = maxEnter;
+		
+		float col = 0.5;
+		
+		for(int i = 0 ; i < 10 ; i++){
+			if(i<=lights.numDir){
+				float tempCol=dot(normalize(ray.n),normalize(lights.directional[i].xyz))*lights.directional[i].w;
+				if(tempCol>0.0){
+					col+=tempCol;
+				}
+			}	
+			else{
+				col+=0.0;
+			}
+		}
+		ray.color = (cube.color*col)+lights.ambient;
+		ray.hit = true;
+    }
+	else{
+		ray.hit = false;
+	}
+
+	return ray;
+}
+
+Transform makeXform(float x, float y, float z, vec3 T, vec3 S){
+	Transform Xform;
+	Xform.x = x;
+	Xform.y = y;
+	Xform.z = z;
+	Xform.T = T;
+    Xform.S = S;
+	return Xform;
+}
+
+Cam makeCam(float focal_length, float zPos){
+	Cam cam;
+	vec2 uv = 1.0*( gl_FragCoord.xy / uViewportSize.xy );	
+	//float focal_length = 5.0;
+	cam.V = vec4( 0.0, 0.0, zPos, 1.0); //ray origin
+	cam.W = normalize( vec4( -0.5 + uv.x,0.5 - uv.y, -focal_length, 0.0) );
+	return cam;
+
+}
+
+Ray iSphere( in Cam cam, in pSphere sphere,  in Lights lights )
+{
+	Ray ray = makeDefaultRay();
+	
+	
+    vec3  A = cam.V.xyz - sphere.pos; // ray origin minus sphere position - gives a vector
+    float b = 2.0 * dot( A, cam.W.xyz );
+    float c = dot(A,A) - sphere.rad * sphere.rad;
+    float h = b*b - 4.0 *c;
+
+	//set t to negative one to test
+	if (h > 0.0) { 
+	
+		ray.hit = true;
+		ray.t = (-b - sqrt(h)) / 2.0;
+		vec3 pos = cam.V.xyz + ray.t * cam.W.xyz;
+		ray.n =  normalize(pos - sphere.pos) ;
+		
+		float col = 0.0;
+		
+		for(int i = 0 ; i < 10 ; i++){
+			if(i<=lights.numDir){
+				float tempCol=dot(normalize(ray.n),normalize(lights.directional[i].xyz))*lights.directional[i].w;
+				if(tempCol>0.0){
+					col+=tempCol;
+				}
+			}	
+			else{
+				col+=0.0;
+			}
+		}	
+		ray.color = (sphere.color*col)+lights.ambient;
+		
+	}
+	
+
+	
+	
+    return ray;
+}
+
+pSphere makeSphere(vec3 color, Transform xform){
+
+	pSphere sphere;
+	
+	sphere.color = color;
+	mat4 inverseMatrix = TSRmat(xform.x,xform.y,xform.z,xform.T,xform.S);
+	sphere.rad = 1.0 * xform.S.x;
+	
+	vec4 tempPos = vec4(xform.T,1.0);//*inverseMatrix;
+	sphere.pos = xform.T;
+	
+	return sphere;
+}
+
+//****---------------------****//
+void main( void ){
+
+	//--------scene setup----------
+	Ray ray = makeDefaultRay();
+
+	Cam cam = makeCam(5.0,50.0);
+	
+	vec4 dirLights[10];
+	dirLights[0] = vec4(sin(uTime),-1,-0.4,1.0);
+	dirLights[1] = vec4(0,1,0.0,0.2);
+	
+	Lights lighting;
+	lighting.ambient = vec3(0.1,0.2,0.1);
+	lighting = makeLights(vec3(0.051,0.06,0.07),dirLights,1);
+
+	//--------object setup----------
+	
+	//--------cylinder----------
+	
+	Cylinder iTube = makeCylinder();
+	
+	Transform cylXform = makeXform(0.0,0.0,0.0,
+	vec3(sin(uTime)*10., 0.0, 0.0),
+	vec3(1.0, 1.0, 1.0));
+	
+	xFormCylinder(cylXform,iTube);
+	
+	Ray cyl = iCyl(cam,iTube,lighting);
+	
+	//--------cube----------
+	
+	Transform cubeXform = makeXform(uTime,uTime,uTime,
+	vec3(0.0, 0.0, 10.0*sin(4.0*uTime)-10.0),
+	vec3(1.0, 1.0, 1.0));
+	
+	sCube cuber = makeCube(vec3(1.0*sin(4.0*uTime)+0.5,0.7,0.2),cubeXform);
+		
+	Ray cube;
+    cube = pCube(cam,cuber,lighting);
+	
+	//--------2 spheres----------
+	
+	Transform sphereXform = makeXform(uTime,uTime,uTime,
+	vec3(cos(uTime*3.0)*2.0, sin(uTime*20.0)*0.2, sin(uTime*3.0)*7.0),
+	vec3(0.5, 1.0, 1.0));
+
+	pSphere spheric = makeSphere(vec3(0.1,0.6,0.8),sphereXform);
+
+	Ray sphere;
+	sphere = iSphere(cam,spheric,lighting);
+	
+	Transform sphereXform2 = makeXform(uTime,uTime,uTime,
+	vec3(cos((uTime*3.0)+1.0)*2.0, sin(uTime*13.0)*0.2, sin(uTime*3.0)*7.0),
+	vec3(0.8, 1.0, 1.0));
+
+	pSphere spheric2 = makeSphere(vec3(0.7,0.3,0.8),sphereXform2);
+
+	Ray sphere2;
+	sphere2 = iSphere(cam,spheric2,lighting);
+ 
+ 
+	//--------rendering----------
+	gl_FragColor = vec4( ray.color, 1.0 );
+
+	if(cube.hit == true && cube.t < ray.t){
+		gl_FragColor = vec4( cube.color, 1.0 );
+	}
+	if(sphere.hit == true && sphere.t < cube.t){
+		gl_FragColor = vec4( sphere.color, 1.0 );
+	}
+	if(sphere2.hit == true && sphere2.t < cube.t && sphere2.t < sphere.t){
+		gl_FragColor = vec4( sphere2.color, 1.0 );
+	}
+	if(cyl.hit == true){
+		gl_FragColor = vec4( cyl.color, 1.0 );
+	}
+
+	
+}
+</script>
+
+<script>start()</script>

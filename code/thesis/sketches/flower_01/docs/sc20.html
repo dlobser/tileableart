@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sc20.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>sc20.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> sc1 = {
+
+	setup:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>blha ksfjalsfd aksdf as dfkas dfl as</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		tree = <span class="hljs-keyword">new</span> TREE();
+		tree.branch();
+		scene.add(tree);
+		tree.setScale(<span class="hljs-number">3</span>);
+
+		tree.xform(tree.makeInfo([
+			[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">50</span>],{rz:<span class="hljs-number">1</span>,sc:<span class="hljs-number">4</span>}
+		]),
+		tree.transform);
+
+		tree.xform(tree.makeInfo([
+			[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,[<span class="hljs-number">51</span>,<span class="hljs-number">99</span>]],{rz:-<span class="hljs-number">.1</span>,sc:<span class="hljs-number">.96</span>}
+		]),
+		tree.transform);
+
+		tree.xform(tree.makeInfo([
+			[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,[<span class="hljs-number">51</span>,<span class="hljs-number">99</span>]],{amount:<span class="hljs-number">20</span>}
+		]),
+		tree.appendBranch);
+
+		tree.xform(tree.makeInfo([
+			[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,[<span class="hljs-number">0</span>,<span class="hljs-number">48</span>],<span class="hljs-number">0</span>,<span class="hljs-string">"all"</span>],{rz:<span class="hljs-number">.1</span>,scx:<span class="hljs-number">.9</span>,scz:<span class="hljs-number">.9</span>}
+		]),
+		tree.transform);
+
+		scene.add(tree.makeTubes());
+		tree.position.x=<span class="hljs-number">100</span>;
+		console.log(tree);
+
+	},
+
+	draw:<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(time)</span>{</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>This ##function does what I tell you to all the damn time @copy</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		tree.xform(tree.makeInfo([
+			[<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,[<span class="hljs-number">51</span>,<span class="hljs-number">99</span>]],{rz:omouseX,sc:<span class="hljs-number">.96</span>}
+		]),
+		tree.transform);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>and here it isn’t funny anymore</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+		tree.animateTubes(<span class="hljs-number">1</span>,scene);
+		
+		
+	}
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

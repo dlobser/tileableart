@@ -1,0 +1,255 @@
+<!! ASSIGNMENT DUE WEDNESDAY SEPTEMBER 18, 2013 FOR KEN PERLIN'S GRAPHICS CLASS>
+
+<script src="script.js"></script>
+
+<!! REPLACE THE TEXT BELOW WITH A TITLE FOR YOUR SHADER>
+
+<script id="title" type="text/plain">
+Chinese Medicine Balls
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH A BRIEF DESCRIPTION OF YOUR SHADER>
+
+<script id="description" type="text/plain">
+
+Because one ball is never enough.
+
+</script>
+
+<!! REPLACE THE TEXT BELOW WITH YOUR SHADER CODE>
+
+<script id="shader" type="x-shader/x-fragment">
+
+//define sphere positions and scale
+vec4 sph1 = vec4(sin(uTime), cos(uTime)*0.5, sin(uTime)*-2.,
+abs(sin(uTime*5.5)+5.0)*0.15);
+vec4 sph2 = vec4(sin(uTime+3.14), cos(uTime+3.14), 0.0,
+abs(sin(uTime*5.0)+5.0)*0.15);
+
+vec4 cyl = vec4(0.0,0.0,0.0,1.0);  //if w is 1 it's a point
+
+struct Cube
+{
+vec3 pos;
+vec3 scale;
+};
+
+vec4 cube[6];
+
+
+float iCube( in vec4 V, in vec4 W){
+
+/*ken notes
+
+vec4 point = vec4(1.0,0.0,0.0,1.0);
+vec4 plane = vec4(1.0,0.0,0.0,-1.0);
+
+vec3 T = vec3(0.0, 1.0, 0.0); // translate upward by one unit
+vec3 S = vec3(0.5, 0.5, 0.5); // scale down by one half
+
+mat4 matrix = tsMatrix(T, S);
+vec4 newPoint = matrix * point; // result will be: (0.5,1.0,0.0,1.0)
+
+mat4 inverseMatrix = tsMatrix(-T/S, 1.0/S);
+vec4 newPlane = plane * inverseMatrix;
+*/
+//from Ken -- attempting to include matrix x-formation into the cube class
+//mat4 matrix = tsMatrix(Translate, Scale);
+//vec4 newPoint = matrix * vec4(vec3(cube[0].xyz),1.0); // result will
+//be: (0.5,1.0,0.0,1.0)
+/*
+Ken's example looks like this - the only difference between a point
+and a plane being the w coordinate
+So on the line above I just made a new vec4 using info from the plane
+and replaced the -1 with a 1 - does that even make sense?
+vec4 point = vec4(1.0,0.0,0.0,1.0);
+vec4 plane = vec4(1.0,0.0,0.0,-1.0);
+*/
+
+//mat4 inverseMatrix = tsMatrix(-Translate/Sscale, 1.0/Sscale);
+
+//made these vectors but I'm not sure how to move them away from the origin
+cube[0] = vec4(-1.0,0.0,0.0,-1.0);
+cube[1] = vec4(1.0,0.0,0.0,-1.0);
+cube[2] = vec4(0.0,-1.0,0.0,-1.0);
+cube[3] = vec4(0.0,1.0,0.0,-1.0);
+cube[4] = vec4(0.0,0.0,-1.0,-1.0);
+cube[5] = vec4(0.0,0.0,1.0,-1.0);
+//compute the intersection of a ray with a plane
+//t   =   - ( L • V ) / ( L • W )
+//should I be using a loop to go through each plane?  For now I'm just
+//looking at one.
+//should each ray inside the cube have kept track of which planes it
+//passed through?
+
+//for
+float LW = (dot(cube[0],W));
+float LV = (dot(cube[0],V));
+//returns a distance to a point on a plane
+float t = -LV/LW;
+//use a counter to add up enters and exits - I'm sure I have to
+//structure this differently
+//an enter means that the ray is inside of all of the half spaces
+float enter = 0.0;
+float exit = 0.0;
+//figure out if the ray is inside the cube by adding up the enters and exits?
+//if(t<0){enter += t;}
+//if(t>0){exit += t;}
+//degenerate case
+//if(LW==0 && LV<=0){return 0.0;}
+//Keep track of which of the six ray/half-plane intersections resulted in tenter
+//not sure how to do this
+//if t < 0 - the ray is entering
+//if t > 0 - the ray is exiting
+/* from ken
+L • W = 0 and L • V = 0 The entire ray lies inside the half space
+L • W = 0 and L • V > 0 The entire ray lies outside the half space
+*/
+/*** code I found from elsewhere - trying to pick it apart
+//plane position and plane normal can be the same - why negative dot?
+float d = -dot(pl.p, pl.n);
+//this makes sense - dot ray direction with plane normal
+float v = dot(ray.dir, pl.n);
+
+if (abs(v) < 1.0e-6)
+return; // the plane is parallel to the ray.
+
+float t = -(dot(ray.org, pl.n) + d) / v;
+*/
+//float t = dot(pl.xyz,V);
+if (t < 0.0) { return -1.0; }
+
+return t;
+}
+
+//simple x-form matrix function from Ken
+/*
+mat4 tsMatrix(vec3 t, vec3 s) {
+return mat4(s.x,0.,0.,0., 0.,s.y,0.,0., 0.,0.,s.z,0., t.x,t.y,t.z,1.);
+}
+
+float iCylinder( in vec3 V, in vec3 W, in vec4 cyl)
+{
+
+/* quadratic equation
+A = W•W
+B = 2 (V•W)
+C = V•V - 1
+// sphere =   (W•W) t2 + 2W•(V-c) t + (V-c)•(V-c) - r2 = 0
+// cylinder = (W•W) t2 + 2(V•W) t   + (V•V - 1) = 0
+root1 = (-b + sqrt(b*b-4.*a*c) ) / (2.*a);
+root2 = (-b - sqrt(b*b-4.*a*c) ) / (2.*a);
+
+//rewriting code to more closely match Ken's suggestions
+float A = dot(W,W);
+float B = 2.0 * dot(V,W);
+float C = dot(V,V) - 1.0;
+if ((B*B - 4.0 * A * C ) < 0.0) { return -1.0; }
+return ( -B - sqrt(B*B - 4.0 * A * C ) / ( 2.0 * A );
+/*original code
+    vec3  Vec = V - cyl.xyz; // ray origin minus sphere position -
+gives a vector
+    float b = 2.0 * dot( Vec, W ); //In this case - why can't I use
+dot(V,W) - why dot(A,W)?
+    float c = dot(Vec,Vec) - 1.0;   //yep - unfortunately still not
+really understanding the quadratic equation and
+//how a cylinder differs from a sphere
+    float h = b*b - 4.0 *c;
+
+    //set t to negative one to test
+    if (h < 0.0) { return -1.0; }
+    float t = (-b - sqrt(h)) / 2.0;
+    return t;
+
+}
+*/
+
+
+
+float iSphere( in vec3 V, in vec3 W, in vec4 sph )
+{
+
+    /* quadratic equation
+A = W•W
+B = 2W•(V-c)
+C = (V-c)•(V-c) - r2
+*/
+// sphere = (W•W) t2 + 2W•(V-c) t + (V-c)•(V-c) - r2 = 0
+// cylinder = (W•W) t2 + 2(V•W) t   + (V•V - 1) = 0
+    vec3  A = V - sph.xyz; // ray origin minus sphere position - gives a vector
+    float b = 2.0 * dot( A, W );
+    float c = dot(A,A) - sph.w;
+    float h = b*b - 4.0 *c;
+
+    //set t to negative one to test
+    if (h < 0.0) { return -1.0; }
+    float t = (-b - sqrt(h)) / 2.0;
+    return t;
+}
+
+float remap (in float low1, in float high1, in float low2, in float
+high2, in float value){
+     return low2 + (value - low1) * (high2 - low2) / (high1 - low1) ;
+}
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+void main( void )
+{
+
+     vec3 light = normalize( vec3(0.4,2.6,1.4) );    // light position
+     vec2 uv = ( gl_FragCoord.xy / uViewportSize.xy );
+
+     vec4 V = vec4( 0.1, 0.1, 4.0, 1.0 ); //ray origin
+     vec4 W = normalize( vec4( -0.5 + uv.x * (uViewportSize.x/uViewportSize.y),-0.5 + uv.y, -1.0, 0.0) ); //ray direction
+
+        // float t = iSphere( V, W, sph1 );
+       //  float q = iSphere( V, W, sph2 );
+    float t = 0.0;
+    float q = 0.0;
+    //Cube.scale = vec3(1.0,1.0,1.0);
+    //Cube.pos = vec3(0.0,0.0,0.0);
+
+    float cube = iCube(V,W);
+    //float cyl = iCylinder(V,W,cyl);
+
+    vec3 col = vec3(0.0);
+    vec3 col2 = vec3(0.0);
+
+/*
+     if ( t > 0.0 ) // sphere
+     {
+         vec3 pos = V + t * W;
+         vec3 nor = ( pos - sph1.xyz );
+         float dif = clamp( dot( nor, light ), 0.0, 1.0);
+    //float ao = remap(0.0,1.0,0.0,-0.1,t); //attempting to
+incorporate depth by remapping the t value but no luck
+         //col = vec3( rand(vec2(nor.x,nor.y)), 0.8, 0.6) * dif +
+vec3(0.1, 0.2, 0.4) ;
+     }
+     if ( q > 0.0 ) // sphere
+     {
+         vec3 pos = V + q * W;
+         vec3 nor = ( pos - sph2.xyz );
+         float dif = clamp( dot( nor, light ), 0.0, 2.0);
+         //col2 = vec3( 0.0, 0.8, 0.9) * dif + vec3(0.1, 0.2, 0.4) ;
+     }
+
+if (t>0.0 && q>0.0)
+{
+//just playing around with what happens when balls intersect
+//col = vec3(rand(vec2(uv)))*vec3(0.5,0,0.4);
+}
+*/
+
+if ( cube > 0.0 ) // cube
+     {
+        col = vec3(cube*0.05);
+     }
+     gl_FragColor = vec4( col+col2, 1.0 );
+}
+</script>
+
+<script>start()</script>
