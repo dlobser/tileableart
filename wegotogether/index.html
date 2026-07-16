@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+        <link href='http://fonts.googleapis.com/css?family=Codystar:300' rel='stylesheet' type='text/css'>
+
+    <style>
+      #mainBoxFull img { display: block; }
+      #mainBoxFull{ font-size:0; }
+      img{
+        padding:0;
+      }
+      #title{
+        /*font-family: 'Roboto', sans-serif;*/
+        /*font-family: 'Codystar', cursive;*/
+        font-family:'Georgia',serif;
+        font-size:3em;
+      }
+      p{
+        font-family:'Georgia',serif;
+        font-size:1.4em;
+        padding-left:10%;
+        padding-right:10%;
+      }
+      #black{
+        background-color:black;
+      }
+      .col-centered{
+          float: none;
+          margin: 0 auto;
+      }
+      .center-block {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .containerVideo video {
+          position:relative;
+          z-index:0;
+      }
+      .overlayVideo {
+          position:absolute;
+          top:0;
+          left:0;
+          z-index:10;
+      }
+      a:link {color:#6699CC;}      /* unvisited link */
+      a:visited {color:#667788;}  /* visited link */
+      a:hover {color:#DDDDDD !important; text-decoration:none !important;}  /* mouse over link */
+      a:active {color:#0000FF;}  /* selected link */
+    </style>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-41213515-2', 'wegotogether.info');
+      ga('send', 'pageview');
+
+    </script>
+    <title>WeGoTogether</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="../../../../dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head> <script type="text/javascript">
+    $(document).bind(
+      'touchmove',
+      function(e) {
+        e.preventDefault();
+      }
+    );
+    </script>
+
+  <body style="background-color:black;color:#bbbbbb">
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="background-color:black">
+      <div class="container">
+        <div class="navbar-header" style="text-align:center">
+
+          <a class="navbar-brand" href="/" style="font-family:Georgia">Home</a>
+          <a class="navbar-brand" href="/blog" style="font-family:Georgia;font-size:1em">Blog</a>
+          <a class="navbar-brand" href="/about" style="font-family:Georgia">About</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="container">
+        <br><br>
+        <style>
+  button{
+    padding-left:50px;
+    padding-right:50px;
+    background-color:#000000;
+    font-size:1.5em;
+    border-radius:29px;
+    border-style:solid;
+  }
+</style>
+
+       
+     
+      <!-- <div class="container" style="background-color:black"> -->
+        <div class="navbar-fixed-top" style="margin-top:-10px;margin-right:3%">
+          <div class="nav nav-pills pull-right">
+          <a class="navbar-brand" href="#wegotitle" style="font-size:1em;font-family:Georgia">Intro</a>
+          <a class="navbar-brand" href="#complexity" style="font-size:1em;font-family:Georgia">complexity</a>
+          <a class="navbar-brand" href="#wegodots" style="font-size:1em;font-family:Georgia">we begin</a>
+          <a class="navbar-brand" href="#wego" style="font-size:1em;font-family:Georgia">we go</a>
+          <a class="navbar-brand" href="#wegopoles" style="font-size:1em;font-family:Georgia">we meet</a>
+          <a class="navbar-brand" href="#wemove" style="font-size:1em;font-family:Georgia">we move</a>
+          <a class="navbar-brand" href="#wemerge" style="font-size:1em;font-family:Georgia">we merge</a>
+        </div>
+        </div>
+      
+      <!-- </div> -->
+</div>
+
+<div class="containerVideo">
+   	  <a href="#wegotitle"> 
+        <video  poster="images/presentation/mothLights.png" width="100%" height="auto" loop autoplay>
+          <source src="images/video/preview.webm">
+          <source src="images/video/preview.mp4">
+        </video>
+        </a>
+</div>
+    <div class="overlayVideo" style="text-align:center;padding-left:40%;padding-right:0%;padding-top:150px;z-index:-5">
+
+         <a href="#wegotitle"><span id="title" style="text-align:center;font-size:2em"></span><p style="text-align:center;font-size:3em">
+          Loading Video</p>
+          <br><p style="text-align:center">if 'mime type' is not supported <br>
+          please use a different browser, such as Chrome<br></a></p>
+    </div>
+	 
+	</video>
+
+
+<div class="row">
+  <div class="col-md-12"> <a id="wegotitle"></a>
+  	<br><br><br><br><br><br>
+    <div style="text-align:center;padding-left:20%;padding-right:20%">
+	 
+    <br><br><span id="title">This is a story</span>
+    <div style="padding-top:-50px;text-align:center;">
+<p style="color:#5588aa;font-size:1em">told in a variety of media with <a href="http://wegotogether.info/tree/"><u>tools</u></a> built in</p>
+<a href="webgl/polesplant.html" style="text-align:center;line-height:-50px;font-size:1em"> <b style="font-size:2em"><button >webGL</button></b><br><br></a>
+<p style="color:#5588aa;font-size:1em">select these links to display real time 3D pages <br>(may not be compatible with your browser)</p>
+</div><br>
+	  <p>This is a story about a migration of miller moths</p>
+	  <!-- <video src="images/video/QBMoths.mov" controls></video> -->
+	 
+	  <img src="images/presentation/mothModel2.png"><br><br>
+	  
+
+    </div>
+<br><br>
+  </div>
+
+</div>
+ <div class="center-block" style="padding-left:10%;padding-right:10%">
+  <div>
+  <p>       
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In 1991 the largest miller moth migration in memory was occurring and the night time sky was filled with the dusty travelers. They would crowd around streetlamps and die in muddy piles.  Some people believe that moths are attracted to light because it interrupts their ability to navigate.  I would propose that the network of telephone poles has become sentient and evolved the ability to implant their spores into the obsessive moths.  This is more or less how <a href="http://en.wikipedia.org/wiki/Cordyceps">cordyceps</a> reproduce, driving their host insects to suicide.</p>
+
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;We Go Together tells the story of the miller moth migration and their encounter with our technology through a series of interactive webgl animations, <a href="http://www.shapeways.com/shops/hilobster?section=wegotogether&s=0"><u>3D prints</u></a>, virtual reality experiences, musical performance, robot drawings, etc.  You can read more about the process <a href="/about">here</a>.
+</p>
+<br><br><br>
+ <div style="text-align:center"><a id="complexity"><img src="images/presentation/mothModel2.png" width="50px"><br><br></a></div>
+
+
+<div id="title" style="text-align:center">We Go Together</div><br>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Complexity can arise out of a multiplicity of relatively simple interactions, the shape that emerges and then loops in this video is the result of recursive matrix multiplication, where the latter parts of the line are affected by the previous parts and the sine wave that drives the shape of the line is modified over its length. 
+</p>
+
+<div class="containerVideo" style="text-align:center">
+        <video width="400px" height="auto" loop controls>
+          <source src="images/video/sinWave.webm">
+          <source src="images/video/sinWave.mp4">
+        
+</div>
+
+<!--BUTTON-->
+<br><br><br>
+<div style="text-align:center">
+<a href="webgl/sine.html"> 
+  <button>
+    WebGL 
+  <span style="font-size:.6em">
+    move the mouse
+  </span></button>
+</a>
+<!--BUTTON-->
+
+</div><br></div>
+
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This idea is the basis for the techniques I used to build TREE.js.  You can read more about hierarchical sine waves <a href="/2014/04/05/sine/">here</a>.
+</p>
+
+<br><br><br><br><br><br><br><br><br><br><br><br>
+ <div style="text-align:center"><a id="wegodots"><img src="images/presentation/mothModel2.png" width="50px"><br><br></a></div>
+
+<div id="title" style="text-align:center">We Start As Dots</div>
+<p><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The Miller Moth is the adult form of the Army Cutworm, their eggs are laid in the soil.  They feed on wheat and barley and they pupate in the soil.
+</p>
+
+<div class="containerVideo" style="text-align:center">
+   	  <video poster="images/video/worms.jpg" width="90%" height="auto" controls>
+          <source src="images/video/wormsDidge.webm">
+          <source src="images/video/wormsDidge.mp4">
+        </video>
+</div>
+
+
+<!--BUTTON-->
+<br><br><br>
+<div style="text-align:center">
+<a href="webgl/worms.html"> 
+  <button>
+    WebGL 
+  <span style="font-size:.6em">
+    microphone input
+  </span></button>
+</a>
+<!--BUTTON-->
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br>
+ <a id="wego"><img src="images/presentation/mothModel2.png" width="50px"><br><br>
+</a>
+
+
+<div id="title" style="text-align:center">When we are ready, we go</div><br>
+<div style="padding-top:-50px;text-align:center;">
+
+
+<p style="text-align:left">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Miller Moths are so named because of their dusty scales they emerge in early summer, sometimes in huge numbers.  They travel to the mountains where they feed at night on the nectar of wildflowers
+</p>
+
+<br><br><br>
+
+<div class="containerVideo" style="text-align:center">
+      <video poster="images/video/barley.jpg" width="90%" height="auto" controls>
+        <source src="images/video/mothBarley2.webm">
+        <source src="images/video/mothBarley2.mp4">
+</div>
+
+
+<!--BUTTON-->
+<br><br><br>
+<div style="text-align:center">
+<a href="webgl/barley.html"> 
+  <button>
+    WebGL 
+  <span style="font-size:.6em">
+    move the mouse, 'h' displays sliders
+  </span></button>
+</a>
+<!--BUTTON-->
+
+<br><br><br><br><br><br><br><br><br><br><br><br>
+
+ <div style="text-align:center"><a id="wegopoles"><img src="images/presentation/mothModel2.png" width="50px"><br><br></a></div>
+
+<div id="title" style="text-align:center">I am Awake</div><br>
+
+<p style="text-align:left">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Panpsychism is the idea that consciousness is a fundamental feature of the universe and would naturally arise within any sufficiently complex, information-processing system. All living things are conscious, this would include all vertebrates, worms, jellyfish, insects and plants; it’s also possible that this is true of complex systems that we wouldn’t normally think of as being alive, such as the internet.
+</p>
+
+<br><br><br>
+
+
+<div class="containerVideo"style="text-align:center">
+      <video width="90%" poster="images/video/poles.jpg" height="auto" controls>
+         <source src="images/video/poleGame.webm">
+        <source src="images/video/poleGame.mp4">
+      </video>
+</div>
+
+<!--BUTTON-->
+<br><br><br><br>
+<div style="text-align:center">
+<a href="webgl/poles.html"> 
+  <button>
+    WebGL 
+  <span style="font-size:.6em">
+    mouse steers - 'q' and 'e' roll - fly into the light
+  </span></button>
+</a>
+<!--BUTTON-->
+
+<br><br><br><br><br><br><br><br><br><br><br><br>
+ <div style="text-align:center"><a id="wemove"><img src="images/presentation/mothModel2.png" width="50px"><br><br></a></div>
+
+
+<div id="title" style="text-align:center">We Move Together</div>
+
+<br>
+<p style="text-align:left">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cordyceps are a family of fungus which take over the minds of insects. Once infected, the insects are driven to suicide in order to facilitate the spread of the spores.  Perhaps our network of telephone poles has learned some techniques from this species and are using it to reproduce and evolve.
+
+</p>
+
+<br><br><br>
+
+<div class="containerVideo"style="text-align:center">
+      <video poster="images/video/mothLight.jpg" width="90%" height="auto"  controls>
+        <source src="images/video/mothLight.webm">
+        <source src="images/video/mothLight.mp4">
+      </video>
+</div>
+
+<!--BUTTON-->
+<br><br><br>
+<div style="text-align:center">
+<a href="webgl/moths.html"> 
+  <button>
+    WebGL 
+  <span style="font-size:.6em">
+    mouse changes speed
+  </span></button>
+</a>
+<!--BUTTON-->
+
+<br><br><br>
+
+
+<div class="containerVideo"style="text-align:center">
+  <img src="images/presentation/mothZoe_01.gif" style="text-align:center">
+</div>
+
+
+<br><br><br><br><br><br><br><br><br>
+ <div style="text-align:center"><a id="wemerge"><img src="images/presentation/mothModel2.png" width="50px"><br><br></a></div>
+
+<div id="title" style="text-align:center">We Merge Together</div><br>
+
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;When we meet we dissolve a little <br>and we can become something new, together.
+</p>
+
+<br><br><br>
+
+<div class="containerVideo"style="text-align:center">
+      <video  poster="images/video/print.jpg" width="100%" height="auto" controls>
+         <source src="images/video/mothPrints.webm">
+         <source src="images/video/mothPrints.mp4">
+      </video>
+</div>
+
+<!--BUTTON-->
+<br><br><br>
+<div style="text-align:center">
+<a href="webgl/polesplant.html"> 
+  <button>
+    WebGL 
+  <span style="font-size:.6em">
+    move the mouse
+  </span></button>
+</a>
+<!--BUTTON-->
+
+<br><br><br>
+<br><br>
+ <div style="text-align:center"><img src="images/presentation/mothModel2.png" width="50px"><br><br></div>
+<br><br>
+
+<div id="title" style="text-align:center">Thank You!</div><br>
+
+<div class="containerVideo"style="text-align:center">
+  <img src="images/presentation/norah_02_256.gif" style="text-align:center">
+  <img src="images/presentation/ryan_02_256.gif" style="text-align:center">
+  <img src="images/presentation/leslie_02_256.gif" style="text-align:center"><br>
+  <img src="images/presentation/david_01_256.gif" style="text-align:center">
+  <img src="images/presentation/shawn_02_256.gif" style="text-align:center">
+</div>
+
+<br><br><br><br><br><br>
+
+<div id="title" style="text-align:center"><a href="/about">Making Of</a></div><br>
+
+<br><br><br><br><br><br>
+
+
+<p style="font-size:.9em">Thank you:<br><br>
+  Scott Garner - for showing me the way<br>
+  Dan Shiffman - for the Nature of Code<br>
+  Marina Zurkow - for The Fungus Among us<br>
+  Danny Rozin - for setting an example<br>
+  Katherine Dillon and my thesis group<br>
+  Ryan Bartley, Norah Solorzano, Leslie Lin, and Shawn Chua for being my models<br>
+  Ken Perlin, Wyna Liu, Pamela Liou, Gal Sasson, Omer Shapira <br>and all others for the support<br>
+
+<br><br><br><br><br><br>
+
+
+
+
+     
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+  </body>
+</html>

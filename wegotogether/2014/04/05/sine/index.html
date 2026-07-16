@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+        <link href='http://fonts.googleapis.com/css?family=Codystar:300' rel='stylesheet' type='text/css'>
+
+    <style>
+      #mainBoxFull img { display: block; }
+      #mainBoxFull{ font-size:0; }
+      img{
+        padding:0;
+      }
+      #title{
+        /*font-family: 'Roboto', sans-serif;*/
+        /*font-family: 'Codystar', cursive;*/
+        font-family:'Georgia',serif;
+        font-size:3em;
+      }
+      p{
+        font-family:'Georgia',serif;
+        font-size:1.4em;
+        padding-left:10%;
+        padding-right:10%;
+      }
+      #black{
+        background-color:black;
+      }
+      .col-centered{
+          float: none;
+          margin: 0 auto;
+      }
+      .center-block {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .containerVideo video {
+          position:relative;
+          z-index:0;
+      }
+      .overlayVideo {
+          position:absolute;
+          top:0;
+          left:0;
+          z-index:10;
+      }
+      a:link {color:#6699CC;}      /* unvisited link */
+      a:visited {color:#667788;}  /* visited link */
+      a:hover {color:#DDDDDD !important; text-decoration:none !important;}  /* mouse over link */
+      a:active {color:#0000FF;}  /* selected link */
+    </style>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-41213515-2', 'wegotogether.info');
+      ga('send', 'pageview');
+
+    </script>
+    <title>WeGoTogether</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../dist/css/bootstrap.min.css" rel="stylesheet">
+     <link href="../../../../dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="jumbotron.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head> <script type="text/javascript">
+    $(document).bind(
+      'touchmove',
+      function(e) {
+        e.preventDefault();
+      }
+    );
+    </script>
+
+  <body style="background-color:black;color:#bbbbbb">
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="background-color:black">
+      <div class="container">
+        <div class="navbar-header" style="text-align:center">
+
+          <a class="navbar-brand" href="/" style="font-family:Georgia">Home</a>
+          <a class="navbar-brand" href="/blog" style="font-family:Georgia;font-size:1em">Blog</a>
+          <a class="navbar-brand" href="/about" style="font-family:Georgia">About</a>
+        </div>
+        <div class="navbar-collapse collapse">
+
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="container">
+        <br><br>
+        <div class="row">
+  
+    <p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;My work over the last year has centered around a simple idea.  If you take a sine wave and treat it like a series of segments, or joints, where each segment is hierarchically parented to the previous joint some interesting phenomena occur.  Passing a regular sine wave down the joint chain can generate the typical wave pattern that we're all familiar with.  However, adjusting the parameters slightly begins to create much more complex shapes such as looping spirals and lacy filigree.</p>
+
+<p>To get a sense of why this happens let's step back to a simpler example.  This is a joint chain laid out in a line.  If we bend all the joints an equal amount, it will twist around and become a circle.</p>
+
+<p><a href="../../../../images/gifs/sine/circle_01.gif"><img src="../../../../images/gifs/sine/circle_01.gif" width="300px"></a><br></p>
+
+<p>A duplication, mirroring, and extending reveals lines reminiscent of magnetic fields.</p>
+
+<p><a href="../../../../images/gifs/sine/circle_02.gif"><img src="../../../../images/gifs/sine/circle_02.gif" width="300px"></a><br></p>
+
+<p>If the joint chain scales as it rotates (each subsequent joint becomes slightly smaller) then spirals emerge.</p>
+
+<p><a href="../../../../images/gifs/sine/circle_03.gif"><img src="../../../../images/gifs/sine/circle_03.gif" width="300px"></a><br></p>
+
+<p>Each joint has a number identifying its place in the chain.  The first joint is 1, the second is 2 and so forth.  This number can be used as a variable to control a sine wave - the formula for this image is something like: rotate = sin(joint.number);</p>
+
+<p><a href="../../../../images/gifs/sine/sine_01.gif"><img src="../../../../images/gifs/sine/sine_01.gif" width="600px"></a><br></p>
+
+<p>In this example the frequency of the sine wave is actually slowed down: rotate = sin(joint.numer/10); Because the joints are parented hierarchically the lower frequency doesn't result in a longer wave but rather a wave that loops back on itself.</p>
+
+<p><a href="../../../../images/gifs/sine/sine_02.gif"><img src="../../../../images/gifs/sine/sine_02.gif" width="600px"></a><br></p>
+
+<p>An even more extreme example.</p>
+
+<p><a href="../../../../images/gifs/sine/sine_03.gif"><img src="../../../../images/gifs/sine/sine_03.gif" width="600px"></a><br></p>
+
+<p>Things start to get interesting when I increase the amplitude based on the joint number : rotate = sin(joint.number)*joint.number</p>
+
+<p><a href="../../../../images/gifs/sine/sine_04.gif"><img src="../../../../images/gifs/sine/sine_04.gif" width="600px"></a><br>
+<a href="../../../../images/gifs/sine/sine_05.gif"><img src="../../../../images/gifs/sine/sine_05.gif" width="600px"></a><br></p>
+
+<p>If this were a tone that was being played the frequency and volume would be increasing.  When applied to the hierarchical sine wave the results become fractal like, meaning that patterns repeat across the wave at different scales as phase patterns emerge.<br></p>
+
+<p><a href="../../../../images/gifs/sine/sine_06.gif"><img src="../../../../images/gifs/sine/sine_06.gif" width="600px"></a>
+<a href="../../../../images/gifs/sine/fractal_01.gif"><img src="../../../../images/gifs/sine/fractal_01.gif" width="300px"></a></p>
+
+<p><a href="../../../../images/gifs/sine/fractal_02.gif"><img src="../../../../images/gifs/sine/fractal_02.gif" width="300px"></a>
+<a href="../../../../images/gifs/sine/fractal_03.gif"><img src="../../../../images/gifs/sine/fractal_03.gif" width="300px"></a>
+<a href="../../../../images/gifs/sine/fractal_04.gif"><img src="../../../../images/gifs/sine/fractal_04.gif" width="300px"></a></p>
+
+<p>The reason that the joint chain with a sine wave applied creates such unusual shapes is that unlike a regular sin wave, the hierarchical sin wave will continue twisting around until it loops back on itself, producing spirals which alternate directions.  As these joint chains are three dimensional they can rotate in different ways on different axis to produce even more interesting results.</p>
+
+<p>.</p>
+</p>
+</div>
+
+
+     
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+  </body>
+</html>

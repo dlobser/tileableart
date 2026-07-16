@@ -1,0 +1,225 @@
+
+<html>
+  <head>
+    <title>TREE.js</title>
+ 
+    <style>
+    #container{
+		width:500px
+	}
+	body{
+		background-color:white;
+		margin:0;
+		padding:0;
+		text-decoration:none;
+		/*cursor: none !important; */
+	}
+	 body {
+        overflow: hidden;
+    }
+    a:link {color:#999999;text-decoration:none;}      /* unvisited link */
+	a:visited {color:#999999;text-decoration:none;}  /* visited link */
+	a:hover {color:#333333;text-decoration:none;}  /* mouse over link */
+	a:active {color:#999999;text-decoration:none;}  /* selected link */
+   
+	.buttonb {
+		-moz-box-shadow:inset 0px 6px 3px 0px #ffffff;
+		-webkit-box-shadow:inset 0px 6px 3px 0px #ffffff;
+		box-shadow:inset 0px 14px 13px 0px #ffffff;
+		background-color:#f9f9f9;
+		border:1px solid #dcdcdc;
+		display:inline-block;
+		color:#666666;
+		font-family:Arial;
+		font-size:10px;
+		font-weight:bold;
+		font-style:normal;
+		height:18px;
+		line-height:5px;
+		width:59px;
+		text-decoration:none;
+		text-align:center;
+		text-shadow:-3px -1px 7px #ffffff;
+	}.buttonb:hover {
+		background-color:#e9e9e9;
+	}.buttonb:active {
+		position:relative;
+		top:1px;
+	}
+	}.buttonb:visited {
+		text-decoration:none !important;
+		border:none;
+	}
+	}.buttonb:focus {
+		text-decoration:none !important;
+		border:none;
+		outline:none;
+	}
+	*:focus {
+	    outline: none;
+	}
+    
+    #editor { 
+        margin: 0;
+        margin-right:50%;
+        margin-bottom:100px;
+        position: absolute;
+        z-index:1;
+        background-color:transparent;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+    </style>
+	</head>
+<body>
+	
+
+		
+				<div id="info"  style="font-family:sans-serif;font-size:0em;color:gray;z-index:10;position:absolute">
+					<span id="mouseInfoX">x: y:</span><br>
+					<span id="mouseInfoY">x: y:</span>
+				</div>
+
+			<div id="container">
+		</div>
+		
+		
+		<script src="lib/setupAce.js"></script>
+
+		<script src="lib/dat.gui.min.js"></script>
+		<script src="lib/three.js"></script>
+		<script src="lib/library.js"></script>
+		<script src="lib/blob.js"></script>
+		
+		<script src="lib/webAudio.js"></script>
+		<script src="lib/jsfxGen.js"></script>
+
+
+		<script src="lib/TREE.js"></script>
+		<script src="lib/fungus.js"></script>
+
+		<script src="lib/template.js"></script>
+
+		<script>
+			
+			sc1 = {
+
+    //telephone poles
+    
+    setup:function(){
+
+        tree = new TREE();
+        // tree.position.y=-100;
+
+        invertBG();
+
+        tree.generate({
+            joints: [16,20,10,5],
+            divs:   [1,1,2,4],
+            start:  [0,10,16,9],
+            angles: [0,2,Math.PI/2,-Math.PI/2],
+            length: [10,10,3,1],
+            rads:   [1,1,2,1],
+            width:  [4,3,2,1]
+        });
+
+        scene.add(tree);
+
+        tree.setScale(.5);
+
+        tree.position.y=-250;
+
+
+        tree.passFunc(tree.makeInfo([
+            [0,0,0], {rx:-.3},
+            [0,0,-1], {ry:.5,rz:.2,sc:1.1},
+            [0,0,[12,15]], {sc:.9},
+            [0,0,-1,0,-2], {jOff:count,rx:0,offMult:.0,freq:1,jMult:.02,jFract:4.5,jOffset:mouseX,offsetter3:0.01,jFreq:.02},
+            // [0,0,-1,0,-2], {rz:0.01},//,freq:.1,offMult:-1,offsetter3:1},
+            [0,0,-1,0,-1,-1,0], {rz:.1},
+
+            [0,0,-1,0,-1,-1,-2], {rz:.2},
+
+            [0,0,-1,0,0], {rz:0},
+            [0,0,-1,0,1], {ry:Math.PI/2},
+
+        ]),
+        tree.transform);
+
+        
+        
+
+    },
+
+    draw:function(time){
+
+
+        tree.passFunc(tree.makeInfo([
+            [0,0,0], {rx:-.3},
+            [0,0,-1], {ry:.5,rz:.2,sc:1.1},
+            [0,0,[12,15]], {sc:.9},
+            [0,0,-1,0,-2], {jOff:time*.05,rx:0,offMult:.0,freq:1,jMult:.02,jFract:4.5,jOffset:mouseX,offsetter3:0.01,jFreq:omouseY*.1},
+            // [0,0,-1,0,-2], {rz:0.01},//,freq:.1,offMult:-1,offsetter3:1},
+            [0,0,-1,0,-1,-1,0], {rz:.1},
+
+            [0,0,-1,0,-1,-1,-2], {rz:.2},
+
+            [0,0,-1,0,0], {rz:0},
+            [0,0,-1,0,1], {ry:Math.PI/2},
+
+        ]),
+        tree.transform);
+        if(var1){
+            var poles = tree.reportLayers();
+
+             var stuff = (tree.worldPositionsMultiArray(poles));
+            
+            var Lines = [];
+            
+
+            for(var j = 0 ; j < 4 ; j++){
+                
+                for(var i = 0 ; i < stuff[3].length-3 ; i+=4){
+                    var lines = [];
+                    lines.push(stuff[3][i+j][4]);
+                    // lines.push(stuff[3][i+j][4]);
+                    if(i+j+1 < stuff[3].length-3){
+                        var v = stuff[3][i+j][4].clone();
+                        v.y-=160;
+                        lines.push(v.lerp(stuff[3][i+j+4][4],.5));
+                        lines.push(stuff[3][i+j+4][4]);
+
+
+                    }
+                    Lines.push(lines);
+
+                }
+            }
+
+        
+            scene.add(tree.tubes(Lines,{lengthSegs:14,minWidth:2,width:2}));
+            bargles = tree.makeTubes({widthSegs:12,lengthSegs:5,minWidth:1,width:2});
+            scene.add(bargles);
+            scene.remove(tree);
+            saver("pole.obj");
+            var1=false;
+        }
+
+    
+    }
+}
+
+
+
+
+			window.onload=function(){reinit();dat.GUI.toggleHide()};
+
+	</script>
+
+
+	</body>
+</html>
+
+
