@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Previs — Local Projects</title>
+<meta name="description" content="Proposal and interaction mock-up for Local Projects Previs, a browser-based VR previsualization tool for experiences.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0a'/%3E%3Ccircle cx='16' cy='16' r='8' fill='%23e4874c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header" id="header">
+  <a class="wordmark" href="#top">Local Projects<span>Previs · Proposal</span></a>
+  <nav class="site-nav" id="nav">
+    <a href="#environment">01 Environment</a>
+    <a href="#materials">02 Materials</a>
+    <a href="#lighting">03 Lighting</a>
+    <a href="#led">04 LED</a>
+    <a href="#projection">05 Projection</a>
+    <a href="#audio">06 Audio</a>
+    <a href="#cues">07 Cues</a>
+    <a href="#walk">08 Navigate</a>
+    <a href="#crowd">09 Crowd</a>
+    <a href="#capture">10 Capture</a>
+  </nav>
+  <div class="progress" id="progress"></div>
+</header>
+
+<!-- ================================================================== HERO -->
+<section class="hero" id="top">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow">Local Projects Previs — a proposal</div>
+    <h1>We are building a previs tool and we <span class="rot" id="heroRot">rehearse the room before it exists.</span></h1>
+    <p class="lede">One browser-based space, desktop or VR headset, where designers, lighting, AV, sound and content teams build an experience together, light it with real fixtures, cue the show, fill it with a simulated crowd and render it for clients. All before a single wall goes up.</p>
+    <div class="meta">
+      <div>Ten stages<span>From napkin sketch to final render</span></div>
+      <div>Real-world data<span>Photometric fixtures, spatial audio, crowd timing</span></div>
+      <div>Open to Blender<span>MCP bridge for modelling &amp; materials</span></div>
+    </div>
+  </div>
+  <div class="scroll-cue">Scroll to explore</div>
+</section>
+
+<!-- ================================================================== OVERVIEW -->
+<section class="block" id="overview">
+  <div class="small-heading reveal">The pipeline</div>
+  <div class="intro reveal">
+    <h2>From rough idea to a show you can walk through.</h2>
+    <p>Each stage below is a working sketch of the interaction, not a finished product. Hover a frame to see what it does; each stage you explore is ticked off here. The mock-ups are live: drag lights, fire cues and run a crowd through the space.</p>
+  </div>
+  <div class="frames map" id="map">
+    <a class="frame reveal" href="#environment" style="--grad:linear-gradient(135deg,#f6e3d6,#efe9e2)"><div class="num">01</div><h3>Environment</h3><div class="more">Import sketches, CAD, BIM or meshes. Tag anything and ask Blender (via MCP) to change it.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#materials" style="--grad:linear-gradient(135deg,#efe6d9,#e2ebe6)"><div class="num">02</div><h3>Materials</h3><div class="more">PBR library, plus photo-to-tileable material generation dropped straight into the library.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#lighting" style="--grad:linear-gradient(135deg,#fae1c8,#f3ece4)"><div class="num">03</div><h3>Lighting</h3><div class="more">Physically based fixtures from an editable catalogue of real lights. Swap, aim, dim.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#led" style="--grad:linear-gradient(135deg,#f6d9e4,#dfe6f5)"><div class="num">04</div><h3>LED</h3><div class="more">Pixel-mapped strips and panels with pitch, power and data universes calculated.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#projection" style="--grad:linear-gradient(135deg,#dbe9f2,#efe7df)"><div class="num">05</div><h3>Projection</h3><div class="more">UV-mapped screens or real projectors whose images cast shadows on people and objects.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#audio" style="--grad:linear-gradient(135deg,#dcefe9,#ecebe4)"><div class="num">06</div><h3>Audio</h3><div class="more">Real speaker models with sound travelling through the space via Steam Audio.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#cues" style="--grad:linear-gradient(135deg,#e4f1dd,#f2e9df)"><div class="num">07</div><h3>Cues</h3><div class="more">An authoring tool for looks, plus a dead-simple GO-button cue runner and multi-camera monitoring.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#walk" style="--grad:linear-gradient(135deg,#efe0f2,#e4eef0)"><div class="num">08</div><h3>Navigate</h3><div class="more">Walk through on desktop or headset. Trigger cues manually or by zone; use interactives.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#crowd" style="--grad:linear-gradient(135deg,#f3e5d0,#dbe9ea)"><div class="num">09</div><h3>Crowd</h3><div class="more">Silhouetted visitors with pathfinding, groups and realistic dwell times, with stats out.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+    <a class="frame reveal" href="#capture" style="--grad:linear-gradient(135deg,#e5e3f3,#f4e6db)"><div class="num">10</div><h3>Capture</h3><div class="more">Path-traced stills and keyframed camera moves for client presentations.</div><div class="tag"><span class="state">Not yet explored</span></div></a>
+  </div>
+  <div class="map-progress reveal" id="mapProgress"><b>0 / 10</b> stages explored</div>
+</section>
+
+<!-- ================================================================== 01 ENVIRONMENT -->
+<section class="block stage-sec" id="environment">
+  <div class="small-heading reveal"><span class="n">01</span>Create the environment</div>
+  <div class="intro reveal">
+    <h2>Start from whatever exists: a napkin sketch, a DWG, a Revit model.</h2>
+    <ul>
+      <li><b>Import</b>Sketches, photos, PDF, DWG/DXF, IFC/RVT, SKP, 3DM, FBX, OBJ, glTF, USD, .blend</li>
+      <li><b>Select &amp; tag</b>Click anything, tag it, describe the change you want</li>
+      <li><b>Blender MCP</b>Requests go to a headless Blender over MCP; results come back as a reviewable diff</li>
+    </ul>
+  </div>
+
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Environment</b> — Gallery_Cyc_Room</div><div class="spacer"></div><span class="chip teal">Blender MCP · connected</span></div>
+    <div class="wb-body">
+      <div class="pane">
+        <div class="ph">Import</div>
+        <label class="drop" id="envDrop"><b>Drop files or click</b>Any sketch, CAD, BIM or mesh<input type="file" multiple hidden id="envFile"></label>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" data-sample="napkin_sketch.jpg">+ sketch.jpg</button>
+          <button class="btn" data-sample="level2_plan.dwg">+ plan.dwg</button>
+          <button class="btn" data-sample="lectern_v3.skp">+ lectern.skp</button>
+          <button class="btn" data-sample="bench_oak.fbx">+ bench.fbx</button>
+        </div>
+        <div class="ph">Sources</div>
+        <div class="list" id="envSources"></div>
+        <div class="ph">Scene</div>
+        <div class="list" id="envOutline"></div>
+      </div>
+      <div class="stage" id="envStage">
+        <canvas id="envCanvas"></canvas>
+        <div class="hud">Click an object to select · <b id="envSelName">nothing selected</b></div>
+      </div>
+      <div class="pane">
+        <div class="ph">Selection</div>
+        <div id="envInspector" class="note" style="margin-top:0">Select an object in the viewport.</div>
+        <div id="envInspectorBody" class="hidden">
+          <div style="font-size:16px;font-weight:700" id="envObjName"></div>
+          <div class="note" id="envObjDims" style="margin-top:2px"></div>
+          <div class="ph">Tags</div>
+          <div class="chips" id="envTags"></div>
+          <input class="inp" id="envTagInput" placeholder="add tag + Enter" style="margin-top:6px">
+          <div class="ph">Ask Blender</div>
+          <textarea id="envReq" placeholder="e.g. make the podium 20 cm taller and round the edges"></textarea>
+          <div class="row" style="margin-top:6px">
+            <button class="btn" data-suggest="make it taller">taller</button>
+            <button class="btn" data-suggest="make it wider">wider</button>
+            <button class="btn" data-suggest="move it 1m left">move left</button>
+            <button class="btn" data-suggest="remove it">remove</button>
+          </div>
+          <button class="btn primary" id="envSubmit" style="width:100%;margin-top:8px">Submit request to Blender</button>
+        </div>
+        <div class="ph">MCP requests</div>
+        <div class="list" id="envQueue"><div class="note" style="margin:0">No requests yet.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Input</div><h3>Sketch to block-out</h3><div class="sub">A phone photo of a sketch becomes a dimensioned grey-box.</div><div class="more">A vision model reads walls, openings and objects, asks for one known dimension, then Blender builds a block-out with named, taggable objects. You keep refining from there.</div><div class="tag">Vision + Blender<i>~2 min</i></div></div>
+    <div class="frame reveal"><div class="k">Input</div><h3>CAD &amp; BIM, natively</h3><div class="sub">DWG, IFC and Revit come in with layers and families intact.</div><div class="more"><ul><li>DWG/DXF linework extruded by layer rules</li><li>IFC/RVT keep categories (wall, door, casework) as tags</li><li>Re-import updates in place; your lights and cues stay put</li></ul></div><div class="tag">Live link<i>diff on re-import</i></div></div>
+    <div class="frame reveal"><div class="k">Collaborate</div><h3>Select, tag, request</h3><div class="sub">Anyone can mark up the model. No 3D skills needed.</div><div class="more">Tags (“client-supplied”, “TBC”, “touchable”) drive filters, crowd behaviour and export. Requests are plain language. The Blender MCP server turns them into tool calls and returns a before/after for approval.</div><div class="tag">MCP<i>reviewable diffs</i></div></div>
+    <div class="frame reveal"><div class="k">Output</div><h3>One source of truth</h3><div class="sub">The scene is a versioned USD stage under the hood.</div><div class="more">Every change, whether human or Blender, is a commit you can branch, compare or roll back. The same file feeds the walkthrough, renders and the AV handoff.</div><div class="tag">USD<i>versioned</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 02 MATERIALS -->
+<section class="block stage-sec" id="materials">
+  <div class="small-heading reveal"><span class="n">02</span>Materials &amp; textures</div>
+  <div class="intro reveal">
+    <h2>Photograph the real sample. Get a tileable PBR material.</h2>
+    <ul>
+      <li><b>Library</b>Shared PBR library: albedo, normal, roughness, AO, height</li>
+      <li><b>Materials MCP</b>Upload a photo; the tool de-lights it, makes it tileable and generates the maps</li>
+      <li><b>Apply</b>Drag onto any surface or tag (“all plinths”)</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Materials</b></div><div class="spacer"></div>
+      <span class="note" style="margin:0">Apply to</span>
+      <select id="matTarget" style="width:auto"><option>Floor</option><option>Cyc</option><option>Podium top</option><option>Plinths (tag)</option></select>
+    </div>
+    <div class="wb-body">
+      <div class="pane">
+        <div class="ph">Photo → tileable PBR</div>
+        <label class="drop" id="matDrop"><b>Drop a photo of a real sample</b>JPG/PNG, shot flat under even light<input type="file" accept="image/*" hidden id="matFile"></label>
+        <button class="btn" id="matSample" style="width:100%;margin-top:6px">Use sample photo (stone)</button>
+        <div id="matGen" class="hidden">
+          <div class="ph">Generated maps <span class="status run" id="matGenStatus">working</span></div>
+          <div class="maps">
+            <figure><canvas id="mapAlbedo" width="128" height="128"></canvas><figcaption>Albedo</figcaption></figure>
+            <figure><canvas id="mapNormal" width="128" height="128"></canvas><figcaption>Normal</figcaption></figure>
+            <figure><canvas id="mapRough" width="128" height="128"></canvas><figcaption>Rough</figcaption></figure>
+            <figure><canvas id="mapHeight" width="128" height="128"></canvas><figcaption>Height</figcaption></figure>
+          </div>
+          <div class="ph">Tiling check (3×3)</div>
+          <canvas id="mapTile" width="240" height="240" style="width:100%;border-radius:3px"></canvas>
+          <input class="inp" id="matName" value="Sampled stone" style="margin-top:8px">
+          <button class="btn primary" id="matAdd" style="width:100%;margin-top:6px">Add to library</button>
+        </div>
+      </div>
+      <div class="stage" id="matStage">
+        <canvas id="matCanvas"></canvas>
+        <div class="hud" id="matHud">Preview</div>
+      </div>
+      <div class="pane">
+        <div class="ph">Library <span id="matCount"></span></div>
+        <input class="inp" placeholder="Search: oak, terrazzo, felt…" id="matSearch" style="margin-bottom:8px">
+        <div class="swatches" id="swatches"></div>
+        <div class="ph">Selected</div>
+        <div class="kv" id="matInfo"></div>
+        <div class="field"><label>Roughness</label><input type="range" id="matRough" min="0" max="1" step=".01"><output></output></div>
+        <div class="field"><label>Tiling (m)</label><input type="range" id="matScale" min=".25" max="4" step=".05"><output></output></div>
+      </div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Library</div><h3>Shared &amp; specified</h3><div class="sub">Every material carries supplier, finish code and sample status.</div><div class="more">The library is the spec. Materials link to supplier SKUs, fire ratings and lead times, so the previs and the finishes schedule never drift apart.</div><div class="tag">PBR<i>metal/rough</i></div></div>
+    <div class="frame reveal"><div class="k">Materials MCP</div><h3>Photo in, material out</h3><div class="sub">Phone photo → de-lit, seamless, measured.</div><div class="more"><ul><li>Lens &amp; perspective correction, de-lighting</li><li>Seam removal &amp; tiling (try it: drop any photo)</li><li>Normal / roughness / height inferred</li><li>Optional ruler in shot sets real-world scale</li></ul></div><div class="tag">MCP tool<i>generate_pbr()</i></div></div>
+    <div class="frame reveal"><div class="k">Apply</div><h3>By object or by tag</h3><div class="sub">Assign to “all plinths” once.</div><div class="more">Assignments follow tags, so when Blender adds three more plinths they arrive finished. Material changes are tracked like any other edit.</div><div class="tag">Tags<i>rule-based</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 03 LIGHTING -->
+<section class="block stage-sec" id="lighting">
+  <div class="small-heading reveal"><span class="n">03</span>Light models &amp; settings</div>
+  <div class="intro reveal">
+    <h2>Light it with fixtures you can actually buy.</h2>
+    <ul>
+      <li><b>Catalogue</b>Real fixtures with IES/LDT photometry, beam options, lumens, CCT, CRI, wattage</li>
+      <li><b>Editable</b>Duplicate a fixture, change the lens or lumen package, save as a variant</li>
+      <li><b>Physically based</b>Results in lux and candela, so the lighting designer can trust them</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Lighting</b> — plan view</div><div class="spacer"></div>
+      <div class="seg" id="litView"><button class="on" data-v="pool">Light pools</button><button data-v="lux">False-colour lux</button></div>
+      <button class="btn" id="litAdd">+ Add fixture</button>
+    </div>
+    <div class="wb-body">
+      <div class="pane">
+        <div class="ph">Fixture catalogue</div>
+        <div class="list" id="litCatalogue"></div>
+        <div class="note">Drag-to-swap: select a fixture on the plan, then click a catalogue entry to swap it. Position and aim are kept.</div>
+      </div>
+      <div class="stage">
+        <canvas id="litCanvas"></canvas>
+        <div class="hud">Drag fixtures · click to select · <b id="litLux">hover for lux</b></div>
+      </div>
+      <div class="pane" id="litInspector">
+        <div class="ph">Selected fixture</div>
+        <div style="font-size:16px;font-weight:700" id="litName">—</div>
+        <div class="note" id="litSpec" style="margin-top:2px"></div>
+        <div class="field wide" style="margin-top:10px"><label>Swap model</label><select id="litModel"></select></div>
+        <div class="field"><label>Pan</label><input type="range" id="litPan" min="-180" max="180"><output></output></div>
+        <div class="field"><label>Tilt</label><input type="range" id="litTilt" min="0" max="70"><output></output></div>
+        <div class="field"><label>Beam</label><input type="range" id="litBeam" min="5" max="60"><output></output></div>
+        <div class="field"><label>Dimmer</label><input type="range" id="litDim" min="0" max="100"><output></output></div>
+        <div class="field"><label>CCT</label><input type="range" id="litCct" min="1800" max="6500" step="50"><output></output></div>
+        <div class="field wide hidden" id="litColorRow"><label>Colour</label><input type="color" id="litColor" value="#ff8a3d"></div>
+        <div class="field"><label>Height</label><input type="range" id="litZ" min="2" max="8" step=".1"><output></output></div>
+        <div class="ph">Photometrics</div>
+        <div class="kv" id="litPhoto"></div>
+        <button class="btn" id="litDel" style="margin-top:12px;width:100%">Remove fixture</button>
+      </div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Accuracy</div><h3>IES-driven light</h3><div class="sub">Manufacturer photometry, not a guess.</div><div class="more">Each fixture uses its IES/LDT candela distribution as a light profile in the renderer, with real lumens → physical units and exposure set like a camera. Lux readouts match what you’d measure on site.</div><div class="tag">Photometric<i>lux / cd</i></div></div>
+    <div class="frame reveal"><div class="k">Library</div><h3>Swap without re-aiming</h3><div class="sub">Try three spot models in the same position in seconds.</div><div class="more">Swapping keeps position, aim and focus, and checks the new fixture's beam range. Costs, wattage and lead time update in the schedule.</div><div class="tag">Catalogue<i>editable variants</i></div></div>
+    <div class="frame reveal"><div class="k">Handoff</div><h3>A real lighting schedule</h3><div class="sub">Export the plot, schedule and DMX patch.</div><div class="more">Fixture schedule (CSV), a lighting plot (DWG/PDF) and an MVR file for Vectorworks / grandMA, so previs becomes the start of the lighting package, not a throwaway.</div><div class="tag">MVR · CSV · DWG<i>export</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 04 LED -->
+<section class="block stage-sec" id="led">
+  <div class="small-heading reveal"><span class="n">04</span>LED strips &amp; panels</div>
+  <div class="intro reveal">
+    <h2>Pixel-mapped, emissive, and counted.</h2>
+    <ul>
+      <li><b>Strips</b>Draw along any edge or cove; pixels per metre, colour channels, diffuser</li>
+      <li><b>Panels</b>LED tiles with real pitch, nits and viewing angle; they emit light into the room</li>
+      <li><b>Budget</b>Pixel count, power and DMX/sACN universes worked out as you draw</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>LED</b> — elevation</div><div class="spacer"></div>
+      <div class="seg" id="ledFx"><button class="on" data-fx="gradient">Gradient</button><button data-fx="chase">Chase</button><button data-fx="breathe">Breathe</button><button data-fx="video">Video map</button><button data-fx="static">Static</button></div>
+    </div>
+    <div class="wb-body two">
+      <div class="stage"><canvas id="ledCanvas"></canvas><div class="hud">Cove strip · LED wall · floor-edge strip — <b>emissive light spills onto the room</b></div></div>
+      <div class="pane">
+        <div class="ph">Products</div>
+        <div class="field wide"><label>Strip</label><select id="ledStrip"><option value="60">RGBW pixel strip · 60 px/m</option><option value="30">RGB pixel strip · 30 px/m</option><option value="144">RGB dense strip · 144 px/m</option></select></div>
+        <div class="field wide"><label>Panel</label><select id="ledPanel"><option value="2.6">LED tile 500×500 · 2.6 mm</option><option value="3.9">LED tile 500×500 · 3.9 mm</option><option value="1.9">LED tile 500×500 · 1.9 mm</option></select></div>
+        <div class="ph">Look</div>
+        <div class="field wide"><label>Colour A</label><input type="color" id="ledA" value="#ff6a2b"></div>
+        <div class="field wide"><label>Colour B</label><input type="color" id="ledB" value="#2bd4c8"></div>
+        <div class="field"><label>Speed</label><input type="range" id="ledSpeed" min="0" max="3" step=".05" value="1"><output></output></div>
+        <div class="field"><label>Brightness</label><input type="range" id="ledBri" min="0" max="100" value="80"><output></output></div>
+        <div class="ph">Budget</div>
+        <div class="kv" id="ledBudget"></div>
+      </div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Draw</div><h3>Strips follow geometry</h3><div class="sub">Click edges to lay strip; corners and runs are measured.</div><div class="more">Strips snap to edges and coves with a choice of diffuser profile. Cut points, feed positions and run lengths are checked against the product's maximum run length.</div><div class="tag">Snap<i>auto-length</i></div></div>
+    <div class="frame reveal"><div class="k">Light</div><h3>Emissive = illuminating</h3><div class="sub">LED content lights the room, like the screen did in our test room.</div><div class="more">The textured area-light technique from our video-GI prototype lets every LED surface throw coloured light and bounce onto nearby walls, updated live as content plays.</div><div class="tag">Real-time GI<i>prototype proven</i></div></div>
+    <div class="frame reveal"><div class="k">Data</div><h3>Patch-ready</h3><div class="sub">Universes, controllers and power, calculated as you draw.</div><div class="more">Exports a pixel map for Madrix/Resolume, sACN universes, and a power/data riser. The cue system drives the same pixels in previs as on site.</div><div class="tag">sACN · Art-Net<i>export</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 05 PROJECTION -->
+<section class="block stage-sec" id="projection">
+  <div class="small-heading reveal"><span class="n">05</span>Projection surfaces &amp; screens</div>
+  <div class="intro reveal">
+    <h2>Screens map by UV. Projectors cast real light, and real shadows.</h2>
+    <ul>
+      <li><b>Screens</b>Any mesh becomes a display: content mapped by its UVs, at a set nits</li>
+      <li><b>Projectors</b>Real lens data: throw ratio, shift, lumens. Images project through space</li>
+      <li><b>Shadows</b>Visitors and objects in the beam block the image and get content on them</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Projection</b> — section view</div><div class="spacer"></div>
+      <div class="seg" id="prjMode"><button data-m="uv">Screen (UV mapped)</button><button class="on" data-m="proj">Projector (projected)</button></div>
+    </div>
+    <div class="wb-body two">
+      <div class="stage"><canvas id="prjCanvas"></canvas><div class="hud">Drag the visitor into the beam · drag the projector to re-position</div><div class="hud hud-r" id="prjHud"></div></div>
+      <div class="pane">
+        <div class="ph">Projector</div>
+        <div class="field wide"><label>Model</label><select id="prjModel"><option value="12000">Laser 12K lm · WUXGA</option><option value="20000">Laser 20K lm · 4K</option><option value="7000">Laser 7K lm · WUXGA</option></select></div>
+        <div class="field"><label>Throw ratio</label><input type="range" id="prjThrow" min=".3" max="2.5" step=".05" value="1.6"><output></output></div>
+        <div class="field"><label>Lens shift V</label><input type="range" id="prjShift" min="-.5" max=".5" step=".01" value=".05"><output></output></div>
+        <div class="field wide"><label>Content</label><select id="prjContent"><option value="bars">Abstract colour</option><option value="grid">Alignment grid</option><option value="text">Title card</option></select></div>
+        <div class="field"><label>Screen gain</label><input type="range" id="prjGain" min=".5" max="2" step=".1" value="1"><output></output></div>
+        <div class="ph">Image</div>
+        <div class="kv" id="prjInfo"></div>
+        <div class="note">In projector mode the visitor blocks the image, so you can see where people will cast shadows and where content lands on them. Switch to UV mode to compare an LED/LCD screen.</div>
+      </div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Screens</div><h3>UV-mapped media</h3><div class="sub">Curved cycs, columns, odd shapes.</div><div class="more">Content maps through each mesh's UVs. Use a test grid to check the pixel density and bezels, then swap in real cuts of the content.</div><div class="tag">Video · image · web<i>per surface</i></div></div>
+    <div class="frame reveal"><div class="k">Projectors</div><h3>Shadow-casting projection</h3><div class="sub">Projected-texture lights with shadow maps.</div><div class="more">Each projector is a light that projects video through its frustum with shadow maps, so people, plinths and handrails block the image and catch content on themselves, just like on site.</div><div class="tag">Projective texture<i>+ shadows</i></div></div>
+    <div class="frame reveal"><div class="k">Planning</div><h3>Throw, blend &amp; brightness</h3><div class="sub">Find positions before the site visit.</div><div class="more">Throw distance, edge-blend overlap between projectors, and brightness in nits on the surface are checked against ambient light from the lighting stage.</div><div class="tag">Blend zones<i>nits on surface</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 06 AUDIO -->
+<section class="block stage-sec" id="audio">
+  <div class="small-heading reveal"><span class="n">06</span>Spatial audio &amp; speakers</div>
+  <div class="intro reveal">
+    <h2>Hear the room: real speakers, real walls, real reflections.</h2>
+    <ul>
+      <li><b>Steam Audio</b>Physics-based propagation (occlusion, reflections, reverb) running in the browser via WebAssembly</li>
+      <li><b>Speakers</b>Place real models with sensitivity and directivity; route content to them</li>
+      <li><b>Materials</b>Surface absorption comes from the material library</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Audio</b> — plan</div><div class="spacer"></div>
+      <div class="seg" id="audView"><button class="on" data-v="heat">SPL map</button><button data-v="rays">Paths to listener</button></div>
+      <button class="btn primary" id="audListen">▶ Listen (headphones)</button>
+    </div>
+    <div class="wb-body">
+      <div class="pane">
+        <div class="ph">Speaker library</div>
+        <div class="list" id="audLib"></div>
+        <div class="note">Click a model to add it. Drag speakers, drag the listener (head icon). Shift-drag a speaker to aim it.</div>
+      </div>
+      <div class="stage"><canvas id="audCanvas"></canvas><div class="hud">Drag speakers &amp; listener · <b id="audHover"></b></div></div>
+      <div class="pane">
+        <div class="ph">Selected speaker</div>
+        <div style="font-weight:700" id="audSelName">—</div>
+        <div class="field"><label>Level</label><input type="range" id="audLevel" min="60" max="110" value="90"><output></output></div>
+        <div class="field"><label>Aim</label><input type="range" id="audAim" min="-180" max="180"><output></output></div>
+        <div class="field wide"><label>Source</label><select id="audSrc"><option>Ambience bed</option><option>Voice-over</option><option>Film mix L/R</option></select></div>
+        <div class="ph">Walls</div>
+        <div class="field wide"><label>Material</label><select id="audWall"><option value=".03">Painted plaster (α .03)</option><option value=".1">Timber panel (α .10)</option><option value=".6">Acoustic panel (α .60)</option><option value=".02">Glass (α .02)</option></select></div>
+        <div class="ph">At listener</div>
+        <div class="kv" id="audInfo"></div>
+      </div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Engine</div><h3>Steam Audio in the browser</h3><div class="sub">HRTF spatialization plus simulated propagation.</div><div class="more">Occlusion, transmission through walls, early reflections and baked or real-time reverb per zone. Headphone users hear roughly what a visitor would; the SPL map shows the same simulation as a plan.</div><div class="tag">WASM<i>HRTF · reflections</i></div></div>
+    <div class="frame reveal"><div class="k">Speakers</div><h3>Real models, real directivity</h3><div class="sub">Point source, line array, directional beam, subs.</div><div class="more">Speakers carry sensitivity, max SPL and directivity balloons from manufacturer data (CLF/GLL), so you can check spill from a directional speaker into the next gallery.</div><div class="tag">Directivity<i>CLF / GLL</i></div></div>
+    <div class="frame reveal"><div class="k">Check</div><h3>Bleed &amp; intelligibility</h3><div class="sub">Will the film in room B drown out the VO in room A?</div><div class="more">Per-zone level and estimated reverberation time (Sabine) flag problems early, before acoustic treatment is specified.</div><div class="tag">RT60 · SPL<i>per zone</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 07 CUES -->
+<section class="block stage-sec" id="cues">
+  <div class="small-heading reveal"><span class="n">07</span>Cueing</div>
+  <div class="intro reveal">
+    <h2>Author the show in detail. Run it with one button.</h2>
+    <ul>
+      <li><b>Authoring</b>Per-cue colour &amp; brightness for every light group, video and audio actions, fades, follows, triggers</li>
+      <li><b>Runner</b>QLab-style cue list: standby, GO, back, panic. Nothing else</li>
+      <li><b>Cameras</b>Place cameras around the space and watch cues land from several angles at once</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Cues</b></div><div class="spacer"></div>
+      <div class="seg" id="cueMode"><button class="on" data-m="author">Authoring</button><button data-m="run">Runner only</button></div>
+    </div>
+    <div class="wb-body" id="cueBody" style="grid-template-columns: 330px 1fr 260px">
+      <div class="pane" id="cueAuthor">
+        <div class="ph">Cue list <button class="btn" id="cueNew">+ New cue</button></div>
+        <table class="cuelist" id="cueTable"><thead><tr><th>#</th><th>Name</th><th>Fade</th><th>Trigger</th></tr></thead><tbody></tbody></table>
+        <div class="ph" style="margin-top:16px">Edit cue <span id="cueEditNum"></span></div>
+        <input class="inp" id="cueName">
+        <div class="groups" id="cueGroups"></div>
+        <div class="field wide"><label>Video</label><select id="cueVideo"><option value="">— no change —</option><option value="intro">Play: Intro film</option><option value="loop">Play: Ambient loop</option><option value="stop">Stop video</option></select></div>
+        <div class="field wide"><label>Audio</label><select id="cueAudio"><option value="">— no change —</option><option value="amb">Play: Ambience bed</option><option value="vo">Play: Welcome VO</option><option value="stop">Fade out all</option></select></div>
+        <div class="field"><label>Fade (s)</label><input type="range" id="cueFade" min="0" max="10" step=".5"><output></output></div>
+        <div class="field wide"><label>Trigger</label><select id="cueTrig"><option>Manual (GO)</option><option>Follow previous</option><option>Zone: Entrance</option><option>Zone: Podium</option><option>Interactive: Touch table</option><option>Time of day</option><option>OSC / MIDI</option></select></div>
+        <button class="btn" id="cueRecord" style="width:100%;margin-top:6px">Preview this cue on stage</button>
+      </div>
+      <div class="stage">
+        <div class="cams" id="cams">
+          <div class="cam"><canvas></canvas><span>CAM 1 · Audience</span></div>
+          <div class="cam"><canvas></canvas><span>CAM 2 · Podium close</span></div>
+          <div class="cam"><canvas></canvas><span>CAM 3 · Overhead</span></div>
+          <div class="cam"><canvas></canvas><span>CAM 4 · Entrance</span></div>
+        </div>
+      </div>
+      <div class="pane trig-simple">
+        <div class="ph">Runner</div>
+        <div class="standby"><small>Standing by</small><div id="cueStandby">—</div></div>
+        <button class="go" id="cueGo">GO</button>
+        <div class="row fill" style="margin-top:8px"><button class="btn" id="cueBack">◀ Back</button><button class="btn" id="cueNext">Skip ▶</button><button class="btn" id="cuePanic" style="color:#ff8a8a">Panic</button></div>
+        <div class="ph" style="margin-top:18px">Live</div>
+        <div class="standby"><small>Running</small><div id="cueLive" style="font-size:14px">—</div><div class="pbar"><div id="cueFadeBar"></div></div></div>
+        <div class="note">Space bar = GO while the mouse is over the cue tool. The runner is the only thing an operator or docent needs to see.</div>
+        <div class="ph">Cameras</div>
+        <div class="note" style="margin-top:0">Click a camera tile to solo it. In the full tool, cameras are placed in 3D like any object and can be locked to a cue.</div>
+      </div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Authoring</div><h3>Looks, not channels</h3><div class="sub">Set colour and brightness per light group, and per fixture if needed.</div><div class="more">Cues store looks (light groups, LED content, video and audio actions) with fades, delays and follows. Update a cue by adjusting the stage and pressing record.</div><div class="tag">Full control<i>for designers</i></div></div>
+    <div class="frame reveal"><div class="k">Runner</div><h3>One big GO</h3><div class="sub">The QLab mental model: standby, go.</div><div class="more">The runner shows only the next cue and a GO button, with back and panic. Hand it to a client in VR or to a docent on a tablet.</div><div class="tag">Simple<i>for operators</i></div></div>
+    <div class="frame reveal"><div class="k">Triggers</div><h3>Manual, zone, interactive, OSC</h3><div class="sub">The same cue can fire from many sources.</div><div class="more">Zones fire on visitor entry (human or simulated crowd), interactives fire on use, and OSC/MIDI lets real show controllers drive previs, or previs drive real hardware.</div><div class="tag">OSC · MIDI<i>bi-directional</i></div></div>
+    <div class="frame reveal"><div class="k">Monitoring</div><h3>Multi-camera view</h3><div class="sub">Watch from the back row, the podium and overhead at once.</div><div class="more">Cameras are placed in the scene like any object, and up to 9 views render together, so you can see a cue land everywhere before signing it off.</div><div class="tag">Up to 3×3<i>vantage points</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 08 WALK -->
+<section class="block stage-sec" id="walk">
+  <div class="small-heading reveal"><span class="n">08</span>Navigate &amp; interact</div>
+  <div class="intro reveal">
+    <h2>Walk the show as a visitor, on a laptop or in a headset.</h2>
+    <ul>
+      <li><b>Navigate</b>Desktop first-person, WebXR headset, or a guided tour path</li>
+      <li><b>Trigger</b>Fire cues by hand, or let zones auto-trigger as you walk in</li>
+      <li><b>Interact</b>Use touch tables and gesture walls as prototypes inside the scene</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Walkthrough</b></div><div class="spacer"></div>
+      <div class="seg" id="walkMode"><button class="on" data-m="free">Free walk</button><button data-m="tour">Guided tour</button><button data-m="vr">VR headset</button></div>
+    </div>
+    <div class="wb-body">
+      <div class="pane">
+        <div class="ph">Manual triggers</div>
+        <div class="list" id="walkTriggers"></div>
+        <div class="ph">Auto-trigger zones</div>
+        <div class="list" id="walkZones"></div>
+      </div>
+      <div class="stage" id="walkStage" tabindex="0"><canvas id="walkCanvas"></canvas><div class="hud">Click the plan, then <span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> to walk (or click to walk there) · <b id="walkWhere"></b></div></div>
+      <div class="pane">
+        <div class="ph">Interactive</div>
+        <div id="walkInteractive" class="note" style="margin-top:0">Walk up to the touch table or the gesture wall to use it.</div>
+        <div id="walkTable" class="hidden">
+          <div style="font-weight:700;margin-bottom:6px">Touch table: “Choose a story”</div>
+          <div class="row fill"><button class="btn" data-story="#ff6a2b">Fire</button><button class="btn" data-story="#2bd4c8">Water</button><button class="btn" data-story="#9be564">Forest</button></div>
+          <div class="note">Choosing a story changes what the film nook plays, just as it will on site.</div>
+        </div>
+        <div id="walkGesture" class="hidden">
+          <div style="font-weight:700;margin-bottom:6px">Gesture wall: move over it</div>
+          <canvas id="gestCanvas" style="width:100%;height:120px;border-radius:4px;background:#0c0d0f"></canvas>
+        </div>
+        <div class="ph">Event log</div>
+        <div class="log" id="walkLog"></div>
+      </div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Navigate</div><h3>Desktop, headset, tour</h3><div class="sub">WebXR means a link opens on a Quest. No install.</div><div class="more">First-person with sit/stand heights, a teleport and smooth-move headset mode, and guided tours that stop at key moments: good for client sessions.</div><div class="tag">WebXR<i>Quest · Vision Pro</i></div></div>
+    <div class="frame reveal"><div class="k">Interact</div><h3>Prototype interactives in place</h3><div class="sub">Embed a web app on a surface and use it in the scene.</div><div class="more">Touch tables, kiosks and gesture walls are live web apps rendered on their surfaces. They emit events that fire cues, so you can test the interaction and the room’s response together.</div><div class="tag">Web surfaces<i>events → cues</i></div></div>
+    <div class="frame reveal"><div class="k">Review</div><h3>Multi-user sessions</h3><div class="sub">Walk together; leave notes where you stand.</div><div class="more">Client and team share a session with avatars and voice. Pinned comments in 3D become tagged requests in the environment stage.</div><div class="tag">Presence<i>pinned notes</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 09 CROWD -->
+<section class="block stage-sec" id="crowd">
+  <div class="small-heading reveal"><span class="n">09</span>Crowd simulation</div>
+  <div class="intro reveal">
+    <h2>Fill the space before opening day, and time the visit.</h2>
+    <ul>
+      <li><b>Visitors</b>Silhouettes that find their way, watch content and move on at realistic speeds</li>
+      <li><b>Behaviour</b>Arrival rate, age mix, groups and solos, groups that split and regroup</li>
+      <li><b>Answers</b>Visit length, peak occupancy, throughput, crowding hotspots per exhibit</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Crowd</b> — sim clock <b id="crowdClock">00:00:00</b></div><div class="spacer"></div>
+      <button class="btn primary" id="crowdRun">▶ Run</button><button class="btn" id="crowdReset">Reset</button>
+      <div class="seg" id="crowdSpeed"><button data-s="1">1×</button><button data-s="10">10×</button><button class="on" data-s="30">30×</button><button data-s="90">90×</button></div>
+      <button class="btn" id="crowdHeat">Heatmap</button>
+      <button class="btn" id="crowdCsv">Export CSV</button>
+    </div>
+    <div class="wb-body">
+      <div class="pane">
+        <div class="ph">Arrivals</div>
+        <div class="field"><label>Visitors</label><input type="range" id="crVisitors" min="20" max="600" step="10" value="240"><output></output></div>
+        <div class="field"><label>Arrivals/min</label><input type="range" id="crRate" min="1" max="30" value="6"><output></output></div>
+        <div class="ph">Age mix</div>
+        <div class="field"><label>Children</label><input type="range" id="crKids" min="0" max="60" value="20"><output></output></div>
+        <div class="field"><label>Seniors</label><input type="range" id="crSeniors" min="0" max="60" value="15"><output></output></div>
+        <div class="note" style="margin-top:0" id="crAdults"></div>
+        <div class="ph">Groups</div>
+        <div class="field"><label>In groups</label><input type="range" id="crGroup" min="0" max="100" value="55"><output></output></div>
+        <div class="field"><label>Max size</label><input type="range" id="crGroupMax" min="2" max="8" value="5"><output></output></div>
+        <div class="field"><label>Split off</label><input type="range" id="crSplit" min="0" max="60" value="20"><output></output></div>
+        <div class="ph">Behaviour</div>
+        <div class="field"><label>Patience</label><input type="range" id="crPatience" min="10" max="180" step="5" value="60"><output></output></div>
+        <div class="field"><label>Attention</label><input type="range" id="crAttn" min="30" max="150" step="5" value="100"><output></output></div>
+        <div class="note">Patience: how long people queue at a crowded exhibit before giving up. Attention scales dwell times (100% = typical museum data).</div>
+      </div>
+      <div class="stage" style="min-height:560px"><canvas id="crowdCanvas"></canvas>
+        <div class="hud" id="crowdLegend"></div>
+      </div>
+      <div class="pane">
+        <div class="ph">Live stats</div>
+        <div class="stat-grid">
+          <div class="stat"><small>In space</small><b id="stIn">0</b></div>
+          <div class="stat"><small>Peak</small><b id="stPeak">0</b></div>
+          <div class="stat"><small>Entered</small><b id="stEntered">0</b></div>
+          <div class="stat"><small>Exited</small><b id="stExited">0</b></div>
+          <div class="stat"><small>Avg visit</small><b id="stAvg">–</b></div>
+          <div class="stat"><small>P90 visit</small><b id="stP90">–</b></div>
+        </div>
+        <div class="ph">Visit length distribution</div>
+        <canvas id="crowdHist" style="width:100%;height:80px;background:#0c0d0f;border-radius:4px"></canvas>
+        <div class="ph">Exhibits</div>
+        <table class="exh-table" id="exhTable"><thead><tr><th>Exhibit</th><th>Visits</th><th>Avg dwell</th><th>Max</th><th>Skipped</th></tr></thead><tbody></tbody></table>
+        <div class="estimate" id="crowdEstimate">Run the simulation to get estimates.</div>
+      </div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Movement</div><h3>Pathfinding, not wandering</h3><div class="sub">Navmesh routing with local avoidance.</div><div class="more">Visitors route around walls and each other (flow fields over a nav grid here; navmesh + RVO in the full tool), slow down in crowds, and queue at full exhibits until they lose patience.</div><div class="tag">Navmesh · RVO<i>hundreds of agents</i></div></div>
+    <div class="frame reveal"><div class="k">Behaviour</div><h3>Real time frames</h3><div class="sub">Walking speed and dwell by age, from visitor studies.</div><div class="more">Children move fast and dwell briefly; seniors walk slower and read longer. Films hold watchers for their running time. All parameters can be tuned against the client's own counts.</div><div class="tag">Calibrated<i>tunable</i></div></div>
+    <div class="frame reveal"><div class="k">Social</div><h3>Groups split and regroup</h3><div class="sub">Families drift apart at exhibits and meet up again.</div><div class="more">Groups move at the pace of the slowest member. Members can peel off to another exhibit and rejoin later, which is what actually produces bottlenecks at doorways.</div><div class="tag">Groups<i>solo ↔ group</i></div></div>
+    <div class="frame reveal"><div class="k">Output</div><h3>Numbers for the client</h3><div class="sub">Visit length, capacity, throughput, hotspots.</div><div class="more">CSV export per visitor and per exhibit, density heatmaps, and a plain-language estimate (“plan for a 22-minute experience; 140 people peak”). The crowd also drives zone cues.</div><div class="tag">CSV · heatmap<i>estimates</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== 10 CAPTURE -->
+<section class="block stage-sec" id="capture">
+  <div class="small-heading reveal"><span class="n">10</span>Stills &amp; camera moves</div>
+  <div class="intro reveal">
+    <h2>Path-traced stills and keyframed fly-throughs for the client deck.</h2>
+    <ul>
+      <li><b>Stills</b>Progressive path tracing of the same scene, lights and materials, denoised</li>
+      <li><b>Camera</b>Keyframe position, aim and lens on a timeline; preview in real time</li>
+      <li><b>Render</b>Queue MP4/PNG sequences; cues can play during the move</li>
+    </ul>
+  </div>
+  <div class="wb reveal">
+    <div class="wb-bar"><div class="dots"><i></i><i></i><i></i></div><div class="title">Previs / <b>Capture</b></div><div class="spacer"></div>
+      <div class="seg" id="capMode"><button class="on" data-m="still">Path-traced still</button><button data-m="anim">Camera animation</button></div>
+    </div>
+    <div class="wb-body two" id="capStill">
+      <div class="stage"><canvas id="ptCanvas"></canvas><div class="hud" id="ptHud"></div></div>
+      <div class="pane">
+        <div class="ph">Render settings</div>
+        <div class="field wide"><label>Samples</label><select id="ptSpp"><option>256</option><option selected>1024</option><option>4096</option></select></div>
+        <div class="field"><label>Bounces</label><input type="range" id="ptBounces" min="1" max="12" value="6"><output></output></div>
+        <div class="field wide"><label>Resolution</label><select><option>1920 × 1080</option><option>3840 × 2160</option><option>Square 2048</option></select></div>
+        <div class="field wide"><label>Denoiser</label><select id="ptDenoise"><option value="1">On (OIDN)</option><option value="0">Off</option></select></div>
+        <div class="field wide"><label>Cue state</label><select><option>Cue 3: Welcome</option><option>Cue 4: Film</option></select></div>
+        <button class="btn primary" id="ptStart" style="width:100%;margin-top:8px">Render still</button>
+        <div class="note">Runs progressively in the browser (WebGPU path tracer) for previews; final frames can be sent to a render node running Cycles with the identical scene.</div>
+      </div>
+    </div>
+    <div class="hidden" id="capAnim">
+      <div class="wb-body two-l" style="min-height:440px;grid-template-columns:minmax(300px,36%) 1fr">
+        <div class="pane" style="position:relative;padding:0;min-height:300px"><canvas id="camPlan" style="position:absolute;inset:0;width:100%;height:100%"></canvas></div>
+        <div class="stage"><canvas id="camView"></canvas><div class="hud" id="camHud"></div></div>
+      </div>
+      <div class="wb-bar" style="border-top:1px solid var(--ui-line)">
+        <button class="btn" id="camPlay">▶ Play</button>
+        <button class="btn" id="camKey">◆ Add keyframe</button>
+        <button class="btn" id="camDelKey">Delete key</button>
+        <span class="note" style="margin:0">Drag a keyframe's camera on the plan to move it; drag the red playhead to scrub.</span>
+        <div class="spacer"></div>
+        <button class="btn primary" id="camRender">Queue render · MP4 1080p 24fps</button>
+      </div>
+      <div class="timeline" id="camTimeline"><canvas class="ticks" id="camTicks"></canvas><div class="head" id="camHead"></div></div>
+      <div class="pane render-q" style="max-height:none"><div class="ph">Render queue</div><div class="list" id="camQueue"><div class="note" style="margin:0">Empty.</div></div></div>
+    </div>
+  </div>
+  <div class="frames">
+    <div class="frame reveal"><div class="k">Stills</div><h3>Presentation quality</h3><div class="sub">The same scene, now path traced.</div><div class="more">No re-export to another package: path tracing uses the same photometric lights, PBR materials, LED and projection content. Denoised previews in seconds, finals in minutes.</div><div class="tag">Path traced<i>denoised</i></div></div>
+    <div class="frame reveal"><div class="k">Motion</div><h3>Keyframeable camera</h3><div class="sub">Position, target, focal length, depth of field.</div><div class="more">Smooth spline moves with easing, bound to the cue timeline, so a fly-through can show the show happening. Crowds can be included as silhouettes for scale.</div><div class="tag">Timeline<i>cue-synced</i></div></div>
+    <div class="frame reveal"><div class="k">Deliver</div><h3>Straight to the deck</h3><div class="sub">PNG, EXR, MP4, 360° stills.</div><div class="more">Renders land in a shared gallery with the scene version they came from, so every image in a client deck can be traced back and re-rendered after changes.</div><div class="tag">Versioned<i>traceable</i></div></div>
+  </div>
+</section>
+
+<!-- ================================================================== ARCHITECTURE + ROADMAP -->
+<div class="dark-band">
+<section class="block" id="arch">
+  <div class="small-heading reveal">How it’s built</div>
+  <div class="intro reveal">
+    <h2>A web app, a Blender bridge and a few proven engines.</h2>
+    <p>Most of the hard parts already exist as mature components. Our own video-driven GI room prototype shows the browser can carry physically based lighting with real-time video light. The work is in joining these pieces into one tool a whole studio can use.</p>
+  </div>
+  <div class="frames three">
+    <div class="frame reveal"><div class="k">Client</div><h3>three.js · WebGPU · WebXR</h3><div class="sub">React + R3F interface, imperative render core.</div><div class="more">The same split as our R3F prototype: React for UI and interaction, a dedicated lighting engine for GI, LTC area lights, shadows and projection.</div><div class="tag">Browser<i>desktop &amp; headset</i></div></div>
+    <div class="frame reveal"><div class="k">Bridge</div><h3>Blender MCP server</h3><div class="sub">Headless Blender workers, driven by tagged requests.</div><div class="more">Requests carry the selection, tags and a screenshot. An agent plans Blender tool calls, executes them and returns a USD diff for approval.</div><div class="tag">MCP<i>queued workers</i></div></div>
+    <div class="frame reveal"><div class="k">Bridge</div><h3>Materials MCP</h3><div class="sub">Photo → de-lit, tileable PBR set.</div><div class="more">Image-to-material models plus classic tiling. Results land in the shared library with provenance and real-world scale.</div><div class="tag">MCP<i>generate_pbr</i></div></div>
+    <div class="frame reveal"><div class="k">Engines</div><h3>Steam Audio · Path tracer · Crowd</h3><div class="sub">WASM audio, WebGPU path tracing, navmesh crowds.</div><div class="more">Steam Audio for propagation, a WebGPU path tracer for stills (Cycles on a render node for finals), Recast/Detour-style navmesh and RVO for crowds.</div><div class="tag">Proven libraries<i>integrated</i></div></div>
+    <div class="frame reveal"><div class="k">Show</div><h3>OSC · sACN · MVR</h3><div class="sub">Talks to the real show world.</div><div class="more">Cue data exports to show control; lighting to MVR; pixels to sACN. Live OSC lets a real console drive the previs during programming.</div><div class="tag">Standards<i>in &amp; out</i></div></div>
+    <div class="frame reveal"><div class="k">Data</div><h3>USD + project store</h3><div class="sub">Versioned scenes, libraries, cue lists, sim runs.</div><div class="more">Branch a design option, compare crowd stats between options, and roll back. Everything shareable by link.</div><div class="tag">Versioned<i>branchable</i></div></div>
+  </div>
+
+  <div class="small-heading reveal" style="margin-top:110px">Proposed phasing</div>
+  <div class="roadmap">
+    <div class="frame reveal" style="--grad:linear-gradient(135deg,#3a261b,#1b1b1b)"><div class="k">Phase 1</div><h3>Room &amp; light</h3><div class="weeks">8<small>weeks</small></div><div class="more">Import (CAD, mesh, sketch), material library, photometric lighting catalogue, screens, desktop walkthrough.</div><div class="tag">Foundation<i></i></div></div>
+    <div class="frame reveal" style="--grad:linear-gradient(135deg,#2f2a1a,#1b1b1b)"><div class="k">Phase 2</div><h3>Show</h3><div class="weeks">8<small>weeks</small></div><div class="more">LED, projectors with shadows, cue authoring + runner, multi-cam, spatial audio and speakers, WebXR.</div><div class="tag">Cue it<i></i></div></div>
+    <div class="frame reveal" style="--grad:linear-gradient(135deg,#1b2d2b,#1b1b1b)"><div class="k">Phase 3</div><h3>People</h3><div class="weeks">6<small>weeks</small></div><div class="more">Crowd simulation, zone triggers, stats/exports, interactive surfaces, multi-user review.</div><div class="tag">Populate it<i></i></div></div>
+    <div class="frame reveal" style="--grad:linear-gradient(135deg,#25223a,#1b1b1b)"><div class="k">Phase 4</div><h3>Bridges &amp; capture</h3><div class="weeks">6<small>weeks</small></div><div class="more">Blender &amp; Materials MCP, path-traced stills, camera animation, show-control exports.</div><div class="tag">Ship it<i></i></div></div>
+  </div>
+</section>
+</div>
+
+<footer class="site-footer">
+  <a class="wordmark" href="#top">Local Projects<span>Previs</span></a>
+  <div>Proposal &amp; interaction mock-up. All fixtures, speakers and products shown are representative placeholders.</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/common.js"></script>
+<script src="js/site.js"></script>
+<script src="js/env.js"></script>
+<script src="js/materials.js"></script>
+<script src="js/lighting.js"></script>
+<script src="js/led.js"></script>
+<script src="js/projection.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/cues.js"></script>
+<script src="js/walk.js"></script>
+<script src="js/crowd.js"></script>
+<script src="js/capture.js"></script>
+</body>
+</html>
